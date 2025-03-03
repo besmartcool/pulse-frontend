@@ -23,41 +23,41 @@ export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.containerImageSign}>
-      <LinearGradient
-        // Background Linear Gradient
-        colors={['#FFFFFF', '#A3E2F8']}
-        start={{ x: 0.5, y: 0.3}}
-        end={{ x: 0.5, y: 0.9 }}
-        style={styles.background}
-      >
-        <Image style={styles.logo} source={require('../assets/Logo.png')} />
-        <View style={styles.containerSign}>
-        <Text style={styles.text}>Vous avez déjà un compte ?</Text>
-        <TouchableOpacity
-          onPress={() => handleSubmit()}
-          style={styles.buttonSignin}
-          activeOpacity={0.8}
+        <LinearGradient
+          // Background Linear Gradient
+          colors={["#FFFFFF", "#A3E2F8"]}
+          start={{ x: 0.5, y: 0.3 }}
+          end={{ x: 0.5, y: 0.9 }}
+          style={styles.background}
         >
-          <Text style={styles.textButton}>Sign in</Text>
-        </TouchableOpacity>
-        <View style={styles.line}></View>
-        <Text style={styles.text}>Inscrivez-vous</Text>
-        <TouchableOpacity
-          onPress={() => handleSubmit()}
-          style={styles.buttonSignup}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.textButtonSignup}>Sign up</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => handleSubmit()}
-          style={styles.buttonContinue}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.textButton}>Continuer sans compte</Text>
-        </TouchableOpacity>
-      </View>
-      </LinearGradient>
+          <Image style={styles.logo} source={require("../assets/Logo.png")} />
+          <View style={styles.containerSign}>
+            <Text style={styles.text}>Vous avez déjà un compte ?</Text>
+            <TouchableOpacity
+              onPress={() => handleSubmit()}
+              style={styles.buttonSignin}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.textButton}>Sign in</Text>
+            </TouchableOpacity>
+            <View style={styles.line}></View>
+            <Text style={styles.text}>Inscrivez-vous</Text>
+            <TouchableOpacity
+              onPress={() => handleSubmit()}
+              style={styles.buttonSignup}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.textButtonSignup}>Sign up</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleSubmit()}
+              style={styles.buttonContinue}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.textButton}>Continuer sans compte</Text>
+            </TouchableOpacity>
+          </View>
+        </LinearGradient>
       </View>
       <View style={styles.containerTextFooter}>
         <Text style={styles.textFooter}>@Pulse | 2025</Text>
@@ -77,12 +77,21 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 36,
     paddingBottom: 50,
     
+
+    // Ombre sur iOS
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    
+
+    // Ombre sur Android
+    elevation: 8,
   },
   container: {
     flex: 1,
     alignItems: "center",
     justifyContent: "space-between",
-    
   },
   containerImageSign: {
     width: "100%",
@@ -100,7 +109,6 @@ const styles = StyleSheet.create({
     width: 400,
     height: 200,
     marginTop: 150,
-    
   },
   buttonSignup: {
     alignItems: "center",
@@ -111,6 +119,13 @@ const styles = StyleSheet.create({
     borderColor: "#bbbbbb",
     backgroundColor: "#FF6C02",
     borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+
+    // Ombre sur Android
+    elevation: 8,
   },
   line: {
     marginTop: 20,
