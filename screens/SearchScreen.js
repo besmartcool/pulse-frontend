@@ -19,7 +19,7 @@ export default function SearchScreen({ navigation }) {
             <View style={styles.topContent}>
               <Image
                 style={styles.logo}
-                source={require("../assets/logo.png")}
+                source={require("../assets/Logo.png")}
                 size={25}
               />
               <Pressable style={styles.addAsso}>
