@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Input from "../components/input";
-import CityAutocomplete from "../components/cityDropdown";
+import CityDropdown from "../components/cityDropdown";
+import CountryDropdown from "../components/countryDropdown";
 
 export default function SearchScreen({ navigation }) {
   const [typeContent, setTypeContent] = useState("default");
@@ -50,30 +51,32 @@ export default function SearchScreen({ navigation }) {
     content = (
       <View style={styles.fakeModal}>
         <View style={styles.research}>
-          <Input
-            title="Pays d'origine"
-            placeholder="Pays..."
-            value={originCountry}
-            onChangeText={setOriginCountry}
-            secureTextEntry={false}
-            icon="flag"
-          />
-          <Input
-            title="Pays de destination"
-            placeholder="Pays..."
-            value={destinationCountry}
-            onChangeText={setDestinationCountry}
-            secureTextEntry={false}
-            icon="flag"
-          />
-          <Input
-            title="Ville de destination"
-            placeholder="Ville..."
-            value={destinationCity}
-            onChangeText={setDestinationCity}
-            secureTextEntry={false}
-            icon="flag"
-          />
+          <View style={styles.allInputs}>
+            <View style={styles.dropdown}>
+              <CountryDropdown
+                title="Pays d'origine"
+                placeholder="Rechercher un pays..."
+                selectedCountry={originCountry}
+                onSelectCountry={setOriginCountry}
+              />
+            </View>
+            <View style={styles.dropdown}>
+              <CountryDropdown
+                title="Pays de destination"
+                placeholder="Rechercher un pays..."
+                selectedCountry={destinationCountry}
+                onSelectCountry={setDestinationCountry}
+              />
+            </View>
+            <View style={styles.dropdown}>
+              <CityDropdown
+                title="Ville de destination"
+                placeholder="Rechercher une ville..."
+                selectedCity={destinationCity}
+                onSelectCity={setDestinationCity}
+              />
+            </View>
+          </View>
 
           <View style={styles.criterias}>
             {/* CRTIERE A RECUPERER DU BACK OU DE QQPART AVEC UN .MAP */}
@@ -220,12 +223,20 @@ const styles = StyleSheet.create({
     height: "auto",
     marginTop: 30,
   },
+  allInputs: {
+    height: "auto",
+    justifyContent: "flex-start",
+  },
+  dropdown: {
+    width: "auto",
+    height: "80",
+  },
   criterias: {
     height: "auto",
     width: "auto",
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
     gap: 10,
     flexWrap: "wrap",
     marginVertical: 10,
@@ -241,6 +252,6 @@ const styles = StyleSheet.create({
   criteriaText: {
     fontSize: 12,
     fontWeight: "700",
-    color: "black"
+    color: "black",
   },
 });
