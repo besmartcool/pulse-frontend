@@ -25,7 +25,7 @@ export default function SearchScreen({ navigation }) {
       <View style={styles.fakeModal}>
         <View style={styles.research}>
           <View style={styles.topContent}>
-            <Image style={styles.logo} source={require("../assets/logo.png")} />
+            <Image style={styles.logo} source={require("../assets/Logo.png")} />
             <Pressable style={styles.addAsso}>
               <Text style={styles.addAssoText}>
                 Enregistrer une association
