@@ -163,7 +163,9 @@ const styles = StyleSheet.create({
   safeAreaContainer: {
     flex: 1,
     paddingTop: 15,
+    width: '90%',
     // alignItems: "center",
+    backgroundColor: 'green',
   },
   mainHeader: {
     fontSize: 20,
