@@ -10,13 +10,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Input from '../components/input';
+import Input from "../components/input";
 
 export default function HomeScreen({ navigation }) {
-    const [text, setText] = useState('');
+  const [text, setText] = useState("");
 
-    const handleSubmit = () => {
-        navigation.navigate("TabNavigator");
+  const handleSubmit = () => {
+    navigation.navigate("TabNavigator");
   };
 
   return (
@@ -28,13 +28,6 @@ export default function HomeScreen({ navigation }) {
       >
         <Text style={styles.textButton}>Go to screen</Text>
       </TouchableOpacity>
-      <View>
-            <Input 
-                placeholder="Entrez votre texte"
-                value={text}
-                onChangeText={setText}
-            />
-        </View>
     </View>
   );
 }
@@ -46,9 +39,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   button: {
-    backgroundColor: 'red'
+    backgroundColor: "red",
   },
   textButton: {
-    color: 'white'
-  }
+    color: "white",
+  },
 });
