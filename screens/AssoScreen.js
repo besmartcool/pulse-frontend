@@ -143,7 +143,7 @@ export default function AssoScreen({ navigation }) {
             />
             <Input
               title="Pays d'origine des membres"
-              placeholder="Pays d'origine"
+              placeholder="Sélectionner un ou plusieurs pays"
               value={nationalities}
               onChangeText={(value) => setNationalities(value)}
               secureTextEntry={false}
@@ -151,7 +151,7 @@ export default function AssoScreen({ navigation }) {
             />
             <Input
               title="Secteur d'activité"
-              placeholder="Amicales, groupements affinitaires, groupements d'entraide"
+              placeholder="Exemple: Amicales, groupements affinitaires, groupements d'entraide"
               value={categories}
               onChangeText={(value) => setCategories(value)}
               secureTextEntry={false}
@@ -162,7 +162,7 @@ export default function AssoScreen({ navigation }) {
             <Text style={styles.subSectionHeader}>Informations de contact</Text>
             <Input
               title="Numéro et libellé de la voie"
-              placeholder="35 Avenue des Champs Elysées"
+              placeholder="Exemple: 35 Avenue des Champs Elysées"
               value={streetNumberAndLabel}
               onChangeText={(value) => setStreetNumberAndLabel(value)}
               secureTextEntry={false}
@@ -170,7 +170,7 @@ export default function AssoScreen({ navigation }) {
             />
             <Input
               title="Code postal"
-              placeholder="75008"
+              placeholder="Exemple: 75008"
               value={zipcode}
               onChangeText={(value) => setZipcode(value)}
               secureTextEntry={false}
@@ -178,7 +178,7 @@ export default function AssoScreen({ navigation }) {
             />
             <Input
               title="Ville"
-              placeholder="Paris"
+              placeholder="Exemple: Paris"
               value={city}
               onChangeText={(value) => setCity(value)}
               secureTextEntry={false}
@@ -186,7 +186,7 @@ export default function AssoScreen({ navigation }) {
             />
             <Input
               title="N° de département"
-              placeholder="75"
+              placeholder="Exemple: 75"
               value={department}
               onChangeText={(value) => setDepartment(value)}
               secureTextEntry={false}
@@ -194,7 +194,7 @@ export default function AssoScreen({ navigation }) {
             />
             <Input
               title="Pays"
-              placeholder="France"
+              placeholder="Exemple: France"
               value={country}
               onChangeText={(value) => setCountry(value)}
               secureTextEntry={false}
@@ -213,7 +213,7 @@ export default function AssoScreen({ navigation }) {
             />
             <Input
               title="Numéro d'identification"
-              placeholder="W111000000"
+              placeholder="Exemple: W111000000"
               value={legalNumber}
               onChangeText={(value) => setLegalNumber(value)}
               secureTextEntry={false}
@@ -221,7 +221,7 @@ export default function AssoScreen({ navigation }) {
             />
             <Input
               title="Date dernière déclaration"
-              placeholder="JJ/MM/AAAA"
+              placeholder="Exemple: JJ/MM/AAAA"
               value={lastDeclarationDate}
               onChangeText={(value) => setlastDeclarationDate(value)}
               secureTextEntry={false}
@@ -232,7 +232,7 @@ export default function AssoScreen({ navigation }) {
             <Text style={styles.subSectionHeader}>Autres informations</Text>
             <Input
               title="Langues parlées"
-              placeholder="Français, Albanais, Anglais"
+              placeholder="Sélectionner une ou plusieurs langues"
               value={languages}
               onChangeText={(value) => setLanguages(value)}
               secureTextEntry={false}
@@ -240,7 +240,7 @@ export default function AssoScreen({ navigation }) {
             />
             <Input
               title="Zone d'intervention"
-              placeholder="France, Vietnam, Laos"
+              placeholder="Sélectionner un ou plusieurs pays"
               value={interventionZone}
               onChangeText={(value) => setInterventionZone(value)}
               secureTextEntry={false}
