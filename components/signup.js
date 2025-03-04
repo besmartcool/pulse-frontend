@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Image } from "expo-image";
 import { useDispatch } from "react-redux";
-import { login } from "../reducers/users";
+import { login } from "../reducers/user";
 import {
   StyleSheet,
   Text,
@@ -16,7 +16,7 @@ export default function Signup() {
   const [errorMessage, setErrorMessage] = useState("");
   const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   const dispatch = useDispatch();
-  const router = useRouter();
+  
 
   const handleSignUp = () => {
     fetch("http://10.0.1.90:3000/users/signup", {
@@ -65,7 +65,7 @@ export default function Signup() {
         placeholder="Password"
         type="password"
       />
-      {emailError && <Text style={styles.error}>Email invalide</Text>}
+      {errorMessage && <Text style={styles.error}>Email invalide</Text>}
       <TouchableOpacity
         onPress={() => handleSignUp()}
         style={styles.button}
