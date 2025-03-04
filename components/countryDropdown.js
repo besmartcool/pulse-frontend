@@ -49,7 +49,7 @@ const CountryDropdown = ({ title, placeholder, selectedCountry, onSelectCountry 
           closeOnSubmit={false} // Ne ferme pas la liste après sélection
           onSelectItem={(item) => {
             setSearchText(item?.title || ""); // Met à jour le texte affiché
-            onSelectCountry(item?.title || ""); // Exécute la fonction callback
+            onSelectCountry(item?.title); // Exécute la fonction callback
           }}
           dataSet={suggestions} // Passe la liste des suggestions
           textInputProps={{

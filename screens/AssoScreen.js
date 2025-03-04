@@ -14,7 +14,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Input from "../components/input";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-
+import CountryDropdown from "../components/countryDropdown";
 
 const BACKEND_ADDRESS = "http://10.0.1.62:3000";
 
@@ -34,6 +34,22 @@ export default function AssoScreen({ navigation }) {
   const [creationDate, setCreationDate] = useState(null);
   const [lastDeclarationDate, setlastDeclarationDate] = useState(null);
   const [legalNumber, setLegalNumber] = useState("");
+
+  const selectResidenceCountry = (country) => {
+    country && setResidenceCountry(country);
+  };
+
+  const selectNationalities = (country) => {
+    country && setNationalities((nationalities) => [...nationalities, country]);
+  };
+
+  const nationalitiesSelected = nationalities?.map((data, i) => {
+    return (
+      <View key={i} style={styles.nationalitiesSelected}>
+        <Text style={{ marginRight: 5, marginLeft: 5, color: "blue" }}>{data}</Text>
+      </View>
+    );
+  });
 
   const newAsso = {
     name: "test frontend",
@@ -92,7 +108,7 @@ export default function AssoScreen({ navigation }) {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.mainHeaderContainer}>
-        <Text style = {styles.mainHeader} >Enregistrer votre association</Text>
+        <Text style={styles.mainHeader}>Enregistrer votre association</Text>
         <View style={styles.bottomBorder} />
       </View>
       <ScrollView
@@ -133,25 +149,29 @@ export default function AssoScreen({ navigation }) {
               secureTextEntry={false}
               icon="pencil"
             />
-            <Input
-              title="Pays de résidence de l'asso"
-              placeholder="Pays de résidence de l'asso"
-              value={residenceCountry}
-              onChangeText={(value) => setResidenceCountry(value)}
-              secureTextEntry={false}
-              icon="caret-down"
-            />
-            <Input
-              title="Pays d'origine des membres"
-              placeholder="Pays d'origine"
-              value={nationalities}
-              onChangeText={(value) => setNationalities(value)}
-              secureTextEntry={false}
-              icon="caret-down"
-            />
+            <View style={styles.dropdown}>
+              <CountryDropdown
+                title="Pays de résidence de l'asso"
+                placeholder="Choisir un pays"
+                onSelectCountry={selectResidenceCountry}
+                selectedCountry={residenceCountry}
+              />
+            </View>
+            <View style={styles.dropdown}>
+              <CountryDropdown
+                title="Pays d'origine des membres"
+                placeholder="Choisir un ou plusieurs pays"
+                onSelectCountry={selectNationalities}
+                selectedCountry={nationalities}
+              />
+            </View>
+            <View style={styles.nationalitiesSelected}>
+              <Text>Sélection:</Text>
+              {nationalitiesSelected}
+            </View>
             <Input
               title="Secteur d'activité"
-              placeholder="Amicales, groupements affinitaires, groupements d'entraide"
+              placeholder="Exemple: Amicales, groupements affinitaires, groupements d'entraide"
               value={categories}
               onChangeText={(value) => setCategories(value)}
               secureTextEntry={false}
@@ -162,7 +182,7 @@ export default function AssoScreen({ navigation }) {
             <Text style={styles.subSectionHeader}>Informations de contact</Text>
             <Input
               title="Numéro et libellé de la voie"
-              placeholder="35 Avenue des Champs Elysées"
+              placeholder="Exemple: 35 Avenue des Champs Elysées"
               value={streetNumberAndLabel}
               onChangeText={(value) => setStreetNumberAndLabel(value)}
               secureTextEntry={false}
@@ -170,7 +190,7 @@ export default function AssoScreen({ navigation }) {
             />
             <Input
               title="Code postal"
-              placeholder="75008"
+              placeholder="Exemple: 75008"
               value={zipcode}
               onChangeText={(value) => setZipcode(value)}
               secureTextEntry={false}
@@ -178,7 +198,7 @@ export default function AssoScreen({ navigation }) {
             />
             <Input
               title="Ville"
-              placeholder="Paris"
+              placeholder="Exemple: Paris"
               value={city}
               onChangeText={(value) => setCity(value)}
               secureTextEntry={false}
@@ -186,7 +206,7 @@ export default function AssoScreen({ navigation }) {
             />
             <Input
               title="N° de département"
-              placeholder="75"
+              placeholder="Exemple: 75"
               value={department}
               onChangeText={(value) => setDepartment(value)}
               secureTextEntry={false}
@@ -194,7 +214,7 @@ export default function AssoScreen({ navigation }) {
             />
             <Input
               title="Pays"
-              placeholder="France"
+              placeholder="Exemple: France"
               value={country}
               onChangeText={(value) => setCountry(value)}
               secureTextEntry={false}
@@ -213,7 +233,7 @@ export default function AssoScreen({ navigation }) {
             />
             <Input
               title="Numéro d'identification"
-              placeholder="W111000000"
+              placeholder="Exemple: W111000000"
               value={legalNumber}
               onChangeText={(value) => setLegalNumber(value)}
               secureTextEntry={false}
@@ -221,7 +241,7 @@ export default function AssoScreen({ navigation }) {
             />
             <Input
               title="Date dernière déclaration"
-              placeholder="JJ/MM/AAAA"
+              placeholder="Exemple: JJ/MM/AAAA"
               value={lastDeclarationDate}
               onChangeText={(value) => setlastDeclarationDate(value)}
               secureTextEntry={false}
@@ -232,7 +252,7 @@ export default function AssoScreen({ navigation }) {
             <Text style={styles.subSectionHeader}>Autres informations</Text>
             <Input
               title="Langues parlées"
-              placeholder="Français, Albanais, Anglais"
+              placeholder="Sélectionner une ou plusieurs langues"
               value={languages}
               onChangeText={(value) => setLanguages(value)}
               secureTextEntry={false}
@@ -240,7 +260,7 @@ export default function AssoScreen({ navigation }) {
             />
             <Input
               title="Zone d'intervention"
-              placeholder="France, Vietnam, Laos"
+              placeholder="Sélectionner un ou plusieurs pays"
               value={interventionZone}
               onChangeText={(value) => setInterventionZone(value)}
               secureTextEntry={false}
@@ -277,7 +297,7 @@ const styles = StyleSheet.create({
     height: 50,
     alignItems: "center",
   },
-    bottomBorder: {
+  bottomBorder: {
     position: "absolute",
     bottom: 0,
     width: "90%",
@@ -355,5 +375,10 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginLeft: 8,
+  },
+  nationalitiesSelected: {
+    fontSize: 5,
+    color: "red",
+    flexDirection: "row",
   },
 });
