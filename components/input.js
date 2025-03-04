@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   input: {
+    width: "100%",
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,

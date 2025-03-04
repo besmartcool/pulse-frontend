@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Image } from "expo-image";
 import { useDispatch } from "react-redux";
 import { login } from "../reducers/user";
+import Input  from '../components/input'
 import {
   StyleSheet,
   Text,
@@ -9,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
 
 export default function Signup() {
   const [signUpEmail, setSignUpEmail] = useState("");
@@ -49,23 +51,32 @@ export default function Signup() {
   };
 
   return (
-    <View className={styles.modalSignup}>
+    <View style={styles.modalSignup}>
+      <View style={styles.containerLogo}>
       <Image style={styles.logo} source={require("../assets/Logo.png")} />
-      <Text>Créer votre compte</Text>
-      <TextInput
-        onChangeText={(value) => setSignUpEmail(value)}
-        value={signUpEmail}
-        className={styles.input}
-        placeholder="Email"
-      />
-      <TextInput
-        onChangeText={(value) => setSignUpPassword(value)}
-        value={signUpPassword}
-        className={styles.input}
-        placeholder="Password"
-        type="password"
-      />
+      </View>
+      <View style={styles.containerTitle}>
+      <Text style={styles.title}>Créer votre compte</Text>
+      </View>
+      <Input
+      style={styles.input}
+      placeholder="Email"
+      value={signUpEmail}
+      onChangeText={(value) => setSignUpEmail(value)}
+      secureTextEntry={false}
+      icon="pencil"/>
+      
+      <Input
+      style={styles.input}
+      placeholder="Password"
+      value={signUpPassword}
+      onChangeText={(value) => setSignUpPassword(value)}
+      secureTextEntry={false}
+      icon="pencil"/>
+      
+      
       {errorMessage && <Text style={styles.error}>Email invalide</Text>}
+      <View>
       <TouchableOpacity
         onPress={() => handleSignUp()}
         style={styles.button}
@@ -73,14 +84,62 @@ export default function Signup() {
       >
         <Text style={styles.textButton}>Sign-up</Text>
       </TouchableOpacity>
+      </View>
     </View>
   );
 }
 const styles = StyleSheet.create({
     modalSignup: {
-        width: "80%",
-        height: 500,
-    }
+        justifyContent: "space-around",
+        width: "100%",
+        height: "90%",
+    },
+    cadre: {
+        width: "100%",
+    },
+    title: {
+        marginBottom: 20,
+        fontWeight: 900,
+    },
+    containerTitle: {
+        alignSelf: "center",
+       
+    },
+    containerLogo: {
+        alignItems: "center",
+        marginBottom: 20,
+    },
+    logo: {
+        resizeMode: "contain",
+        width: 100,
+        height: 100,
+    },
+    input: {
+        width: "auto",
+    },
+        button: {
+        marginTop: 30,
+        alignSelf: "center",
+        justifyContent: "center",
+        width: "100%",
+        height: 43,
+        borderWidth: 1,
+        borderColor: "#bbbbbb",
+        backgroundColor: "#FF6C02",
+        borderRadius: 8,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 5 },
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
+
+    // Ombre sur Android
+        elevation: 8,
+    },
+    textButton: {
+        alignSelf: "center",
+        color: "white",
+        fontWeight: 900,
+    },
 });
 
 

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import Signup  from '../components/signup'
+import Signup from "../components/signup";
+import Signin from "../components/signin";
 import {
   Modal,
   ImageBackground,
@@ -12,7 +13,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  Pressable
+  Pressable,
 } from "react-native";
 import Input from "../components/input";
 
@@ -25,9 +26,13 @@ export default function HomeScreen({ navigation }) {
     navigation.navigate("TabNavigator");
   };
 
-  const handleClickModal = () => {
+  const handleClickModalSignup = () => {
     setModalVisible1(true);
   };
+
+  // const handleClickModalSignin = () => {
+  //   setModalVisible2(true);
+  // };
 
   return (
     <View style={styles.container}>
@@ -36,62 +41,73 @@ export default function HomeScreen({ navigation }) {
         transparent={true}
         visible={modalVisible1}
         onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
+          // Alert.alert("Modal has been closed.");
           setModalVisible1(!modalVisible1);
+          setModalVisible2(!modalVisible2);
         }}
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Signup/>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={styles.containerKeyboardAvoidingView}
+          >
+            {/* <Signin /> */}
+            <Signup />
+            </KeyboardAvoidingView>
           </View>
         </View>
       </Modal>
-      <View style={styles.containerImageSign}>
-        <LinearGradient
-          // Background Linear Gradient
-          colors={["#FFFFFF", "#A3E2F8"]}
-          start={{ x: 0.5, y: 0.3 }}
-          end={{ x: 0.5, y: 0.9 }}
-          style={styles.background}
-        >
-          <Image style={styles.logo} source={require("../assets/Logo.png")} />
-          <View style={styles.containerSign}>
-            <Text style={styles.text}>Vous avez déjà un compte ?</Text>
-            <TouchableOpacity
-              onPress={() => handleSubmit()}
-              style={styles.buttonSignin}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.textButton}>Sign in</Text>
-            </TouchableOpacity>
-            <View style={styles.line}></View>
-            <Text style={styles.text}>Inscrivez-vous</Text>
-            <TouchableOpacity
-              onPress={() => handleClickModal()}
-              style={styles.buttonSignup}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.textButtonSignup}>Sign up</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => handleSubmit()}
-              style={styles.buttonContinue}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.textButton}>Continuer sans compte</Text>
-            </TouchableOpacity>
-          </View>
-        </LinearGradient>
-      </View>
-      <View style={styles.containerTextFooter}>
-        <Text style={styles.textFooter}>@Pulse | 2025</Text>
-        <Text style={styles.textFooter}>Besoin d'aide ? Nous contacter</Text>
-      </View>
+        <View style={styles.containerImageSign}>
+          <LinearGradient
+            // Background Linear Gradient
+            colors={["#FFFFFF", "#A3E2F8"]}
+            start={{ x: 0.5, y: 0.3 }}
+            end={{ x: 0.5, y: 0.9 }}
+            style={styles.background}
+          >
+            <Image style={styles.logo} source={require("../assets/Logo.png")} />
+            <View style={styles.containerSign}>
+              <Text style={styles.text}>Vous avez déjà un compte ?</Text>
+              <TouchableOpacity
+                onPress={() => handleSubmit()}
+                style={styles.buttonSignin}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.textButtonSignin}>Sign in</Text>
+              </TouchableOpacity>
+              <View style={styles.line}></View>
+              <Text style={styles.text}>Inscrivez-vous</Text>
+              <TouchableOpacity
+                onPress={() => handleClickModalSignup()}
+                style={styles.buttonSignup}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.textButtonSignup}>Sign up</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleSubmit()}
+                style={styles.buttonContinue}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.textButton}>Continuer sans compte</Text>
+              </TouchableOpacity>
+            </View>
+          </LinearGradient>
+        </View>
+        <View style={styles.containerTextFooter}>
+          <Text style={styles.textFooter}>@Pulse | 2025</Text>
+          <Text style={styles.textFooter}>Besoin d'aide ? Nous contacter</Text>
+        </View>
+      
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  containerKeyboardAvoidingView: {
+    width: "100%",
+  },
   background: {
     width: "100%",
     height: "100%",
@@ -186,6 +202,10 @@ const styles = StyleSheet.create({
     fontWeight: 900,
     color: "black",
   },
+  textButtonSignin: {
+    fontWeight: 900,
+    color: "#FF6C02"
+  },
   textButtonSignup: {
     fontWeight: 900,
     color: "white",
@@ -198,48 +218,47 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: 900,
   },
-
-    centeredView: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginTop: 22,
+  // CSS Modal
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    width: "90%",
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
     },
-    modalView: {
-      margin: 20,
-      backgroundColor: 'white',
-      borderRadius: 20,
-      padding: 35,
-      alignItems: 'center',
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      elevation: 5,
-    },
-    button: {
-      borderRadius: 20,
-      padding: 10,
-      elevation: 2,
-    },
-    buttonOpen: {
-      backgroundColor: '#F194FF',
-    },
-    buttonClose: {
-      backgroundColor: '#2196F3',
-    },
-    textStyle: {
-      color: 'white',
-      fontWeight: 'bold',
-      textAlign: 'center',
-    },
-    modalText: {
-      marginBottom: 15,
-      textAlign: 'center',
-    },
-  });
-  
-
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
+  },
+});
