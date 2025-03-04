@@ -29,6 +29,9 @@ export default function SearchScreen({ navigation }) {
     setTypeContent("default");
   };
 
+
+  
+
   useEffect(() => {
     fetch("http://localhost:3000/associations/all")
       .then((response) => response.json())
