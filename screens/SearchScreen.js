@@ -1,5 +1,12 @@
-import React, { useState } from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Input from "../components/input";
 import CityDropdown from "../components/cityDropdown";
@@ -12,6 +19,8 @@ export default function SearchScreen({ navigation }) {
   const [destinationCountry, setDestinationCountry] = useState("");
   const [destinationCity, setDestinationCity] = useState("");
 
+  const [associations, setAssociations] = useState([]);
+
   const handleSearch = () => {
     setTypeContent("search");
   };
@@ -19,6 +28,21 @@ export default function SearchScreen({ navigation }) {
   const handleResearch = () => {
     setTypeContent("default");
   };
+
+  useEffect(() => {
+    fetch("http://localhost:3000/associations/all")
+      .then((response) => response.json())
+      .then((data) => {
+        data.association;
+        setAssociations(data);
+      })
+      .catch((error) =>
+        console.error(
+          "Erreur lors de la récupération des associations :",
+          error
+        )
+      );
+  }, []);
 
   let content;
   if (typeContent === "default") {
@@ -98,11 +122,45 @@ export default function SearchScreen({ navigation }) {
     );
   }
 
+  let resultFromSearch =
+    associations.length > 0 ? (
+      associations.map((association, index) => (
+        <View key={index} style={styles.associationCard}>
+          <View style={styles.topAssoContent}>
+            <Text>Logo</Text>
+            <View style={styles.textTitle}>
+              <Text>{association.name}</Text>
+              <Text>{association.nationality}</Text>
+            </View>
+            <Text>Categorie</Text>
+          </View>
+          <Image
+            style={styles.image}
+            source={require("../assets/placeholderImage.png")}
+          />
+          <Text style={styles.description}>
+            {association.description.length > 100
+              ? association.description.slice(0, 200) + "..."
+              : association.description}
+          </Text>
+          <View style={styles.bottomAssoContent}>
+            <FontAwesome name="heart" size={28} color="#000000" />
+            <FontAwesome name="comment" size={28} color="#000000" />
+          </View>
+        </View>
+      ))
+    ) : (
+      <Text>Aucune association trouvée.</Text>
+    );
+
   return (
     <View style={styles.container}>
       <View style={styles.allContent}>
         {content}
         <View style={styles.line}></View>
+        <ScrollView style={styles.allAssociations}>
+          {resultFromSearch}
+        </ScrollView>
       </View>
     </View>
   );
@@ -253,5 +311,51 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "700",
     color: "black",
+  },
+  allAssociations: {
+    width: "90%",
+    height: "auto",
+    marginTop: 20,
+  },
+  associationCard: {
+    height: 300,
+    width: "100%",
+    borderWidth: 1,
+    borderColor: "#bbbbbb",
+    borderRadius: 8,
+    marginBottom: 15,
+    justifyContent: "flex-start",
+    alignItems: "center",
+  },
+  image: {
+    width: "100%",
+    height: 70,
+    resizeMode: "cover",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+  },
+  topAssoContent: {
+    justifyContent: "space-between",
+    alignItems: "center",
+    flexDirection: "row",
+    padding: 10,
+    width: "100%",
+  },
+  textTitle: {
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "column",
+  },
+  description: {
+    padding: 10,
+  },
+  bottomAssoContent: {
+    alignSelf: "flex-end",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    flexDirection: "row",
+    padding: 10,
+    gap: 10,
+    width: "100%",
   },
 });
