@@ -8,9 +8,10 @@ import {
   View,
 } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import Input from "../components/input";
 import CityDropdown from "../components/cityDropdown";
 import CountryDropdown from "../components/countryDropdown";
+import AssociationCard from "../components/associationCard";
+import CategorieRound from "../components/categorieRound";
 
 export default function SearchScreen({ navigation }) {
   const [typeContent, setTypeContent] = useState("default");
@@ -29,14 +30,10 @@ export default function SearchScreen({ navigation }) {
     setTypeContent("default");
   };
 
-
-  
-
   useEffect(() => {
-    fetch("http://localhost:3000/associations/all")
+    fetch("http://10.0.1.57:3000/associations/all")
       .then((response) => response.json())
       .then((data) => {
-        data.association;
         setAssociations(data);
       })
       .catch((error) =>
@@ -46,6 +43,15 @@ export default function SearchScreen({ navigation }) {
         )
       );
   }, []);
+
+  let associationsCategories =
+  associations.length > 0 ? (
+    associations.map((association, index) => (
+  <CategorieRound categorie2={association.categorie2} />
+    ))
+  ) : (
+    <Text>Aucune association trouvée.</Text>
+  );
 
   let content;
   if (typeContent === "default") {
@@ -105,16 +111,20 @@ export default function SearchScreen({ navigation }) {
             </View>
           </View>
 
+          <ScrollView style={styles.categories}>
+            {associationsCategories}
+          </ScrollView>
+
           <View style={styles.criterias}>
             {/* CRTIERE A RECUPERER DU BACK OU DE QQPART AVEC UN .MAP */}
             <Pressable style={styles.criteria}>
-              <Text style={styles.criteriaText}>Criteria 1</Text>
+              <Text style={styles.criteriaText}>Récemment créée</Text>
             </Pressable>
             <Pressable style={styles.criteria}>
-              <Text style={styles.criteriaText}>Criteria 2</Text>
+              <Text style={styles.criteriaText}>Taille</Text>
             </Pressable>
             <Pressable style={styles.criteria}>
-              <Text style={styles.criteriaText}>Criteria 3</Text>
+              <Text style={styles.criteriaText}>Statut</Text>
             </Pressable>
           </View>
           <Pressable style={styles.validateButton} onPress={handleResearch}>
@@ -128,29 +138,7 @@ export default function SearchScreen({ navigation }) {
   let resultFromSearch =
     associations.length > 0 ? (
       associations.map((association, index) => (
-        <View key={index} style={styles.associationCard}>
-          <View style={styles.topAssoContent}>
-            <Text>Logo</Text>
-            <View style={styles.textTitle}>
-              <Text>{association.name}</Text>
-              <Text>{association.nationality}</Text>
-            </View>
-            <Text>Categorie</Text>
-          </View>
-          <Image
-            style={styles.image}
-            source={require("../assets/placeholderImage.png")}
-          />
-          <Text style={styles.description}>
-            {association.description.length > 100
-              ? association.description.slice(0, 200) + "..."
-              : association.description}
-          </Text>
-          <View style={styles.bottomAssoContent}>
-            <FontAwesome name="heart" size={28} color="#000000" />
-            <FontAwesome name="comment" size={28} color="#000000" />
-          </View>
-        </View>
+        <AssociationCard key={index} association={association} />
       ))
     ) : (
       <Text>Aucune association trouvée.</Text>
@@ -170,18 +158,23 @@ export default function SearchScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  // CONTAINER GLOBAL
   container: {
     height: "100%",
     width: "100%",
     justifyContent: "flex-start",
     alignItems: "center",
   },
+
+  // CONTAINER SANS LE DIV DE RECHERCHE
   allContent: {
     height: "100%",
     width: "100%",
     justifyContent: "flex-start",
     alignItems: "center",
   },
+
+  // DIV DE RECHERCHE SANS CRITÈRES
   fakeModal: {
     width: "100%",
     height: "auto",
@@ -194,16 +187,15 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     paddingVertical: 20,
 
-    // Ombre sur iOS
+    // Ombre
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.3,
     shadowRadius: 10,
-
-    // Ombre sur Android
     elevation: 8,
   },
   topContent: {
+    // LOGO + BOUTON ENREGISTRER
     width: "100%",
     flexDirection: "row",
     justifyContent: "space-between",
@@ -211,18 +203,19 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   logo: {
+    // LOGO
     width: 60,
     height: 60,
     resizeMode: "contain",
   },
   addAsso: {
+    // BOUTON ENREGISTRER
     backgroundColor: "#FF6C02",
     borderRadius: 8,
     paddingHorizontal: 13,
     paddingVertical: 10,
     marginBottom: 7,
 
-    // Ombre
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.3,
@@ -234,6 +227,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   searchButton: {
+    // BOUTON RECHERCHER
     height: "64",
     width: "100%",
     flexDirection: "row",
@@ -249,50 +243,33 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     color: "#bbbbbb",
   },
-  validateButton: {
-    height: 43,
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#FF6C02",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginVertical: 20,
-
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-
-    // Ombre sur Android
-    elevation: 8,
-  },
-  validateButtonText: {
-    paddingVertical: 10,
-    color: "white",
-    fontWeight: "600",
-  },
   line: {
+    // SÉPARATEUR
     width: "90%",
     height: 1,
     backgroundColor: "black",
-    marginTop: 30,
+    marginTop: 20,
     alignSelf: "center",
   },
+  // DIV DE RECHERCHE AVEC CRITÈRES
   research: {
+    // CONTIENT TOUT
     width: "90%",
     height: "auto",
     marginTop: 30,
   },
   allInputs: {
+    // CONTIENT LES INPUTS
     height: "auto",
     justifyContent: "flex-start",
   },
   dropdown: {
+    // LES DROPDOWNS
     width: "auto",
     height: "80",
   },
   criterias: {
+    // TOUS LES CRIT7RES
     height: "auto",
     width: "auto",
     flexDirection: "row",
@@ -303,6 +280,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   criteria: {
+    // UN CRITÈRE
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#FF6C02",
@@ -315,50 +293,41 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "black",
   },
+  validateButton: {
+    // BOUTON RECHERCHER AVEC FILTRES
+    height: 43,
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FF6C02",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginVertical: 20,
+
+    // Ombre
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  validateButtonText: {
+    paddingVertical: 10,
+    color: "white",
+    fontWeight: "600",
+  },
+  // CONTENU ASSOCIATIONS
   allAssociations: {
+    // CONTIENT TOUTES LES ASSOCIATIONS
     width: "90%",
     height: "auto",
     marginTop: 20,
   },
-  associationCard: {
-    height: 300,
-    width: "100%",
-    borderWidth: 1,
-    borderColor: "#bbbbbb",
-    borderRadius: 8,
-    marginBottom: 15,
-    justifyContent: "flex-start",
-    alignItems: "center",
-  },
-  image: {
-    width: "100%",
-    height: 70,
-    resizeMode: "cover",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-  },
-  topAssoContent: {
-    justifyContent: "space-between",
-    alignItems: "center",
-    flexDirection: "row",
-    padding: 10,
-    width: "100%",
-  },
-  textTitle: {
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "column",
-  },
-  description: {
-    padding: 10,
-  },
-  bottomAssoContent: {
-    alignSelf: "flex-end",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    flexDirection: "row",
-    padding: 10,
-    gap: 10,
-    width: "100%",
-  },
+  categories: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    width: '100%',
+    height: 50,
+    backgroundColor: 'red'
+  }
 });
