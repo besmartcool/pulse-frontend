@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
+import Signup  from '../components/signup'
 import {
+  Modal,
   ImageBackground,
   KeyboardAvoidingView,
   Platform,
@@ -10,18 +12,40 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Pressable
 } from "react-native";
 import Input from "../components/input";
 
 export default function HomeScreen({ navigation }) {
   const [text, setText] = useState("");
+  const [modalVisible1, setModalVisible1] = useState(false);
+  const [modalVisible2, setModalVisible2] = useState(false);
 
   const handleSubmit = () => {
     navigation.navigate("TabNavigator");
   };
 
+  const handleClickModal = () => {
+    setModalVisible1(true);
+  };
+
   return (
     <View style={styles.container}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible1}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible1(!modalVisible1);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Signup/>
+          </View>
+        </View>
+      </Modal>
       <View style={styles.containerImageSign}>
         <LinearGradient
           // Background Linear Gradient
@@ -43,7 +67,7 @@ export default function HomeScreen({ navigation }) {
             <View style={styles.line}></View>
             <Text style={styles.text}>Inscrivez-vous</Text>
             <TouchableOpacity
-              onPress={() => handleSubmit()}
+              onPress={() => handleClickModal()}
               style={styles.buttonSignup}
               activeOpacity={0.8}
             >
@@ -76,14 +100,12 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 36,
     borderBottomLeftRadius: 36,
     paddingBottom: 50,
-    
 
     // Ombre sur iOS
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.3,
     shadowRadius: 10,
-    
 
     // Ombre sur Android
     elevation: 8,
@@ -176,4 +198,48 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: 900,
   },
-});
+
+    centeredView: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: 22,
+    },
+    modalView: {
+      margin: 20,
+      backgroundColor: 'white',
+      borderRadius: 20,
+      padding: 35,
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
+    },
+    button: {
+      borderRadius: 20,
+      padding: 10,
+      elevation: 2,
+    },
+    buttonOpen: {
+      backgroundColor: '#F194FF',
+    },
+    buttonClose: {
+      backgroundColor: '#2196F3',
+    },
+    textStyle: {
+      color: 'white',
+      fontWeight: 'bold',
+      textAlign: 'center',
+    },
+    modalText: {
+      marginBottom: 15,
+      textAlign: 'center',
+    },
+  });
+  
+
