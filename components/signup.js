@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Image } from "expo-image";
 import { useDispatch } from "react-redux";
 import { login } from "../reducers/users";
-import { useRouter } from "next/router";
 import {
   StyleSheet,
   Text,
