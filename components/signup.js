@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Image } from "expo-image";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { login } from "../reducers/user";
 import Input  from '../components/input'
 import {
@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useNavigation } from '@react-navigation/native';
 
 
 export default function Signup() {
@@ -18,38 +19,61 @@ export default function Signup() {
   const [errorMessage, setErrorMessage] = useState("");
   const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   const dispatch = useDispatch();
+  const navigation = useNavigation();
+
+
   
 
   const handleSignUp = () => {
-    fetch("http://10.0.1.90:3000/users/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: signUpEmail,
-        password: signUpPassword,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (EMAIL_REGEX.test(email)) {
-          dispatch(
-            login({
-              token: data.token,
+if(!signUpPassword) {
+    setErrorMessage('password required')
+} else if (signUpPassword.length < 8){
+    setErrorMessage('password must have 8 characters')
+}
+
+      if (EMAIL_REGEX.test(signUpEmail)) {
+          fetch("http://10.0.1.90:3000/users/signup", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
               email: signUpEmail,
               password: signUpPassword,
-            })
-          );
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+                if (!data || !data.token) {
+                    console.error("Erreur: 'token' est absent de la réponse");
+                    return;
+                }
+                try {
+                    
+                    console.log('data', data.token)
+                    dispatch(
+                        login({
+                            token: 'data.token',
+                            email: data.email,
+                          })
+                      );
+                      console.log('test')
+                      setSignUpEmail("");
+                      console.log('test2')
+                      setSignUpPassword("");
+                      setErrorMessage("");
+                      navigation.navigate('TabNavigator', { screen: 'Search' });
+                      console.log('test3')
+                } catch (error) {
+                    console.log('error', error)
+                }
+            });
 
-          setSignUpEmail("");
-          setSignUpPassword("");
-          setErrorMessage("");
-          navigation.navigate('TabNavigator', { screen: 'SearchScreen' });
-        } else {
-          setErrorMessage("User already exists");
-        }
-      });
+      }else {
+        setErrorMessage("User already exists or email invalid");
+        console.log(errorMessage)
+      }
   };
-
+ const user = useSelector(state => state.user.value);
+ console.log('user', user)
   return (
     <View style={styles.modalSignup}>
       <View style={styles.containerLogo}>
@@ -74,8 +98,8 @@ export default function Signup() {
       secureTextEntry={false}
       icon="pencil"/>
       
-      
-      {errorMessage && <Text style={styles.error}>Email invalide</Text>}
+
+      {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
       <View>
       <TouchableOpacity
         onPress={() => handleSignUp()}
