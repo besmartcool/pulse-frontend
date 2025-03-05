@@ -61,8 +61,8 @@ const AssociationCard = ({ association }) => {
         style={styles.image}
         source={require("../assets/placeholderImage.png")}
       />
-      <Text style={styles.description}>
-        {association.address.length}
+      <Text style={styles.address}>
+      <FontAwesome name="map-pin" size={14} color="#000000" /> {association.address.street}, {association.address.city} {association.address.zipCode}, {association.address.country}
       </Text>
       <Text style={styles.description}>
         {association.description.length > 150
@@ -70,7 +70,7 @@ const AssociationCard = ({ association }) => {
           : association.description}
       </Text>
       <View style={styles.bottomAssoContent}>
-        <FontAwesome name="heart" size={24} color="#000000" />
+        <FontAwesome name="heart" size={30} color="#000000" style={styles.icon}/>
         <Pressable style={styles.contact}>
           <Text style={styles.contactText}>Contacter</Text>
         </Pressable>
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   },
   textCategorie: {
     width: "25%",
-    height: "70%",
+    height: "100%",
     justifyContent: "flex-start",
     alignItems: "flex-end",
   },
@@ -140,11 +140,10 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   bottomAssoContent: {
-    alignSelf: "flex-end",
+    alignSelf: "center",
     justifyContent: "flex-end",
     alignItems: "center",
     flexDirection: "row",
-    padding: 10,
     gap: 10,
     width: "100%",
   },
@@ -165,4 +164,13 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "600",
   },
+  address: {
+    padding: 10,
+    fontSize: 12,
+    width: "100%",
+  },
+  icon: {
+    justifyContent: 'center',
+    alignItems:'center',
+  }
 });
