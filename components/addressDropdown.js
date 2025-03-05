@@ -64,7 +64,6 @@ const AddressDropdown = ({
                   setSearchText(data.features[0].properties.name || ""); 
                   // Mettre à jour les champs de l'addresse, de "numéro et libellé de la voie" à "pays"
                   updateAddressProperties(data) //
-
                 }
               });
             onSelectAddress(item?.title || ""); // Exécute la fonction callback

@@ -21,7 +21,7 @@ import {
   AutocompleteDropdown,
   AutocompleteDropdownContextProvider,
 } from "react-native-autocomplete-dropdown";
-
+import DatePickerInput from "../components/dateTimePicker";
 
 const BACKEND_ADDRESS = "http://10.0.1.62:3000";
 
@@ -232,10 +232,7 @@ export default function AssoScreen({ navigation }) {
             </View>
             <AutocompleteDropdownContextProvider>
               <View style={styles.container}>
-                {/* Affichage du titre si fourni */}
                 <Text style={styles.title}>SECTEURS D'ACTIVITE</Text>
-
-                {/* Composant AutocompleteDropdown */}
                 <AutocompleteDropdown
                   clearOnFocus={false} // Garde le texte saisi quand on clique sur le champ
                   closeOnBlur={true} // Ferme la liste quand on clique ailleurs
@@ -306,6 +303,7 @@ export default function AssoScreen({ navigation }) {
           </View>
           <View style={styles.subSectionContainer}>
             <Text style={styles.subSectionHeader}>Informations légale</Text>
+            <DatePickerInput/>
             <Input
               title="Date de création"
               placeholder="JJ/MM/AAAA"
