@@ -1,5 +1,8 @@
 const categoriesList = [
-    "Éducation", "Santé", "Environnement", "Sport", "Culture", "Technologie", "Humanitaire", "Socioculturel", "Politique", "Spiritualité", "Emploi & Développement local", "Amicales", "Solidarité", "Loisirs", "Réflexion", "Activités économiques", "Droits & Civisme", "Non renseigné", "Communication", "Interventions sociales", "Justice", "Logement", "Patrimoine", "Recherche", "Économie", "Sécurité", "Médico-social", "Services familiaux", "Tourisme",
+    "Education", "Santé", "Environnement", "Sport", "Culture", "Socioculturel", "Politique", "Spiritualité", "Emploi & Développement local", "Amicales", "Solidarité", "Loisirs", "Réflexion", "Activités économiques", "Droits & Civisme", "Divers", "Communication", "Interventions sociales", "Justice", "Logement", "Patrimoine", "Recherche", "Economie", "Sécurité", "Médico-social", "Services familiaux", "Tourisme",
 ]
 
-export default categoriesList;
+const sortedCategories = categoriesList.filter(cat => cat !== "Divers").sort();
+sortedCategories.push("Divers");
+
+export default sortedCategories;

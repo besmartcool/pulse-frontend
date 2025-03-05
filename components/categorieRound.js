@@ -1,16 +1,15 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { library, icon } from '@fortawesome/fontawesome-svg-core'
 
-const CategorieRound = ({ categorie2 }) => {
+const CategorieRound = ({ categorie }) => {
   const categoryIcons = {
-    "Éducation": "graduation-cap",
+    "Education": "graduation-cap",
     "Santé": "heartbeat",
     "Environnement": "leaf",
     "Sport": "soccer-ball-o",
     "Culture": "paint-brush",
-    "Technologie": "laptop",
-    "Humanitaire": "hands-helping",
     "Socioculturel": "users",
     "Politique": "balance-scale",
     "Spiritualité": "circle",
@@ -19,16 +18,16 @@ const CategorieRound = ({ categorie2 }) => {
     "Solidarité": "users",
     "Loisirs": "gamepad",
     "Réflexion": "lightbulb-o",
-    "Activités économiques": "chart-line",
+    "Activités économiques": "dollar",
     "Droits & Civisme": "gavel",
-    "Non renseigné": "question-circle",
+    "Divers": "question-circle",
     "Communication": "bullhorn",
     "Interventions sociales": "user-md",
     "Justice": "balance-scale",
     "Logement": "home",
     "Patrimoine": "university",
     "Recherche": "flask",
-    "Économie": "money",
+    "Economie": "money",
     "Sécurité": "shield",
     "Médico-social": "stethoscope",
     "Services familiaux": "child",
@@ -36,13 +35,11 @@ const CategorieRound = ({ categorie2 }) => {
   };
 
   const categoryColors = {
-    "Éducation": "#3498db",
+    "Education": "#3498db",
     "Santé": "#e74c3c",
     "Environnement": "#2ecc71",
     "Sport": "#f39c12",
     "Culture": "#9b59b6",
-    "Technologie": "#1abc9c",
-    "Humanitaire": "#e67e22",
     "Socioculturel": "#34495e",
     "Politique": "#c0392b",
     "Spiritualité": "#8e44ad",
@@ -60,20 +57,24 @@ const CategorieRound = ({ categorie2 }) => {
     "Logement": "#6c5ce7",
     "Patrimoine": "#b2bec3",
     "Recherche": "#0984e3",
-    "Économie": "#fdcb6e",
+    "Economie": "#fdcb6e",
     "Sécurité": "#2d3436",
     "Médico-social": "#00cec9",
     "Services familiaux": "#fab1a0",
     "Tourisme": "#ff7675",
   };
 
-  const iconName = categoryIcons[categorie2] || "question-circle";
-  const backgroundColor = categoryColors[categorie2] || "#bdc3c7";
+  const iconName = categoryIcons[categorie] || "question-circle";
+  const backgroundColor = categoryColors[categorie] || "#bdc3c7";
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
-      <FontAwesome name={iconName} size={16} color="white" />
-      <Text style={styles.categoryText}>{categorie2}</Text>
+      <View style={styles.icon}>
+      <FontAwesome name={iconName} size={16} color="white"/>
+      </View>
+      <View style={styles.text}>
+      <Text style={styles.categoryText}>{categorie}</Text>
+      </View>
     </View>
   );
 };
@@ -83,7 +84,7 @@ export default CategorieRound;
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     width: 80,
     height: 60,
     padding: 10,
@@ -91,8 +92,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#bbbbbb"
   },
+  icon: {
+    height: '40%',
+    width: '100%',
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  text: {
+    height: '60%',
+    width: '100%',
+    alignItems: "center",
+    justifyContent: "flex-start",
+  },
   categoryText: {
     fontSize: 7,
+    width: '100%',
     fontWeight: "light",
     marginTop: 5,
     textAlign: "center",

@@ -12,29 +12,35 @@ import CityDropdown from "../components/cityDropdown";
 import CountryDropdown from "../components/countryDropdown";
 import AssociationCard from "../components/associationCard";
 import CategorieRound from "../components/categorieRound";
+import categoriesList from "../assets/categoriesList";
 
 export default function SearchScreen({ navigation }) {
   const [typeContent, setTypeContent] = useState("default");
+  const [resultResearch, setResultResearch] = useState("default");
 
   const [originCountry, setOriginCountry] = useState("");
   const [destinationCountry, setDestinationCountry] = useState("");
   const [destinationCity, setDestinationCity] = useState("");
 
   const [associations, setAssociations] = useState([]);
+  const [filteredAssociations, setFilteredAssociations] = useState([]);
 
   const handleSearch = () => {
     setTypeContent("search");
+    setResultResearch("default");
   };
 
   const handleResearch = () => {
     setTypeContent("default");
+    setResultResearch("search");
   };
 
+  // AFFICHAGE DES ASSOCIATIONS ALÉATOIRE AU LANCEMENT DE L'APP
   useEffect(() => {
     fetch("http://10.0.1.57:3000/associations/all")
       .then((response) => response.json())
       .then((data) => {
-        setAssociations(data);
+        setAssociations(data); // ON LES STOCKE DANS UN STATE
       })
       .catch((error) =>
         console.error(
@@ -44,20 +50,59 @@ export default function SearchScreen({ navigation }) {
       );
   }, []);
 
+  // AFFICHAGE DES ASSOCIATIONS PAR CATÉGORIE LORS D'UN CLIC
+  const handleCategoryClick = (category) => {
+    fetch(`http://10.0.1.57:3000/associations/categories/${category}`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          setFilteredAssociations(data.associations);
+          setResultResearch("search");
+        } else {
+          setFilteredAssociations([]);
+          setResultResearch("search");
+        }
+      })
+      .catch((error) =>
+        console.error("Erreur lors de la récupération :", error)
+      );
+  };
+
+  const handleCountryClick = (country) => {
+    fetch(`http://10.0.1.57:3000/associations/country/${country}`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          setFilteredAssociations(data.associations);
+          setResultResearch("search");
+        } else {
+          setFilteredAssociations([]);
+          setResultResearch("search");
+        }
+      })
+      .catch((error) =>
+        console.error("Erreur lors de la récupération :", error)
+      );
+  };
+
+  // RÉCUPÉRATION DES CATÉGORIES
   let associationsCategories =
-  associations.length > 0 ? (
-    associations.map((association, index) => (
-      <View key={index} style={{ marginRight: 5 }}>
-        <CategorieRound categorie2={association.categorie2} />
-      </View>
-    ))
-  ) : (
-    <Text>Aucune association trouvée.</Text>
-  );
+    categoriesList.length > 0 ? (
+      categoriesList.map((category, index) => (
+        <Pressable key={index} onPress={() => handleCategoryClick(category)}>
+          <View style={{ marginRight: 5 }}>
+            <CategorieRound categorie={category} />
+          </View>
+        </Pressable>
+      ))
+    ) : (
+      <Text>Aucune catégorie trouvée.</Text>
+    );
 
-
+  // AFFICHAGE DE LA DIV DE RECHERCHE
   let content;
   if (typeContent === "default") {
+    // PAR DEFAUT
     content = (
       <View style={styles.fakeModal}>
         <View style={styles.research}>
@@ -84,6 +129,7 @@ export default function SearchScreen({ navigation }) {
       </View>
     );
   } else if (typeContent === "search") {
+    // LORSQUE L'ON CLIC SUR RECHERCHER
     content = (
       <View style={styles.fakeModal}>
         <View style={styles.research}>
@@ -101,7 +147,10 @@ export default function SearchScreen({ navigation }) {
                 title="Pays de destination"
                 placeholder="Rechercher un pays..."
                 selectedCountry={destinationCountry}
-                onSelectCountry={setDestinationCountry}
+                onSelectCountry={(country) => {
+                  setDestinationCountry(country);
+                  handleCountryClick(country);
+                }}
               />
             </View>
             <View style={styles.dropdown}>
@@ -147,7 +196,8 @@ export default function SearchScreen({ navigation }) {
     );
   }
 
-  let resultFromSearch =
+  // CONTENU INITIAL AVEC LES ASSO ALÉATOIRES
+  let initialContent =
     associations.length > 0 ? (
       associations.map((association, index) => (
         <AssociationCard key={index} association={association} />
@@ -156,13 +206,33 @@ export default function SearchScreen({ navigation }) {
       <Text>Aucune association trouvée.</Text>
     );
 
+  // CONTENU DES ASSOCIATIONS FILTRÉES
+  let researchedContent =
+    filteredAssociations.length > 0 ? (
+      filteredAssociations.map((association, index) => (
+        <AssociationCard key={index} association={association} />
+      ))
+    ) : (
+      <Text>Aucune association trouvée.</Text>
+    );
+
+  // RESULTAT DE LA RECHERCHE
+  let resultFromResearch;
+  if (resultResearch === "default") {
+    //
+    resultFromResearch = initialContent;
+  } else if (resultResearch === "search") {
+    resultFromResearch = researchedContent;
+  }
+
   return (
+    // AFFICHAGE GLOBAL
     <View style={styles.container}>
       <View style={styles.allContent}>
         {content}
         <View style={styles.line}></View>
         <ScrollView style={styles.allAssociations}>
-          {resultFromSearch}
+          {resultFromResearch}
         </ScrollView>
       </View>
     </View>
@@ -339,7 +409,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     width: "100%",
-    height: 'auto',
+    height: "auto",
     overflow: "hidden",
   },
 });

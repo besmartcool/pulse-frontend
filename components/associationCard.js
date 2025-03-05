@@ -52,7 +52,7 @@ const AssociationCard = ({ association }) => {
           )}
         </View>
         <View style={styles.textCategorie}>
-          <CategorieRound categorie2={association.categorie2} />
+          <CategorieRound categorie={association.categorie} />
         </View>
       </View>
       <Image
