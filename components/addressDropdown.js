@@ -5,36 +5,36 @@ import {
   AutocompleteDropdownContextProvider,
 } from "react-native-autocomplete-dropdown";
 
-
-const CountryDropdown = ({ title, placeholder, selectedCountry, onSelectCountry }) => {
+const AddressDropdown = ({ title, placeholder, selectedAddress, onSelectAddress }) => {
   // État pour stocker le texte saisi par l'utilisateur
-  const [searchText, setSearchText] = useState(selectedCountry || "");
-  // État pour stocker la liste des suggestions de pays
+  const [searchText, setSearchText] = useState(selectedAddress || "");
+  // État pour stocker la liste des suggestions de villes
   const [suggestions, setSuggestions] = useState([]);
 
   // Effet qui se déclenche à chaque modification de searchText
   useEffect(() => {
-    if (!searchText) {
-      setSuggestions([]); // Si l'utilisateur supprime tout, on vide la liste
+    if (searchText.length < 1) { // si la recherche est < 1 on fait rien
+      setSuggestions([]);
       return;
     }
 
-    fetch(`https://restcountries.com/v3.1/name/${searchText}?fields=name`)
+    fetch(`https://api-adresse.data.gouv.fr/search/?q=${searchText}`)
       .then((response) => response.json())
       .then((data) => {
-        if (Array.isArray(data)) {
+        if (data.features) {
           // Transformation des données API en une liste exploitable
-          const formattedCountries = data.map((country) => ({
-            title: country.name.common, // Nom du pays
+          const formattedAddresses = data.features.map((feature, index) => ({
+            id: index,
+            title: feature.properties.name, // Nom de la rue
           }));
 
-          setSuggestions(formattedCountries); // Mettre à jour les suggestions
+          setSuggestions(formattedAddresses); // Mettre à jour les suggestions
         }
       })
       .catch((error) => {
-        console.error("Erreur lors de la récupération des pays :", error);
+        console.error("Erreur lors de la récupération des addresses :", error);
       });
-  }, [searchText]); // le composant se met à jour à chaque modification de searchText
+  }, [searchText]); // se met à jour à chaque modification de searchText
 
   return (
     <AutocompleteDropdownContextProvider>
@@ -49,7 +49,7 @@ const CountryDropdown = ({ title, placeholder, selectedCountry, onSelectCountry 
           closeOnSubmit={false} // Ne ferme pas la liste après sélection
           onSelectItem={(item) => {
             setSearchText(item?.title || ""); // Met à jour le texte affiché
-            onSelectCountry(item?.title); // Exécute la fonction callback
+            onSelectAddress(item?.title || ""); // Exécute la fonction callback
           }}
           dataSet={suggestions} // Passe la liste des suggestions
           textInputProps={{
@@ -96,4 +96,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CountryDropdown;
+export default AddressDropdown;

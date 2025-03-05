@@ -15,6 +15,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Input from "../components/input";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import CountryDropdown from "../components/countryDropdown";
+import AddressDropdown from "../components/addressDropdown";
+import categoriesList from "../assets/categoriesList";
+import {
+  AutocompleteDropdown,
+  AutocompleteDropdownContextProvider,
+} from "react-native-autocomplete-dropdown";
 
 const BACKEND_ADDRESS = "http://10.0.1.62:3000";
 
@@ -35,6 +41,11 @@ export default function AssoScreen({ navigation }) {
   const [lastDeclarationDate, setlastDeclarationDate] = useState(null);
   const [legalNumber, setLegalNumber] = useState("");
 
+  const categoriesDataSet = categoriesList.map((category, i) => ({
+    id: `${i}`,
+    title: category,
+  }));
+
   const selectResidenceCountry = (country) => {
     country && setResidenceCountry(country);
   };
@@ -43,11 +54,42 @@ export default function AssoScreen({ navigation }) {
     country && setNationalities((nationalities) => [...nationalities, country]);
   };
 
+  const selectCategories = (category) => {
+    category && setCategories((categories) => [...categories, category]);
+  };
+
+  const selectAddress = (address) => {
+    country && setStreetNumberAndLabel(address);
+    console.log(streetNumberAndLabel)
+  };
+
+  let textNationalitiesSeleted = nationalities.length>0 &&
+      <View style={styles.dataSelected}>
+        <Text>Sélection:</Text>
+      </View>
+
   const nationalitiesSelected = nationalities?.map((data, i) => {
     return (
-      <View key={i} style={styles.nationalitiesSelected}>
-        <Text style={{ marginRight: 5, marginLeft: 5, color: "blue" }}>{data}</Text>
+        <View key={i}>
+          <Text style={{ marginRight: 5, marginLeft: 5, color: "blue" }}>
+            {data}
+          </Text>
+        </View>
+    );
+  });
+
+  let textCategoriesSeleted = categories.length>0 &&
+      <View style={styles.dataSelected}>
+        <Text>Sélection:</Text>
       </View>
+
+  const categoriesSelected = categories?.map((data, i) => {
+    return (
+        <View key={i} >
+          <Text style={{ marginRight: 5, marginLeft: 5, color: "blue" }}>
+            {data}
+          </Text>
+        </View>
     );
   });
 
@@ -165,21 +207,51 @@ export default function AssoScreen({ navigation }) {
                 selectedCountry={nationalities}
               />
             </View>
-            <View style={styles.nationalitiesSelected}>
-              <Text>Sélection:</Text>
+            <View style={styles.dataSelected}>
+              {textNationalitiesSeleted}
               {nationalitiesSelected}
             </View>
-            <Input
-              title="Secteur d'activité"
-              placeholder="Exemple: Amicales, groupements affinitaires, groupements d'entraide"
-              value={categories}
-              onChangeText={(value) => setCategories(value)}
-              secureTextEntry={false}
-              icon="caret-down"
-            />
+            <AutocompleteDropdownContextProvider>
+              <View style={styles.container}>
+                {/* Affichage du titre si fourni */}
+                <Text style={styles.title}>SECTEURS D'ACTIVITE</Text>
+
+                {/* Composant AutocompleteDropdown */}
+                <AutocompleteDropdown
+                  clearOnFocus={false} // Garde le texte saisi quand on clique sur le champ
+                  closeOnBlur={true} // Ferme la liste quand on clique ailleurs
+                  closeOnSubmit={false} // Ne ferme pas la liste après sélection
+                  onSelectItem={(item) => {
+                    selectCategories(item?.title); // Met à jour la liste des catégories
+                    console.log("catégories sélectionnées: ", categories);
+                  }}
+                  dataSet={categoriesDataSet} // Passe la liste des suggestions
+                  textInputProps={{
+                    placeholder: "Sélection un ou plusieurs secteurs", // Affichage du placeholder
+                    style: styles.input,
+                    value: categories, // Texte affiché dans le champ
+                    //onChangeText: setSearchText,  Met à jour searchText à chaque frappe
+                  }}
+                  inputContainerStyle={styles.inputContainer}
+                  suggestionsListContainerStyle={styles.suggestionsList}
+                />
+              </View>
+            </AutocompleteDropdownContextProvider>
+            <View style={styles.dataSelected}>
+              {textCategoriesSeleted}
+              {categoriesSelected}
+            </View>
           </View>
           <View style={styles.subSectionContainer}>
             <Text style={styles.subSectionHeader}>Informations de contact</Text>
+            <View style={styles.dropdown}>
+              <AddressDropdown
+                title="Numéro et libellé de la voie"
+                placeholder="Ex: 35 Avenue des Champs Elysées"
+                onSelectAddress={selectAddress}
+                selectedAddress={streetNumberAndLabel}
+              />
+            </View>
             <Input
               title="Numéro et libellé de la voie"
               placeholder="Exemple: 35 Avenue des Champs Elysées"
@@ -298,6 +370,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   bottomBorder: {
+    //Trait en bas du titre
     position: "absolute",
     bottom: 0,
     width: "90%",
@@ -362,7 +435,6 @@ const styles = StyleSheet.create({
   },
   input: {
     flexDirection: "row",
-    // alignItems: "center",
     borderWidth: 1,
     borderColor: "#bbbbbb",
     borderRadius: 8,
@@ -376,9 +448,39 @@ const styles = StyleSheet.create({
   icon: {
     marginLeft: 8,
   },
-  nationalitiesSelected: {
+  dataSelected: {
     fontSize: 5,
     color: "red",
     flexDirection: "row",
+    marginBottom: 4,
   },
+  //début mise en forme dropdown secteur d'activité
+  container: {
+    width: "100%",
+  },
+  title: {
+    color: "#FF6C02",
+    fontSize: 12,
+    fontWeight: "600",
+    marginBottom: 4,
+  },
+  inputContainer: {
+    borderWidth: 1,
+    borderColor: "#bbbbbb",
+    borderRadius: 8,
+    backgroundColor: "white",
+  },
+  input: {
+    padding: 12,
+    fontSize: 16,
+    color: "#2c3e50",
+  },
+  suggestionsList: {
+    backgroundColor: "white",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#dddddd",
+    right: 20,
+  },
+  // fin mise en forme dropdown secteur d'activité
 });

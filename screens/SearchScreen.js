@@ -47,11 +47,14 @@ export default function SearchScreen({ navigation }) {
   let associationsCategories =
   associations.length > 0 ? (
     associations.map((association, index) => (
-  <CategorieRound categorie2={association.categorie2} />
+      <View key={index} style={{ marginRight: 5 }}>
+        <CategorieRound categorie2={association.categorie2} />
+      </View>
     ))
   ) : (
     <Text>Aucune association trouvée.</Text>
   );
+
 
   let content;
   if (typeContent === "default") {
@@ -111,7 +114,16 @@ export default function SearchScreen({ navigation }) {
             </View>
           </View>
 
-          <ScrollView style={styles.categories}>
+          <ScrollView
+            horizontal={true}
+            contentContainerStyle={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 10,
+            }}
+            showsHorizontalScrollIndicator={false}
+            style={styles.categories}
+          >
             {associationsCategories}
           </ScrollView>
 
@@ -324,10 +336,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   categories: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    width: '100%',
-    height: 50,
-    backgroundColor: 'red'
-  }
+    flexDirection: "row",
+    flexWrap: "wrap",
+    width: "100%",
+    height: 'auto',
+    overflow: "hidden",
+  },
 });
