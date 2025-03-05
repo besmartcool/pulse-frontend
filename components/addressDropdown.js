@@ -5,7 +5,13 @@ import {
   AutocompleteDropdownContextProvider,
 } from "react-native-autocomplete-dropdown";
 
-const AddressDropdown = ({ title, placeholder, selectedAddress, onSelectAddress }) => {
+const AddressDropdown = ({
+  title,
+  placeholder,
+  selectedAddress,
+  onSelectAddress,
+  updateAddressProperties,
+}) => {
   // État pour stocker le texte saisi par l'utilisateur
   const [searchText, setSearchText] = useState(selectedAddress || "");
   // État pour stocker la liste des suggestions de villes
@@ -13,7 +19,8 @@ const AddressDropdown = ({ title, placeholder, selectedAddress, onSelectAddress 
 
   // Effet qui se déclenche à chaque modification de searchText
   useEffect(() => {
-    if (searchText.length < 1) { // si la recherche est < 1 on fait rien
+    if (searchText.length < 1) {
+      // si la recherche est < 1 on fait rien
       setSuggestions([]);
       return;
     }
@@ -25,7 +32,7 @@ const AddressDropdown = ({ title, placeholder, selectedAddress, onSelectAddress 
           // Transformation des données API en une liste exploitable
           const formattedAddresses = data.features.map((feature, index) => ({
             id: index,
-            title: feature.properties.name, // Nom de la rue
+            title: feature.properties.label, // Nom de la rue
           }));
 
           setSuggestions(formattedAddresses); // Mettre à jour les suggestions
@@ -48,7 +55,17 @@ const AddressDropdown = ({ title, placeholder, selectedAddress, onSelectAddress 
           closeOnBlur={true} // Ferme la liste quand on clique ailleurs
           closeOnSubmit={false} // Ne ferme pas la liste après sélection
           onSelectItem={(item) => {
-            setSearchText(item?.title || ""); // Met à jour le texte affiché
+            if (!item) return; // Vérifie que l'élément sélectionné est valide
+            fetch(`https://api-adresse.data.gouv.fr/search/?q=${item.title}`)
+              .then((response) => response.json())
+              .then((data) => {
+                if (data.features) {
+                  // Met à jour le texte affiché
+                  setSearchText(data.features[0].properties.name || ""); 
+                  // Mettre à jour les champs de l'addresse, de "numéro et libellé de la voie" à "pays"
+                  updateAddressProperties(data) //
+                }
+              });
             onSelectAddress(item?.title || ""); // Exécute la fonction callback
           }}
           dataSet={suggestions} // Passe la liste des suggestions

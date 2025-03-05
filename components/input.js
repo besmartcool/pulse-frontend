@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, TextInput, StyleSheet } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
-const Input = ({ title, placeholder, value, onChangeText, secureTextEntry, icon }) => {
+const Input = ({ title, placeholder, value, onChangeText, secureTextEntry, keyboardType, icon }) => {
   return (
     <View style={styles.inputContainer}>
       {title && <Text style={styles.title}>{title.toUpperCase()}</Text>}
@@ -13,6 +13,7 @@ const Input = ({ title, placeholder, value, onChangeText, secureTextEntry, icon 
           value={value}
           onChangeText={onChangeText}
           secureTextEntry={secureTextEntry}
+          keyboardType={keyboardType}
         />
         {/* Vérifie si icon est défini avant d'afficher FontAwesome */}
         {icon && <FontAwesome name={icon} size={16} color="#bbbbbb" style={styles.icon} />}

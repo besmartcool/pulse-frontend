@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Image,
   ImageBackground,
@@ -21,6 +21,7 @@ import {
   AutocompleteDropdown,
   AutocompleteDropdownContextProvider,
 } from "react-native-autocomplete-dropdown";
+import DatePickerInput from "../components/dateTimePicker";
 
 const BACKEND_ADDRESS = "http://10.0.1.62:3000";
 
@@ -47,21 +48,40 @@ export default function AssoScreen({ navigation }) {
   }));
 
   const selectResidenceCountry = (country) => {
-    country && setResidenceCountry(country);
+    if (country) {
+      setResidenceCountry(country)
+      setCountry(country);
+    }
   };
 
   const selectNationalities = (country) => {
-    country && setNationalities((nationalities) => [...nationalities, country]);
+    if (country) {
+      setNationalities((nationalities) => [...nationalities, country]);
+    }
   };
 
   const selectCategories = (category) => {
-    category && setCategories((categories) => [...categories, category]);
+    if(category) {
+      setCategories((categories) => [...categories, category]);
+    }
   };
 
-  const selectAddress = (address) => {
-    country && setStreetNumberAndLabel(address);
-    console.log(streetNumberAndLabel)
-  };
+  const updateAddressProperties = (data) => {
+    if (data && data.features && data.features[0] && data.features[0].properties) {
+      setStreetNumberAndLabel(data.features[0].properties.name);
+      setZipcode(data.features[0].properties.postcode);
+      setCity(data.features[0].properties.city);
+      setDepartment(data.features[0].properties.context.slice(0, 2));
+    } else {
+      console.error("Invalid address data:", data);
+    }
+  }
+
+  // UseEffect pour vérifier la modification des états
+  // useEffect(() => {
+  //   console.log("Nouvelle adresse :", streetNumberAndLabel, zipcode, city, department, country);
+  // }, [streetNumberAndLabel]); 
+
 
   let textNationalitiesSeleted = nationalities.length>0 &&
       <View style={styles.dataSelected}>
@@ -137,15 +157,14 @@ export default function AssoScreen({ navigation }) {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data); // à modifier
+        
+      })
+      .catch((error) => {
+        console.error("Error during registration:", error);
       });
   };
 
-  fetch("http://localhost:3000/weather", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(newAsso),
-  }).then((response) => response.json());
+
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -213,17 +232,13 @@ export default function AssoScreen({ navigation }) {
             </View>
             <AutocompleteDropdownContextProvider>
               <View style={styles.container}>
-                {/* Affichage du titre si fourni */}
                 <Text style={styles.title}>SECTEURS D'ACTIVITE</Text>
-
-                {/* Composant AutocompleteDropdown */}
                 <AutocompleteDropdown
                   clearOnFocus={false} // Garde le texte saisi quand on clique sur le champ
                   closeOnBlur={true} // Ferme la liste quand on clique ailleurs
                   closeOnSubmit={false} // Ne ferme pas la liste après sélection
                   onSelectItem={(item) => {
                     selectCategories(item?.title); // Met à jour la liste des catégories
-                    console.log("catégories sélectionnées: ", categories);
                   }}
                   dataSet={categoriesDataSet} // Passe la liste des suggestions
                   textInputProps={{
@@ -248,18 +263,11 @@ export default function AssoScreen({ navigation }) {
               <AddressDropdown
                 title="Numéro et libellé de la voie"
                 placeholder="Ex: 35 Avenue des Champs Elysées"
-                onSelectAddress={selectAddress}
+                onSelectAddress={setZipcode}
                 selectedAddress={streetNumberAndLabel}
+                updateAddressProperties={updateAddressProperties}
               />
             </View>
-            <Input
-              title="Numéro et libellé de la voie"
-              placeholder="Exemple: 35 Avenue des Champs Elysées"
-              value={streetNumberAndLabel}
-              onChangeText={(value) => setStreetNumberAndLabel(value)}
-              secureTextEntry={false}
-              icon="pencil"
-            />
             <Input
               title="Code postal"
               placeholder="Exemple: 75008"
@@ -295,6 +303,7 @@ export default function AssoScreen({ navigation }) {
           </View>
           <View style={styles.subSectionContainer}>
             <Text style={styles.subSectionHeader}>Informations légale</Text>
+            <DatePickerInput/>
             <Input
               title="Date de création"
               placeholder="JJ/MM/AAAA"
