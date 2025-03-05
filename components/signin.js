@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
         height: 43,
         borderWidth: 1,
         borderColor: "#bbbbbb",
-        backgroundColor: "#FF6C02",
+        backgroundColor: "white",
         borderRadius: 8,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 5 },
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     },
     textButton: {
         alignSelf: "center",
-        color: "white",
+        color: "#FF6C02",
         fontWeight: 900,
     },
 });

@@ -17,33 +17,36 @@ import {
 } from "react-native";
 import Input from "../components/input";
 
+
+
+
 export default function HomeScreen({ navigation }) {
   const [text, setText] = useState("");
-  const [modalVisible1, setModalVisible1] = useState(false);
-  const [modalVisible2, setModalVisible2] = useState(false);
+  const [signinVisible, setSigninVisible] = useState(false);
+  const [signupVisible, setSignupVisible] = useState(false);
+  
 
   const handleSubmit = () => {
     navigation.navigate("TabNavigator");
   };
 
   const handleClickModalSignup = () => {
-    setModalVisible1(true);
+    setSignupVisible(true);
   };
 
-  // const handleClickModalSignin = () => {
-  //   setModalVisible2(true);
-  // };
+  const handleClickModalSignin = () => {
+    setSigninVisible(true);
+  };
 
   return (
     <View style={styles.container}>
       <Modal
         animationType="slide"
         transparent={true}
-        visible={modalVisible1}
+        visible={signupVisible}
         onRequestClose={() => {
           // Alert.alert("Modal has been closed.");
-          setModalVisible1(!modalVisible1);
-          setModalVisible2(!modalVisible2);
+          setSignupVisible(!signupVisible);
         }}
       >
         <View style={styles.centeredView}>
@@ -52,8 +55,28 @@ export default function HomeScreen({ navigation }) {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={styles.containerKeyboardAvoidingView}
           >
-            {/* <Signin /> */}
             <Signup />
+            </KeyboardAvoidingView>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={signinVisible}
+        onRequestClose={() => {
+          // Alert.alert("Modal has been closed.");
+          setSigninVisible(!signinVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={styles.containerKeyboardAvoidingView}
+          >
+            <Signin />
             </KeyboardAvoidingView>
           </View>
         </View>
@@ -70,7 +93,7 @@ export default function HomeScreen({ navigation }) {
             <View style={styles.containerSign}>
               <Text style={styles.text}>Vous avez déjà un compte ?</Text>
               <TouchableOpacity
-                onPress={() => handleSubmit()}
+                onPress={() => handleClickModalSignin()}
                 style={styles.buttonSignin}
                 activeOpacity={0.8}
               >
