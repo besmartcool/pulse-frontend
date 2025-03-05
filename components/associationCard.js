@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, Pressable } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import CategorieRound from "../components/categorieRound";
 
@@ -35,9 +35,11 @@ const AssociationCard = ({ association }) => {
     <View style={styles.associationCard}>
       <View style={styles.topAssoContent}>
         <View style={styles.textTitle}>
-          <Text style={styles.assoName}>{association.name.length > 30
-          ? association.name.slice(0, 30) + "..."
-          : association.name}</Text>
+          <Text style={styles.assoName}>
+            {association.name.length > 30
+              ? association.name.slice(0, 30) + "..."
+              : association.name}
+          </Text>
 
           {/* Affichage du drapeau s'il est disponible */}
           {countryCode ? (
@@ -60,13 +62,18 @@ const AssociationCard = ({ association }) => {
         source={require("../assets/placeholderImage.png")}
       />
       <Text style={styles.description}>
+        {association.address.length}
+      </Text>
+      <Text style={styles.description}>
         {association.description.length > 150
           ? association.description.slice(0, 150) + "..."
           : association.description}
       </Text>
       <View style={styles.bottomAssoContent}>
         <FontAwesome name="heart" size={24} color="#000000" />
-        <FontAwesome name="comment" size={24} color="#000000" />
+        <Pressable style={styles.contact}>
+          <Text style={styles.contactText}>Contacter</Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -76,7 +83,7 @@ export default AssociationCard;
 
 const styles = StyleSheet.create({
   associationCard: {
-    height: 'auto',
+    height: "auto",
     width: "100%",
     borderWidth: 1,
     borderColor: "#bbbbbb",
@@ -103,12 +110,12 @@ const styles = StyleSheet.create({
     height: 100,
   },
   textTitle: {
-    flexDirection: 'row',
+    flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "flex-start",
     flexDirection: "column",
     width: "70%",
-    height: '100%',
+    height: "100%",
   },
   assoName: {
     fontSize: 18,
@@ -130,7 +137,7 @@ const styles = StyleSheet.create({
   description: {
     padding: 10,
     height: 100,
-    width: '100%',
+    width: "100%",
   },
   bottomAssoContent: {
     alignSelf: "flex-end",
@@ -145,5 +152,17 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     resizeMode: "contain",
+  },
+  contact: {
+    // BOUTON ENREGISTRER
+    backgroundColor: "#FF6C02",
+    borderRadius: 8,
+    paddingHorizontal: 13,
+    paddingVertical: 10,
+    marginBottom: 7,
+  },
+  contactText: {
+    color: "white",
+    fontWeight: "600",
   },
 });
