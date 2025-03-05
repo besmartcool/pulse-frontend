@@ -41,7 +41,7 @@ const CountryDropdown = ({ title, placeholder, selectedCountry, onSelectCountry 
       <View style={styles.container}>
         {/* Affichage du titre si fourni */}
         {title && <Text style={styles.title}>{title.toUpperCase()}</Text>}
-        
+
         {/* Composant AutocompleteDropdown */}
         <AutocompleteDropdown
           clearOnFocus={false} // Garde le texte saisi quand on clique sur le champ
