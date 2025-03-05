@@ -17,14 +17,10 @@ import {
 } from "react-native";
 import Input from "../components/input";
 
-
-
-
 export default function HomeScreen({ navigation }) {
   const [text, setText] = useState("");
   const [signinVisible, setSigninVisible] = useState(false);
   const [signupVisible, setSignupVisible] = useState(false);
-  
 
   const handleSubmit = () => {
     navigation.navigate("TabNavigator");
@@ -40,6 +36,7 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      {/* Modal signup avec composant signup */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -51,16 +48,17 @@ export default function HomeScreen({ navigation }) {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={styles.containerKeyboardAvoidingView}
-          >
-            <Signup />
+            <KeyboardAvoidingView
+              behavior={Platform.OS === "ios" ? "padding" : "height"}
+              style={styles.containerKeyboardAvoidingView}
+            >
+              <Signup />
             </KeyboardAvoidingView>
           </View>
         </View>
       </Modal>
 
+      {/* Modal signin avec composant signin */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -72,57 +70,56 @@ export default function HomeScreen({ navigation }) {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={styles.containerKeyboardAvoidingView}
-          >
-            <Signin />
+            <KeyboardAvoidingView
+              behavior={Platform.OS === "ios" ? "padding" : "height"}
+              style={styles.containerKeyboardAvoidingView}
+            >
+              <Signin />
             </KeyboardAvoidingView>
           </View>
         </View>
       </Modal>
-        <View style={styles.containerImageSign}>
-          <LinearGradient
-            // Background Linear Gradient
-            colors={["#FFFFFF", "#A3E2F8"]}
-            start={{ x: 0.5, y: 0.3 }}
-            end={{ x: 0.5, y: 0.9 }}
-            style={styles.background}
-          >
-            <Image style={styles.logo} source={require("../assets/Logo.png")} />
-            <View style={styles.containerSign}>
-              <Text style={styles.text}>Vous avez déjà un compte ?</Text>
-              <TouchableOpacity
-                onPress={() => handleClickModalSignin()}
-                style={styles.buttonSignin}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.textButtonSignin}>Sign in</Text>
-              </TouchableOpacity>
-              <View style={styles.line}></View>
-              <Text style={styles.text}>Inscrivez-vous</Text>
-              <TouchableOpacity
-                onPress={() => handleClickModalSignup()}
-                style={styles.buttonSignup}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.textButtonSignup}>Sign up</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => handleSubmit()}
-                style={styles.buttonContinue}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.textButton}>Continuer sans compte</Text>
-              </TouchableOpacity>
-            </View>
-          </LinearGradient>
-        </View>
-        <View style={styles.containerTextFooter}>
-          <Text style={styles.textFooter}>@Pulse | 2025</Text>
-          <Text style={styles.textFooter}>Besoin d'aide ? Nous contacter</Text>
-        </View>
-      
+      <View style={styles.containerImageSign}>
+        {/* Background Linear Gradient */}
+        <LinearGradient
+          colors={["#FFFFFF", "#A3E2F8"]}
+          start={{ x: 0.5, y: 0.3 }}
+          end={{ x: 0.5, y: 0.9 }}
+          style={styles.background}
+        >
+          <Image style={styles.logo} source={require("../assets/Logo.png")} />
+          <View style={styles.containerSign}>
+            <Text style={styles.text}>Vous avez déjà un compte ?</Text>
+            <TouchableOpacity
+              onPress={() => handleClickModalSignin()}
+              style={styles.buttonSignin}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.textButtonSignin}>Sign in</Text>
+            </TouchableOpacity>
+            <View style={styles.line}></View>
+            <Text style={styles.text}>Inscrivez-vous</Text>
+            <TouchableOpacity
+              onPress={() => handleClickModalSignup()}
+              style={styles.buttonSignup}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.textButtonSignup}>Sign up</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleSubmit()}
+              style={styles.buttonContinue}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.textButton}>Continuer sans compte</Text>
+            </TouchableOpacity>
+          </View>
+        </LinearGradient>
+      </View>
+      <View style={styles.containerTextFooter}>
+        <Text style={styles.textFooter}>@Pulse | 2025</Text>
+        <Text style={styles.textFooter}>Besoin d'aide ? Nous contacter</Text>
+      </View>
     </View>
   );
 }
@@ -227,7 +224,7 @@ const styles = StyleSheet.create({
   },
   textButtonSignin: {
     fontWeight: 900,
-    color: "#FF6C02"
+    color: "#FF6C02",
   },
   textButtonSignup: {
     fontWeight: 900,
