@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, TextInput, Platform, StyleSheet } from "r
 import DateTimePicker from "@react-native-community/datetimepicker";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
-const DatePickerInput = () => {
+const DatePickerInput = ({title, selectDate}) => {
   const [date, setDate] = useState(new Date());
   const [formattedDate, setFormattedDate] = useState("");
   const [showPicker, setShowPicker] = useState(false);
@@ -17,19 +17,20 @@ const DatePickerInput = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>Sélectionner une date :</Text>
+    <View style={styles.inputContainer}>
+      {title && <Text style={styles.title}>{title.toUpperCase()}</Text>}
 
-      {/* Champ d'Input Cliquable */}
+      <View style={styles.input}>
       <TouchableOpacity onPress={() => setShowPicker(true)}>
         <TextInput
-          style={styles.input}
+          style={styles.inputText}
           value={formattedDate}
           placeholder="Choisir une date"
           placeholderTextColor="#aaa"
           editable={false} // Empêche la saisie manuelle
         />
       </TouchableOpacity>
+      </View>
 
       {/* Android: Utilise le DateTimePicker natif */}
       {Platform.OS === "android" && showPicker && (
@@ -37,9 +38,11 @@ const DatePickerInput = () => {
           value={date}
           mode="date"
           display="default"
+          maximumDate={new Date()}
           onChange={(event, selectedDate) => {
             if (selectedDate) {
               handleConfirm(selectedDate);
+              selectDate(selectedDate);
             } else {
               setShowPicker(false); // Ferme si l'utilisateur annule
             }
@@ -53,6 +56,7 @@ const DatePickerInput = () => {
           isVisible={showPicker}
           mode="date"
           display="inline"
+          maximumDate={new Date()}
           onConfirm={handleConfirm}
           onCancel={() => setShowPicker(false)}
         />
@@ -62,23 +66,28 @@ const DatePickerInput = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 5,
-    color: "#333",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 12,
-    borderRadius: 8,
-    fontSize: 16,
-    color: "#333",
-    backgroundColor: "#f9f9f9",
+    inputContainer: {
+        width: "100%",
+        marginVertical: 10,
+    },
+    title: {
+        color: "#FF6C02",
+        fontSize: 12,
+        fontWeight: "600",
+        marginBottom: 4,
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: "#bbbbbb",
+      paddingHorizontal: 10,
+      borderRadius: 8,
+      fontSize: 12,
+      color: "#333",
+      backgroundColor: "#f9f9f9",
+    },
+    inputText: {
+        flex: 1,
+        paddingVertical: 10,
   },
 });
 

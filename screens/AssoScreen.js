@@ -13,15 +13,13 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Input from "../components/input";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
 import CountryDropdown from "../components/countryDropdown";
 import AddressDropdown from "../components/addressDropdown";
 import categoriesList from "../assets/categoriesList";
-import {
-  AutocompleteDropdown,
-  AutocompleteDropdownContextProvider,
-} from "react-native-autocomplete-dropdown";
+import languagesListFrench from "../assets/languagesList";
 import DatePickerInput from "../components/dateTimePicker";
+import InternalDataSetDropdown from "../components/internalDataSetDropdown";
+import  PhoneInput from "../components/phoneInput";
 
 const BACKEND_ADDRESS = "http://10.0.1.62:3000";
 
@@ -31,6 +29,8 @@ export default function AssoScreen({ navigation }) {
   const [nationalities, setNationalities] = useState([]);
   const [residenceCountry, setResidenceCountry] = useState("");
   const [categories, setCategories] = useState([]);
+  const [phone, setPhone] = useState([]);
+  const [email, setEmail] = useState("");
   const [streetNumberAndLabel, setStreetNumberAndLabel] = useState("");
   const [zipcode, setZipcode] = useState(null);
   const [city, setCity] = useState("");
@@ -41,6 +41,7 @@ export default function AssoScreen({ navigation }) {
   const [creationDate, setCreationDate] = useState(null);
   const [lastDeclarationDate, setlastDeclarationDate] = useState(null);
   const [legalNumber, setLegalNumber] = useState("");
+  const [members, setMembers] = useState([]);
 
   const categoriesDataSet = categoriesList.map((category, i) => ({
     id: `${i}`,
@@ -49,7 +50,7 @@ export default function AssoScreen({ navigation }) {
 
   const selectResidenceCountry = (country) => {
     if (country) {
-      setResidenceCountry(country)
+      setResidenceCountry(country);
       setCountry(country);
     }
   };
@@ -61,13 +62,71 @@ export default function AssoScreen({ navigation }) {
   };
 
   const selectCategories = (category) => {
-    if(category) {
+    if (category) {
       setCategories((categories) => [...categories, category]);
     }
   };
 
+  const addPhoneNumber = (phoneNumber) => {
+    if (phoneNumber) {
+      setPhone((phone) => [...phone, phoneNumber]);
+    }
+  };
+
+  const formatFrenchPhoneNumber = (phoneNumber) => {
+    if (!/^0\d{9}$/.test(phoneNumber)) return "Numéro invalide";
+    return `+33 ${phoneNumber.slice(1, 2)} ${phoneNumber.slice(2, 4)} ${phoneNumber.slice(4, 6)} ${phoneNumber.slice(6, 8)} ${phoneNumber.slice(8, 10)}`;
+  };
+
+  const phoneNumbers = phone?.map((data, i) => {
+    return (
+      <View key={i}>
+        <Text style={{ marginRight: 5, marginLeft: 5, color: "blue" }}>
+          Tél {i+1}: {formatFrenchPhoneNumber(data)}
+        </Text>
+      </View>
+    );
+  });
+
+  let textNationalitiesSeleted = nationalities.length > 0 && (
+    <View style={styles.dataSelected}>
+      <Text>Sélection:</Text>
+    </View>
+  );
+
+  const nationalitiesSelected = nationalities?.map((data, i) => {
+    return (
+      <View key={i}>
+        <Text style={{ marginRight: 5, marginLeft: 5, color: "blue" }}>
+          {data}
+        </Text>
+      </View>
+    );
+  });
+
+  let textCategoriesSeleted = categories.length > 0 && (
+    <View style={styles.dataSelected}>
+      <Text>Sélection:</Text>
+    </View>
+  );
+
+  const categoriesSelected = categories?.map((data, i) => {
+    return (
+      <View key={i}>
+        <Text style={{ marginRight: 5, marginLeft: 5, color: "blue" }}>
+          {data}
+        </Text>
+      </View>
+    );
+  });
+
   const updateAddressProperties = (data) => {
-    if (data && data.features && data.features[0] && data.features[0].properties) {
+    if (
+      data &&
+      data.features &&
+      data.features[0] &&
+      data.features[0].properties
+    ) {
       setStreetNumberAndLabel(data.features[0].properties.name);
       setZipcode(data.features[0].properties.postcode);
       setCity(data.features[0].properties.city);
@@ -75,55 +134,81 @@ export default function AssoScreen({ navigation }) {
     } else {
       console.error("Invalid address data:", data);
     }
-  }
+  };
+
+  const selectCreationDate = (date) => {
+    if (date) {
+      setCreationDate(date);
+    }
+  };
+
+  const selectLastDeclarationDate = (date) => {
+    if (date) {
+      setlastDeclarationDate(date);
+    }
+  };
+
+  const selectInterventionZone = (country) => {
+    if (country) {
+      setInterventionZone((interventionZone) => [...interventionZone, country]);
+    }
+  };
+
+  const interventionZoneSelected = interventionZone?.map((data, i) => {
+    return (
+      <View key={i}>
+        <Text style={{ marginRight: 5, marginLeft: 5, color: "blue" }}>
+          {data}
+        </Text>
+      </View>
+    );
+  });
+
+  const languagesListFrenchDataSet = languagesListFrench.map(
+    (language, i) => ({
+      id: `${i}`,
+      title: language,
+    })
+  );
+
+  const selectLanguages = (language) => {
+    if (language) {
+      setLanguages((languages) => [...languages, language]);
+    }
+  };
+
+  let textLanguagesSeleted = languages.length > 0 && (
+    <View style={styles.dataSelected}>
+      <Text>Sélection:</Text>
+    </View>
+  );
+
+  const languagesSelected = languages?.map((data, i) => {
+    return (
+      <View key={i}>
+        <Text style={{ marginRight: 5, marginLeft: 5, color: "blue" }}>
+          {data}
+        </Text>
+      </View>
+    );
+  });
 
   // UseEffect pour vérifier la modification des états
-  // useEffect(() => {
-  //   console.log("Nouvelle adresse :", streetNumberAndLabel, zipcode, city, department, country);
-  // }, [streetNumberAndLabel]); 
-
-
-  let textNationalitiesSeleted = nationalities.length>0 &&
-      <View style={styles.dataSelected}>
-        <Text>Sélection:</Text>
-      </View>
-
-  const nationalitiesSelected = nationalities?.map((data, i) => {
-    return (
-        <View key={i}>
-          <Text style={{ marginRight: 5, marginLeft: 5, color: "blue" }}>
-            {data}
-          </Text>
-        </View>
-    );
-  });
-
-  let textCategoriesSeleted = categories.length>0 &&
-      <View style={styles.dataSelected}>
-        <Text>Sélection:</Text>
-      </View>
-
-  const categoriesSelected = categories?.map((data, i) => {
-    return (
-        <View key={i} >
-          <Text style={{ marginRight: 5, marginLeft: 5, color: "blue" }}>
-            {data}
-          </Text>
-        </View>
-    );
-  });
+  useEffect(() => {
+    console.log("vérification:", phone);
+  }, [phone]);
 
   const newAsso = {
-    name: "test frontend",
-    description: "test frontend",
-    nationalities: ["test frontend"],
-    categories: ["test frontend"],
+    name,
+    description,
+    nationalities,
+    categories,
     address: {
-      street: "test",
-      zipcode: 12,
-      city: "test",
-      region: "test",
-      country: "test",
+      street: streetNumberAndLabel,
+      zipcode,
+      city,
+      department,
+      country,
     },
     phone: ["test frontend"],
     email: "test",
@@ -156,15 +241,11 @@ export default function AssoScreen({ navigation }) {
       body: JSON.stringify(newAsso),
     })
       .then((response) => response.json())
-      .then((data) => {
-        
-      })
+      .then((data) => {})
       .catch((error) => {
         console.error("Error during registration:", error);
       });
   };
-
-
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -189,19 +270,6 @@ export default function AssoScreen({ navigation }) {
               secureTextEntry={false}
               icon="pencil"
             />
-            {/* <View style={styles.inputContainer}>
-                  <Text style={styles.title}>DESCRIPTION</Text>
-                  <View style={styles.input}>
-                    <TextInput
-                      style={styles.inputText}
-                      placeholder="Objet de l'association"
-                      value={description}
-                      onChangeText={(value) => setDescription(value)}
-                      secureTextEntry={false}
-                    />
-                    <FontAwesome name={"pencil"} size={16} color="#bbbbbb" style={styles.icon} />
-                  </View>
-                </View> */}
             <Input
               title="Description"
               placeholder="Objet de l'association"
@@ -230,28 +298,15 @@ export default function AssoScreen({ navigation }) {
               {textNationalitiesSeleted}
               {nationalitiesSelected}
             </View>
-            <AutocompleteDropdownContextProvider>
-              <View style={styles.container}>
-                <Text style={styles.title}>SECTEURS D'ACTIVITE</Text>
-                <AutocompleteDropdown
-                  clearOnFocus={false} // Garde le texte saisi quand on clique sur le champ
-                  closeOnBlur={true} // Ferme la liste quand on clique ailleurs
-                  closeOnSubmit={false} // Ne ferme pas la liste après sélection
-                  onSelectItem={(item) => {
-                    selectCategories(item?.title); // Met à jour la liste des catégories
-                  }}
-                  dataSet={categoriesDataSet} // Passe la liste des suggestions
-                  textInputProps={{
-                    placeholder: "Sélection un ou plusieurs secteurs", // Affichage du placeholder
-                    style: styles.input,
-                    value: categories, // Texte affiché dans le champ
-                    //onChangeText: setSearchText,  Met à jour searchText à chaque frappe
-                  }}
-                  inputContainerStyle={styles.inputContainer}
-                  suggestionsListContainerStyle={styles.suggestionsList}
-                />
-              </View>
-            </AutocompleteDropdownContextProvider>
+            <InternalDataSetDropdown
+              title="Secteurs d'activité"
+              dataSet={categoriesDataSet}
+              placeholder="Choisir un ou plusieurs secteurs"
+              value={categories}
+              onSelectItem={(item) => {
+                selectCategories(item?.title);
+              }}
+            />
             <View style={styles.dataSelected}>
               {textCategoriesSeleted}
               {categoriesSelected}
@@ -259,6 +314,22 @@ export default function AssoScreen({ navigation }) {
           </View>
           <View style={styles.subSectionContainer}>
             <Text style={styles.subSectionHeader}>Informations de contact</Text>
+            <Input
+              title="Email"
+              placeholder="saisir votre email"
+              value={email}
+              onChangeText={(value) => setEmail(value)}
+              secureTextEntry={false}
+              icon="pencil"
+            />
+            <PhoneInput
+              title="Téléphone"
+              placeholder="06..."
+              value={phone}
+              onChangeText={(value) => addPhoneNumber(value)}
+              secureTextEntry={false}
+              />
+            {phoneNumbers}
             <View style={styles.dropdown}>
               <AddressDropdown
                 title="Numéro et libellé de la voie"
@@ -274,7 +345,6 @@ export default function AssoScreen({ navigation }) {
               value={zipcode}
               onChangeText={(value) => setZipcode(value)}
               secureTextEntry={false}
-              icon="pencil"
             />
             <Input
               title="Ville"
@@ -282,7 +352,6 @@ export default function AssoScreen({ navigation }) {
               value={city}
               onChangeText={(value) => setCity(value)}
               secureTextEntry={false}
-              icon="pencil"
             />
             <Input
               title="N° de département"
@@ -290,7 +359,6 @@ export default function AssoScreen({ navigation }) {
               value={department}
               onChangeText={(value) => setDepartment(value)}
               secureTextEntry={false}
-              icon="pencil"
             />
             <Input
               title="Pays"
@@ -298,19 +366,14 @@ export default function AssoScreen({ navigation }) {
               value={country}
               onChangeText={(value) => setCountry(value)}
               secureTextEntry={false}
-              icon="pencil"
             />
           </View>
           <View style={styles.subSectionContainer}>
             <Text style={styles.subSectionHeader}>Informations légale</Text>
-            <DatePickerInput/>
-            <Input
+            <DatePickerInput
               title="Date de création"
-              placeholder="JJ/MM/AAAA"
               value={creationDate}
-              onChangeText={(value) => setCreationDate(value)}
-              secureTextEntry={false}
-              icon="pencil"
+              selectDate={selectCreationDate}
             />
             <Input
               title="Numéro d'identification"
@@ -320,33 +383,39 @@ export default function AssoScreen({ navigation }) {
               secureTextEntry={false}
               icon="pencil"
             />
-            <Input
+            <DatePickerInput
               title="Date dernière déclaration"
-              placeholder="Exemple: JJ/MM/AAAA"
               value={lastDeclarationDate}
-              onChangeText={(value) => setlastDeclarationDate(value)}
-              secureTextEntry={false}
-              icon="pencil"
+              selectDate={selectLastDeclarationDate}
             />
           </View>
           <View style={styles.subSectionContainer}>
             <Text style={styles.subSectionHeader}>Autres informations</Text>
-            <Input
+            <InternalDataSetDropdown
               title="Langues parlées"
-              placeholder="Sélectionner une ou plusieurs langues"
+              dataSet={languagesListFrenchDataSet}
+              placeholder="Choisir une ou plusieurs langues"
               value={languages}
-              onChangeText={(value) => setLanguages(value)}
-              secureTextEntry={false}
-              icon="pencil"
+              onSelectItem={(item) => {
+                selectLanguages(item?.title);
+              }}
             />
-            <Input
-              title="Zone d'intervention"
-              placeholder="Sélectionner un ou plusieurs pays"
-              value={interventionZone}
-              onChangeText={(value) => setInterventionZone(value)}
-              secureTextEntry={false}
-              icon="pencil"
-            />
+            <View style={styles.dataSelected}>
+              {textLanguagesSeleted}
+              {languagesSelected}
+            </View>
+            <View style={styles.dropdown}>
+              <CountryDropdown
+                title="Zone d'intervention"
+                placeholder="Sélectionner un ou plusieurs pays"
+                onSelectCountry={selectInterventionZone}
+                selectedCountry={interventionZone}
+              />
+            </View>
+            <View style={styles.dataSelected}>
+              {textNationalitiesSeleted}
+              {interventionZoneSelected}
+            </View>
           </View>
         </View>
       </ScrollView>
