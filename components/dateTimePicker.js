@@ -1,38 +1,30 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, TextInput, Platform, StyleSheet } from "react-native";
+import { View, Text, Pressable, Platform, StyleSheet } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
-const DatePickerInput = ({title, selectDate}) => {
+const DatePickerInput = ({ title, selectDate }) => {
   const [date, setDate] = useState(new Date());
-  const [formattedDate, setFormattedDate] = useState("");
+  const [formattedDate, setFormattedDate] = useState("Choisir une date");
   const [showPicker, setShowPicker] = useState(false);
 
   const handleConfirm = (selectedDate) => {
     if (selectedDate) {
       setDate(selectedDate);
-      setFormattedDate(selectedDate.toLocaleDateString("fr-FR")); // Format français : jj/mm/aaaa
+      setFormattedDate(selectedDate.toLocaleDateString("fr-FR"));
+      selectDate(selectedDate);
     }
-    setShowPicker(false); // Fermer le modal après la sélection
+    setShowPicker(false);
   };
 
   return (
     <View style={styles.inputContainer}>
       {title && <Text style={styles.title}>{title.toUpperCase()}</Text>}
 
-      <View style={styles.input}>
-      <TouchableOpacity onPress={() => setShowPicker(true)}>
-        <TextInput
-          style={styles.inputText}
-          value={formattedDate}
-          placeholder="Choisir une date"
-          placeholderTextColor="#aaa"
-          editable={false} // Empêche la saisie manuelle
-        />
-      </TouchableOpacity>
-      </View>
+      <Pressable style={styles.input} onPress={() => setShowPicker(true)}>
+        <Text style={styles.inputText}>{formattedDate}</Text>
+      </Pressable>
 
-      {/* Android: Utilise le DateTimePicker natif */}
       {Platform.OS === "android" && showPicker && (
         <DateTimePicker
           value={date}
@@ -42,15 +34,13 @@ const DatePickerInput = ({title, selectDate}) => {
           onChange={(event, selectedDate) => {
             if (selectedDate) {
               handleConfirm(selectedDate);
-              selectDate(selectedDate);
             } else {
-              setShowPicker(false); // Ferme si l'utilisateur annule
+              setShowPicker(false);
             }
           }}
         />
       )}
 
-      {/* iOS: Utilise le DateTimePickerModal */}
       {Platform.OS === "ios" && (
         <DateTimePickerModal
           isVisible={showPicker}
@@ -66,28 +56,28 @@ const DatePickerInput = ({title, selectDate}) => {
 };
 
 const styles = StyleSheet.create({
-    inputContainer: {
-        width: "100%",
-        marginVertical: 10,
-    },
-    title: {
-        color: "#FF6C02",
-        fontSize: 12,
-        fontWeight: "600",
-        marginBottom: 4,
-    },
-    input: {
-      borderWidth: 1,
-      borderColor: "#bbbbbb",
-      paddingHorizontal: 10,
-      borderRadius: 8,
-      fontSize: 12,
-      color: "#333",
-      backgroundColor: "#f9f9f9",
-    },
-    inputText: {
-        flex: 1,
-        paddingVertical: 10,
+  inputContainer: {
+    width: "100%",
+    marginVertical: 10,
+  },
+  title: {
+    color: "#FF6C02",
+    fontSize: 12,
+    fontWeight: "600",
+    marginBottom: 4,
+  },
+  input: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#bbbbbb",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 12,
+  },
+  inputText: {
+    color: "#000",
   },
 });
 

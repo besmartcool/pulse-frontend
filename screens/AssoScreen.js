@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
-  Image,
-  ImageBackground,
-  KeyboardAvoidingView,
-  Platform,
   StyleSheet,
   Text,
   ScrollView,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -19,11 +15,14 @@ import categoriesList from "../assets/categoriesList";
 import languagesListFrench from "../assets/languagesList";
 import DatePickerInput from "../components/dateTimePicker";
 import InternalDataSetDropdown from "../components/internalDataSetDropdown";
-import  PhoneInput from "../components/phoneInput";
+import PhoneInput from "../components/phoneInput";
+import MessageModal from "../components/messageModal";
 
 const BACKEND_ADDRESS = "http://10.0.1.62:3000";
 
-export default function AssoScreen({ navigation }) {
+export default function AssoScreen() {
+
+  //Etats pour les données de l'association
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [nationalities, setNationalities] = useState([]);
@@ -42,58 +41,75 @@ export default function AssoScreen({ navigation }) {
   const [lastDeclarationDate, setlastDeclarationDate] = useState(null);
   const [legalNumber, setLegalNumber] = useState("");
   const [members, setMembers] = useState([]);
+  const [socialNetworks, setSocialNetworks] = useState([]);
+  const [gallery, setGallery] = useState([]);
+  const [history, setHistory] = useState([]);
+  const [missions, setMissions] = useState([]);
 
+  // Récupération infos utilisateur
+  const user = useSelector((state) => state.user.value);
+
+  // Etats et fonction pour dynamisation du formulaire d'enregistrement d'une association
+
+  // Champs d'identification de l'association
   const categoriesDataSet = categoriesList.map((category, i) => ({
     id: `${i}`,
     title: category,
   }));
-
+  
   const selectResidenceCountry = (country) => {
     if (country) {
       setResidenceCountry(country);
       setCountry(country);
     }
   };
-
+  
   const selectNationalities = (country) => {
     if (country) {
       setNationalities((nationalities) => [...nationalities, country]);
     }
   };
-
+  
   const selectCategories = (category) => {
     if (category) {
       setCategories((categories) => [...categories, category]);
     }
   };
-
+ 
+  // Champs de contact
   const addPhoneNumber = (phoneNumber) => {
     if (phoneNumber) {
       setPhone((phone) => [...phone, phoneNumber]);
     }
   };
-
+  
   const formatFrenchPhoneNumber = (phoneNumber) => {
     if (!/^0\d{9}$/.test(phoneNumber)) return "Numéro invalide";
-    return `+33 ${phoneNumber.slice(1, 2)} ${phoneNumber.slice(2, 4)} ${phoneNumber.slice(4, 6)} ${phoneNumber.slice(6, 8)} ${phoneNumber.slice(8, 10)}`;
+    return `+33 ${phoneNumber.slice(1, 2)} ${phoneNumber.slice(
+      2,
+      4
+    )} ${phoneNumber.slice(4, 6)} ${phoneNumber.slice(
+      6,
+      8
+    )} ${phoneNumber.slice(8, 10)}`;
   };
-
+  
   const phoneNumbers = phone?.map((data, i) => {
     return (
       <View key={i}>
         <Text style={{ marginRight: 5, marginLeft: 5, color: "blue" }}>
-          Tél {i+1}: {formatFrenchPhoneNumber(data)}
+          Tél {i + 1}: {formatFrenchPhoneNumber(data)}
         </Text>
       </View>
     );
   });
-
+  
   let textNationalitiesSeleted = nationalities.length > 0 && (
     <View style={styles.dataSelected}>
       <Text>Sélection:</Text>
     </View>
   );
-
+  
   const nationalitiesSelected = nationalities?.map((data, i) => {
     return (
       <View key={i}>
@@ -103,13 +119,13 @@ export default function AssoScreen({ navigation }) {
       </View>
     );
   });
-
+  
   let textCategoriesSeleted = categories.length > 0 && (
     <View style={styles.dataSelected}>
       <Text>Sélection:</Text>
     </View>
   );
-
+  
   const categoriesSelected = categories?.map((data, i) => {
     return (
       <View key={i}>
@@ -119,6 +135,21 @@ export default function AssoScreen({ navigation }) {
       </View>
     );
   });
+  
+  //Vérificationd de l'email
+  const [errorEmail, setErrorEmail] = useState("");
+  const EMAIL_REGEX =
+    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+  useEffect(() => {
+    if (email?.length == 0) {
+      setErrorEmail("");
+    } else if (EMAIL_REGEX.test(email)) {
+      setErrorEmail("");
+    } else {
+      setErrorEmail("email incomplet ou invalide");
+    }
+  }, [email]);
 
   const updateAddressProperties = (data) => {
     if (
@@ -136,6 +167,7 @@ export default function AssoScreen({ navigation }) {
     }
   };
 
+    // Champs informations légales
   const selectCreationDate = (date) => {
     if (date) {
       setCreationDate(date);
@@ -148,6 +180,7 @@ export default function AssoScreen({ navigation }) {
     }
   };
 
+    // Champs autres informations
   const selectInterventionZone = (country) => {
     if (country) {
       setInterventionZone((interventionZone) => [...interventionZone, country]);
@@ -164,12 +197,10 @@ export default function AssoScreen({ navigation }) {
     );
   });
 
-  const languagesListFrenchDataSet = languagesListFrench.map(
-    (language, i) => ({
-      id: `${i}`,
-      title: language,
-    })
-  );
+  const languagesListFrenchDataSet = languagesListFrench.map((language, i) => ({
+    id: `${i}`,
+    title: language,
+  }));
 
   const selectLanguages = (language) => {
     if (language) {
@@ -193,14 +224,11 @@ export default function AssoScreen({ navigation }) {
     );
   });
 
-  // UseEffect pour vérifier la modification des états
-  useEffect(() => {
-    console.log("vérification:", phone);
-  }, [phone]);
-
+  // Envoi des données de l'association
   const newAsso = {
     name,
     description,
+    residenceCountry,
     nationalities,
     categories,
     address: {
@@ -210,40 +238,49 @@ export default function AssoScreen({ navigation }) {
       department,
       country,
     },
-    phone: ["test frontend"],
-    email: "test",
-    members: [
-      {
-        name: "67c5986fc92f26da214b7ec3",
-        role: "test",
-      },
-    ],
-    socialNetworks: [
-      {
-        name: "test",
-        url: "test",
-      },
-    ],
-    languages: ["test frontend"],
-    interventionZone: ["test frontend"],
-    lastDeclarationDate: null,
-    creationDate: null,
-    legalNumber: "test frontend",
-    gallery: ["test frontend"],
-    history: ["test frontend"],
-    missions: ["test frontend"],
+    phone,
+    email,
+    members,
+    socialNetworks,
+    languages,
+    interventionZone,
+    lastDeclarationDate,
+    creationDate,
+    legalNumber,
+    gallery,
+    history,
+    missions,
   };
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [message, setMessage] = useState("");
+  const [isSuccess, setIsSuccess] = useState(null);
 
   const handleRegistrationSubmit = () => {
     fetch(`${BACKEND_ADDRESS}/associations/creation`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.token}`,
+      },
       body: JSON.stringify(newAsso),
     })
       .then((response) => response.json())
-      .then((data) => {})
+      .then((data) => {
+        if (data.result) {
+          setMessage("✅ Association créée avec succès !");
+          setIsSuccess(true);
+        } else {
+          setMessage("❌ Erreur lors de la création de l'association.");
+          setIsSuccess(false);
+        }
+        setModalVisible(true); // Afficher la modale
+      })
       .catch((error) => {
-        console.error("Error during registration:", error);
+        console.error("Erreur :", error);
+        setMessage("⚠️ Une erreur s'est produite, veuillez réessayer.");
+        setIsSuccess(false);
+        setModalVisible(true);
       });
   };
 
@@ -316,19 +353,23 @@ export default function AssoScreen({ navigation }) {
             <Text style={styles.subSectionHeader}>Informations de contact</Text>
             <Input
               title="Email"
-              placeholder="saisir votre email"
+              keyboardType="email-address"
+              placeholder="Email"
               value={email}
               onChangeText={(value) => setEmail(value)}
               secureTextEntry={false}
               icon="pencil"
             />
+            {errorEmail ? (
+              <Text style={styles.errorText}>{errorEmail}</Text>
+            ) : null}
             <PhoneInput
               title="Téléphone"
               placeholder="06..."
               value={phone}
               onChangeText={(value) => addPhoneNumber(value)}
               secureTextEntry={false}
-              />
+            />
             {phoneNumbers}
             <View style={styles.dropdown}>
               <AddressDropdown
@@ -428,6 +469,12 @@ export default function AssoScreen({ navigation }) {
           <Text style={styles.textButton}>Valider</Text>
         </TouchableOpacity>
       </View>
+      <MessageModal
+        visible={modalVisible}
+        message={message}
+        isSuccess={isSuccess}
+        onClose={() => setModalVisible(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -532,33 +579,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginBottom: 4,
   },
-  //début mise en forme dropdown secteur d'activité
-  container: {
-    width: "100%",
-  },
-  title: {
-    color: "#FF6C02",
+  errorText: {
+    color: "red",
     fontSize: 12,
-    fontWeight: "600",
-    marginBottom: 4,
+    marginTop: 4,
   },
-  inputContainer: {
-    borderWidth: 1,
-    borderColor: "#bbbbbb",
-    borderRadius: 8,
-    backgroundColor: "white",
-  },
-  input: {
-    padding: 12,
-    fontSize: 16,
-    color: "#2c3e50",
-  },
-  suggestionsList: {
-    backgroundColor: "white",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#dddddd",
-    right: 20,
-  },
-  // fin mise en forme dropdown secteur d'activité
 });
