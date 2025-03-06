@@ -31,10 +31,10 @@ export default function FavoriteScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.containerHeader}>
+      <View style={styles.containerLogo}>
       <Image style={styles.logo} source={require("../assets/Logo_Letter.png")} />
-      <Text style={styles.title}>Favoris</Text>
       </View>
+      <Text style={styles.title}>Favoris</Text>
       <View style={styles.line}></View>
       {favorites}
     </View>
@@ -47,14 +47,13 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingTop: 50,
     },
-    containerHeader: {
+    containerLogo: {
         width: "90%",
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 110,
-        marginBottom: 20,
+        alignItems: "start-left",
+
     },
     logo: {
+        position: "absolute",
         width: 50,
         height: 50,
     },
@@ -62,6 +61,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         fontWeight: 900,
         fontSize: 20,
+        paddingTop: 10,
         
     },
     line: {
@@ -69,5 +69,6 @@ const styles = StyleSheet.create({
       height: 2,
       backgroundColor: "black",
       marginBottom: 20,
+      marginTop: 20,
     },
 });
