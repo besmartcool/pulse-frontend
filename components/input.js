@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
   inputText: {
     flex: 1,
     paddingVertical: 10,
+    fontSize: 12,
   },
   icon: {
     marginLeft: 8,

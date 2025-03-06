@@ -13,7 +13,7 @@ const CountryDropdown = ({
 }) => {
   const [searchText, setSearchText] = useState(selectedCountry || "");
   const [suggestions, setSuggestions] = useState([]);
-  const [allCountries, setAllCountries] = useState([]); 
+  const [allCountries, setAllCountries] = useState([]);
 
   // ON STOCK LA LISTE DES PAYS TRADUITE DANS LE STATE ALLCOUNTRIES
   useEffect(() => {
@@ -83,7 +83,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "white",
   },
-  input: { padding: 12, fontSize: 16, color: "#2c3e50" },
+  input: {
+    padding: 8,
+    fontSize: 14,
+    color: "#2c3e50"
+  },
   suggestionsList: {
     backgroundColor: "white",
     borderRadius: 8,

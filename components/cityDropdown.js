@@ -83,8 +83,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   input: {
-    padding: 12,
-    fontSize: 16,
+    padding: 8,
+    fontSize: 14,
     color: "#2c3e50",
   },
   suggestionsList: {

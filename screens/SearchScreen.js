@@ -24,6 +24,7 @@ export default function SearchScreen({ navigation }) {
   const [destinationCountry, setDestinationCountry] = useState("");
   const [destinationCity, setDestinationCity] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [showCriterias, setShowCriterias] = useState(false);
 
   // États pour stocker les associations
   const [associations, setAssociations] = useState([]);
@@ -97,11 +98,9 @@ export default function SearchScreen({ navigation }) {
     setResultResearch("default"); // Revient aux associations aléatoires
   };
 
-  // Bouton sur la div secondaire
-  const handleResearch = () => {
-    setTypeContent("result");
-    setResultResearch("result"); // On garde les résultats affichés
-  };
+  const toggleCriterias = () => {
+    setShowCriterias(!showCriterias)
+  }
 
   // Bouton pour afficher le résultat de la recherche
   const handleShowResult = () => {
@@ -147,20 +146,32 @@ export default function SearchScreen({ navigation }) {
       <Text>Aucune association trouvée.</Text>
     );
 
+    let criteriasView = showCriterias ? (
+      <View style={styles.criterias}>
+        <Pressable style={styles.criteria}>
+          <Text style={styles.criteriaText}>Récemment créée</Text>
+        </Pressable>
+        <Pressable style={styles.criteria}>
+          <Text style={styles.criteriaText}>Taille</Text>
+        </Pressable>
+        <Pressable style={styles.criteria}>
+          <Text style={styles.criteriaText}>Statut</Text>
+        </Pressable>
+      </View>
+    ) : null;
+
   // Définition des différents contenus
   let content;
   if (typeContent === "default") {
     content = (
       <View style={styles.fakeModal}>
         <View style={styles.research}>
-          {/* Header avec logo et bouton */}
           <View style={styles.topContent}>
             <Image style={styles.logo} source={require("../assets/Logo.png")} />
             <Pressable style={styles.addAsso}>
               <Text style={styles.addAssoText}>+ Ajouter une association</Text>
             </Pressable>
           </View>
-          {/* Bouton de recherche */}
           <Pressable
             style={styles.searchButton}
             onPress={() => setTypeContent("search")}
@@ -244,21 +255,13 @@ export default function SearchScreen({ navigation }) {
             {associationsCategories}
           </ScrollView>
 
-          {/* Critères supplémentaires */}
-          <View style={styles.criterias}>
-            <Pressable style={styles.criteria}>
-              <Text style={styles.criteriaText}>Récemment créée</Text>
-            </Pressable>
-            <Pressable style={styles.criteria}>
-              <Text style={styles.criteriaText}>Taille</Text>
-            </Pressable>
-            <Pressable style={styles.criteria}>
-              <Text style={styles.criteriaText}>Statut</Text>
-            </Pressable>
-          </View>
+          {criteriasView}
 
           {/* Bouton Valider */}
           <View style={styles.bottomContent}>
+            <Pressable style={styles.validateButton} onPress={toggleCriterias}>
+              <FontAwesome name="filter" size={30} color="white" />
+            </Pressable>
             <Pressable style={styles.validateButton} onPress={handleShowResult}>
               <FontAwesome name="angle-up" size={30} color="white" />
             </Pressable>
@@ -267,38 +270,34 @@ export default function SearchScreen({ navigation }) {
       </View>
     );
   } else if (typeContent === "result") {
-    if (!originCountry || !destinationCountry) {
-      setTypeContent("default"); // On revient au contenu par défaut
-    } else {
-      content = (
-        <View style={styles.fakeModal}>
-          <View style={styles.newResearch}>
-            <Pressable
-              onPress={handleBackToSearch}
-              style={styles.validateButton}
-            >
-              <FontAwesome name="angle-down" size={30} color="white" />
-            </Pressable>
+    content = (
+      <View style={styles.fakeModal}>
+        <View style={styles.newResearch}>
+          {/* Bouton Retour à gauche */}
+          <Pressable onPress={handleBackToDefault} style={styles.backButton}>
+            <FontAwesome name="arrow-left" size={24} color="#FF6C02" />
+          </Pressable>
 
-            <View style={styles.resultat}>
-              <>
-                <View>
-                  <Text style={styles.result}>
-                    {originCountry || "N"} {""}
-                  </Text>
-                </View>
-                <FontAwesome name="arrow-right" size={10} color="#bbbbbb" />
-                <View>
-                  <Text style={styles.result}>
-                    {""} {destinationCountry || "N"}
-                  </Text>
-                </View>
-              </>
+          {/* Résultat au centre */}
+          {originCountry && destinationCountry ? (
+            <View style={styles.resultatContainer}>
+              <View style={styles.resultat}>
+                <Text style={styles.result}>{originCountry || "N"}</Text>
+                <FontAwesome name="arrow-right" size={12} color="#bbbbbb" />
+                <Text style={styles.result}>{destinationCountry || "N"}</Text>
+              </View>
             </View>
-          </View>
+          ) : (
+            <View></View>
+          )}
+
+          {/* Bouton Angle Down à droite */}
+          <Pressable onPress={handleBackToSearch} style={styles.angleDown}>
+            <FontAwesome name="angle-down" size={30} color="white" />
+          </Pressable>
         </View>
-      );
-    }
+      </View>
+    );
   }
 
   // Détermination du contenu affiché
@@ -337,7 +336,7 @@ const styles = StyleSheet.create({
   // DIV DE RECHERCHE SANS CRITÈRES
   fakeModal: {
     width: "100%",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "center",
     borderBottomRightRadius: 36,
     borderBottomLeftRadius: 36,
@@ -416,8 +415,14 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   backButton: {
-    alignSelf: "flex-start",
-    marginBottom: 10,
+    padding: 10,
+    borderRadius: 50,
+    backgroundColor: "#FFF5E6",
+    shadowColor: "#FF6C02",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
   },
   allInputs: {
     width: "100%",
@@ -440,7 +445,6 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     justifyContent: "flex-start",
   },
-
   criteria: {
     borderRadius: 8,
     borderWidth: 1.5,
@@ -454,26 +458,40 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
-
   criteriaText: {
     fontSize: 14,
     fontWeight: "600",
     color: "#FF6C02",
   },
-
   validateButton: {
     height: 55,
     width: 55,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#FF6C02",
-    borderRadius: 28,
+    borderRadius: 50,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
-    marginTop: 15,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 6,
+    borderWidth: 2,
+    borderColor: "#FFFFFF",
+  },
+  angleDown: {
+    height: 55,
+    width: 55,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FF6C02",
+    borderRadius: 50,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 6,
+    borderWidth: 2,
+    borderColor: "#FFFFFF",
   },
   // CONTENU ASSOCIATIONS
   allAssociations: {
@@ -500,6 +518,15 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     alignItems: "center",
     height: "auto",
+    width: '100%',
+    gap: 15,
+  },
+  research: {
+    width: "90%",
+    height: "auto",
+    marginTop: 40,
+    justifyContent: "center",
+    alignItems: "flex-start",
   },
   newResearch: {
     // CONTIENT TOUT
@@ -509,22 +536,48 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    gap: 15,
   },
   resultat: {
-    width: "70%",
-    height: "auto",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#bbbbbb",
-    padding: 12,
-    marginHorizontal: 5,
     flexDirection: "row",
-    justifyContent: "center",
     alignItems: "center",
+    gap: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: "#E0E0E0",
+    backgroundColor: "#F9F9F9",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
   },
   result: {
     fontSize: 16,
     fontWeight: "bold",
     color: "#FF6C02",
+    textAlign: "center",
+  },
+  toptopContent: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  quart: {
+    width: "25%",
+  },
+  half: {
+    width: "50%",
+    height: "100%",
+    backgroundColor: "red",
+  },
+  resultatContainer: {
+    flex: 1,
+    alignItems: "center",
   },
 });
