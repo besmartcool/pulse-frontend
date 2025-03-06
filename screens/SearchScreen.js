@@ -1,25 +1,18 @@
 import React, { useEffect, useState } from "react";
-import {
-  Image,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import CityDropdown from "../components/cityDropdown";
-import CountryDropdown from "../components/countryDropdown";
+import { ScrollView, StyleSheet, View, Text, Pressable } from "react-native";
+import SearchHome from "../components/searchHome";
+import SearchFilters from "../components/searchFilters";
+import SearchResult from "../components/searchResult";
 import AssociationCard from "../components/associationCard";
 import CategorieRound from "../components/categorieRound";
 import categoriesList from "../assets/categoriesList";
 
 export default function SearchScreen({ navigation }) {
-  // Etats type de contenu div du haut
+  // États principaux
   const [typeContent, setTypeContent] = useState("default");
   const [resultResearch, setResultResearch] = useState("default");
 
-  // États pour stocker les filtres de recherche
+  // États pour les filtres
   const [originCountry, setOriginCountry] = useState("");
   const [destinationCountry, setDestinationCountry] = useState("");
   const [destinationCity, setDestinationCity] = useState("");
@@ -30,90 +23,52 @@ export default function SearchScreen({ navigation }) {
   const [associations, setAssociations] = useState([]);
   const [filteredAssociations, setFilteredAssociations] = useState([]);
 
-  // Récupération des associations aléatoires au lancement
+  // Récupération des associations au chargement
   useEffect(() => {
     fetch("http://10.0.2.19:3000/associations/all")
       .then((response) => response.json())
-      .then((data) => {
-        setAssociations(data); // ON LES STOCKE DANS UN STATE
-      })
+      .then((data) => setAssociations(data))
       .catch((error) =>
-        console.error(
-          "Erreur lors de la récupération des associations :",
-          error
-        )
+        console.error("Erreur lors de la récupération :", error)
       );
   }, []);
 
-  // Fonction pour rechercher les associations en fonction des filtres
+  // Fonction pour rechercher les associations avec les filtres
   const handleFilteredSearch = (
     country = destinationCountry,
     city = destinationCity,
     category = selectedCategory
   ) => {
     let queryParams = [];
-
-    if (country) {
-      queryParams.push(`country=${encodeURIComponent(country)}`);
-    }
-    if (city) {
-      queryParams.push(`city=${encodeURIComponent(city)}`);
-    }
-    if (category) {
-      queryParams.push(`category=${encodeURIComponent(category)}`);
-    }
+    if (country) queryParams.push(`country=${encodeURIComponent(country)}`);
+    if (city) queryParams.push(`city=${encodeURIComponent(city)}`);
+    if (category) queryParams.push(`category=${encodeURIComponent(category)}`);
 
     const queryString =
       queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
-    // ON GÉNÉRE LA QUERY AVEC LES FILTRES VOULUS
 
     fetch(`http://10.0.2.19:3000/associations/search${queryString}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
-          setFilteredAssociations(data.associations); // ON STOCKE LES ASSOCIATIONS FILTRÉES
-          setResultResearch("search"); // ON AFFICHE LES ASSO FILTRÉES
+          setFilteredAssociations(data.associations);
+          setResultResearch("search");
         } else {
-          setFilteredAssociations([]); // SINON, AUCUNE ASSO TROUVÉE
-          setResultResearch("search"); // ON AFFICHE QU'IL N'Y A PAS DE RÉSULTAT
+          setFilteredAssociations([]);
+          setResultResearch("search");
         }
       })
       .catch((error) => console.error("Erreur lors de la recherche :", error));
   };
 
-  // Gestion de la sélection d'une catégorie
+  // Gestion du clic sur une catégorie
   const handleCategoryClick = (category) => {
     setSelectedCategory(category);
-    setTimeout(handleFilteredSearch, 0); // ON APPELLE LA FONCTION DE RECHERCHE ET ON ATTEND QUE LE STATE SOIT BIEN MIS ) JOUR AVEC SETTIMEOUT
+    setTimeout(handleFilteredSearch, 0);
   };
 
-  // Gestion des états d'affichage de la div principale
-  // Bouton sur la div principale
-  const handleBackToSearch = () => {
-    setTypeContent("search");
-  };
-
-  const handleBackToDefault = () => {
-    setTypeContent("default");
-    setResultResearch("default"); // Revient aux associations aléatoires
-  };
-
-  const toggleCriterias = () => {
-    setShowCriterias(!showCriterias)
-  }
-
-  // Bouton pour afficher le résultat de la recherche
-  const handleShowResult = () => {
-    setTypeContent("result");
-  };
-
-  // Gestion de la recherche filtrée après la mise à jour des filtres
-  useEffect(() => {
-    handleFilteredSearch();
-  }, [destinationCountry, destinationCity, selectedCategory]);
-
-  // Récupération des catégories de la BDD
-  let associationsCategories =
+  // Affichage des catégories
+  const associationsCategories =
     categoriesList.length > 0 ? (
       categoriesList.map((category, index) => (
         <Pressable key={index} onPress={() => handleCategoryClick(category)}>
@@ -126,188 +81,65 @@ export default function SearchScreen({ navigation }) {
       <Text>Aucune catégorie trouvée.</Text>
     );
 
-  // Affichage des associations initiales (sans filtres)
-  let initialContent =
-    associations.length > 0 ? (
-      associations.map((association, index) => (
-        <AssociationCard key={index} association={association} />
-      ))
-    ) : (
-      <Text>Aucune association trouvée.</Text>
-    );
+  // Gestion de l'affichage
+  const handleBackToDefault = () => {
+    setTypeContent("default");
+    setResultResearch("default");
+  };
 
-  // Affichage des associations filtrées
-  let researchedContent =
-    filteredAssociations.length > 0 ? (
-      filteredAssociations.map((association, index) => (
-        <AssociationCard key={index} association={association} />
-      ))
-    ) : (
-      <Text>Aucune association trouvée.</Text>
-    );
+  const handleBackToSearch = () => {
+    setTypeContent("search");
+  };
 
-    let criteriasView = showCriterias ? (
-      <View style={styles.criterias}>
-        <Pressable style={styles.criteria}>
-          <Text style={styles.criteriaText}>Récemment créée</Text>
-        </Pressable>
-        <Pressable style={styles.criteria}>
-          <Text style={styles.criteriaText}>Taille</Text>
-        </Pressable>
-        <Pressable style={styles.criteria}>
-          <Text style={styles.criteriaText}>Statut</Text>
-        </Pressable>
-      </View>
-    ) : null;
+  const toggleCriterias = () => {
+    setShowCriterias(!showCriterias);
+  };
 
-  // Définition des différents contenus
-  let content;
-  if (typeContent === "default") {
-    content = (
-      <View style={styles.fakeModal}>
-        <View style={styles.research}>
-          <View style={styles.topContent}>
-            <Image style={styles.logo} source={require("../assets/Logo.png")} />
-            <Pressable style={styles.addAsso}>
-              <Text style={styles.addAssoText}>+ Ajouter une association</Text>
-            </Pressable>
-          </View>
-          <Pressable
-            style={styles.searchButton}
-            onPress={() => setTypeContent("search")}
-          >
-            <FontAwesome name="search" size={18} color="#FF6C02" />
-            <Text style={styles.searchButtonText}>
-              Rechercher une association
-            </Text>
-          </Pressable>
-        </View>
-      </View>
-    );
-  }
-  if (typeContent === "search") {
-    content = (
-      <View style={styles.fakeModal}>
-        <View style={styles.research}>
-          {/* Bouton Retour */}
-          <Pressable onPress={handleBackToDefault} style={styles.backButton}>
-            <FontAwesome name="arrow-left" size={24} color="#FF6C02" />
-          </Pressable>
+  const handleShowResult = () => {
+    setTypeContent("result");
+  };
 
-          {/* Filtres */}
-          <View style={styles.allInputs}>
-            <View style={styles.dropdown}>
-              <CountryDropdown
-                title="Pays d'origine"
-                placeholder="Sélectionner un pays"
-                selectedCountry={originCountry}
-                onSelectCountry={setOriginCountry}
-              />
-            </View>
-
-            <View style={styles.dropdown}>
-              <CountryDropdown
-                title="Pays de destination"
-                placeholder="Sélectionner un pays"
-                selectedCountry={destinationCountry}
-                onSelectCountry={(country) => {
-                  setDestinationCountry(country);
-                  setTimeout(
-                    () =>
-                      handleFilteredSearch(
-                        country,
-                        destinationCity,
-                        selectedCategory
-                      ),
-                    0
-                  );
-                }}
-              />
-            </View>
-
-            <View style={styles.dropdown}>
-              <CityDropdown
-                title="Ville de destination"
-                placeholder="Sélectionner une ville"
-                selectedCity={destinationCity}
-                onSelectCity={(city) => {
-                  setDestinationCity(city);
-                  setTimeout(
-                    () =>
-                      handleFilteredSearch(
-                        destinationCountry,
-                        city,
-                        selectedCategory
-                      ),
-                    0
-                  );
-                }}
-              />
-            </View>
-          </View>
-
-          {/* Catégories */}
-          <ScrollView
-            horizontal
-            contentContainerStyle={styles.categoriesContainer}
-            showsHorizontalScrollIndicator={false}
-          >
-            {associationsCategories}
-          </ScrollView>
-
-          {criteriasView}
-
-          {/* Bouton Valider */}
-          <View style={styles.bottomContent}>
-            <Pressable style={styles.validateButton} onPress={toggleCriterias}>
-              <FontAwesome name="filter" size={30} color="white" />
-            </Pressable>
-            <Pressable style={styles.validateButton} onPress={handleShowResult}>
-              <FontAwesome name="angle-up" size={30} color="white" />
-            </Pressable>
-          </View>
-        </View>
-      </View>
-    );
-  } else if (typeContent === "result") {
-    content = (
-      <View style={styles.fakeModal}>
-        <View style={styles.newResearch}>
-          {/* Bouton Retour à gauche */}
-          <Pressable onPress={handleBackToDefault} style={styles.backButton}>
-            <FontAwesome name="arrow-left" size={24} color="#FF6C02" />
-          </Pressable>
-
-          {/* Résultat au centre */}
-          {originCountry && destinationCountry ? (
-            <View style={styles.resultatContainer}>
-              <View style={styles.resultat}>
-                <Text style={styles.result}>{originCountry || "N"}</Text>
-                <FontAwesome name="arrow-right" size={12} color="#bbbbbb" />
-                <Text style={styles.result}>{destinationCountry || "N"}</Text>
-              </View>
-            </View>
-          ) : (
-            <View></View>
-          )}
-
-          {/* Bouton Angle Down à droite */}
-          <Pressable onPress={handleBackToSearch} style={styles.angleDown}>
-            <FontAwesome name="angle-down" size={30} color="white" />
-          </Pressable>
-        </View>
-      </View>
-    );
-  }
-
-  // Détermination du contenu affiché
-  let resultFromResearch =
-    resultResearch === "default" ? initialContent : researchedContent;
+  // Affichage des associations
+  const resultFromResearch =
+    resultResearch === "default"
+      ? associations.map((association, index) => (
+          <AssociationCard key={index} association={association} />
+        ))
+      : filteredAssociations.map((association, index) => (
+          <AssociationCard key={index} association={association} />
+        ));
 
   return (
     <View style={styles.container}>
       <View style={styles.allContent}>
-        {content}
+        {typeContent === "default" && (
+          <SearchHome setTypeContent={setTypeContent} />
+        )}
+        {typeContent === "search" && (
+          <SearchFilters
+            handleBackToDefault={handleBackToDefault}
+            handleFilteredSearch={handleFilteredSearch}
+            originCountry={originCountry}
+            setOriginCountry={setOriginCountry}
+            destinationCountry={destinationCountry}
+            setDestinationCountry={setDestinationCountry}
+            destinationCity={destinationCity}
+            setDestinationCity={setDestinationCity}
+            associationsCategories={associationsCategories}
+            criteriasView={showCriterias}
+            toggleCriterias={toggleCriterias}
+            handleShowResult={handleShowResult}
+          />
+        )}
+        {typeContent === "result" && (
+          <SearchResult
+            handleBackToDefault={handleBackToDefault}
+            handleBackToSearch={handleBackToSearch}
+            originCountry={originCountry}
+            destinationCountry={destinationCountry}
+          />
+        )}
+
         <ScrollView style={styles.allAssociations}>
           {resultFromResearch}
         </ScrollView>
@@ -317,267 +149,21 @@ export default function SearchScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  // CONTAINER GLOBAL
   container: {
     height: "100%",
     width: "100%",
     justifyContent: "flex-start",
     alignItems: "center",
   },
-
-  // CONTAINER SANS LE DIV DE RECHERCHE
   allContent: {
     height: "100%",
     width: "100%",
     justifyContent: "flex-start",
     alignItems: "center",
   },
-
-  // DIV DE RECHERCHE SANS CRITÈRES
-  fakeModal: {
-    width: "100%",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    borderBottomRightRadius: 36,
-    borderBottomLeftRadius: 36,
-    backgroundColor: "white",
-    paddingVertical: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 5,
-  },
-  topContent: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-end",
-    marginBottom: 20,
-  },
-  logo: {
-    width: 60,
-    height: 60,
-    resizeMode: "contain",
-  },
-  addAsso: {
-    backgroundColor: "#FF6C02",
-    borderRadius: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 17,
-    shadowColor: "#FF6C02",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 4,
-    marginBottom: 5,
-  },
-  addAssoText: {
-    color: "white",
-    fontWeight: "600",
-    fontSize: 14,
-  },
-  searchButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "white",
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 25,
-    borderColor: "#FF6C02",
-    borderWidth: 1,
-    width: "100%",
-    shadowColor: "#FF6C02",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 4,
-  },
-  searchButtonText: {
-    color: "#FF6C02",
-    fontWeight: "600",
-    fontSize: 16,
-    marginLeft: 10,
-  },
-  line: {
-    // SÉPARATEUR
-    width: "90%",
-    height: 1,
-    backgroundColor: "black",
-    marginTop: 20,
-    alignSelf: "center",
-  },
-  // DIV DE RECHERCHE AVEC CRITÈRES
-  research: {
-    width: "90%",
-    height: "auto",
-    marginTop: 30,
-  },
-  backButton: {
-    padding: 10,
-    borderRadius: 50,
-    backgroundColor: "#FFF5E6",
-    shadowColor: "#FF6C02",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  allInputs: {
-    width: "100%",
-  },
-  dropdown: {
-    width: "auto",
-    height: "80",
-  },
-  categoriesContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    paddingVertical: 12,
-  },
-  criterias: {
-    flexDirection: "row",
-    alignItems: "center",
-    flexWrap: "wrap",
-    gap: 10,
-    marginVertical: 8,
-    justifyContent: "flex-start",
-  },
-  criteria: {
-    borderRadius: 8,
-    borderWidth: 1.5,
-    borderColor: "#FF6C02",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: "#FFF5E6",
-    shadowColor: "#FF6C02",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  criteriaText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#FF6C02",
-  },
-  validateButton: {
-    height: 55,
-    width: 55,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#FF6C02",
-    borderRadius: 50,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 6,
-    borderWidth: 2,
-    borderColor: "#FFFFFF",
-  },
-  angleDown: {
-    height: 55,
-    width: 55,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#FF6C02",
-    borderRadius: 50,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 6,
-    borderWidth: 2,
-    borderColor: "#FFFFFF",
-  },
-  // CONTENU ASSOCIATIONS
   allAssociations: {
-    // CONTIENT TOUTES LES ASSOCIATIONS
     width: "90%",
     height: "auto",
     marginTop: 30,
-  },
-  categories: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    width: "100%",
-    height: "auto",
-    overflow: "hidden",
-    marginTop: 10,
-  },
-  buttonUpContent: {
-    width: "100%",
-    height: "100%",
-    backgroundColor: "red",
-  },
-  bottomContent: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    height: "auto",
-    width: '100%',
-    gap: 15,
-  },
-  research: {
-    width: "90%",
-    height: "auto",
-    marginTop: 40,
-    justifyContent: "center",
-    alignItems: "flex-start",
-  },
-  newResearch: {
-    // CONTIENT TOUT
-    width: "90%",
-    height: "auto",
-    marginTop: 40,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: 15,
-  },
-  resultat: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    borderWidth: 1.5,
-    borderColor: "#E0E0E0",
-    backgroundColor: "#F9F9F9",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  result: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#FF6C02",
-    textAlign: "center",
-  },
-  toptopContent: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
-  quart: {
-    width: "25%",
-  },
-  half: {
-    width: "50%",
-    height: "100%",
-    backgroundColor: "red",
-  },
-  resultatContainer: {
-    flex: 1,
-    alignItems: "center",
   },
 });
