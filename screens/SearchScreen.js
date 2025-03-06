@@ -260,6 +260,9 @@ export default function SearchScreen({ navigation }) {
           {/* Bouton Valider */}
           <View style={styles.bottomContent}>
             <Pressable style={styles.validateButton} onPress={handleShowResult}>
+              <FontAwesome name="filter" size={30} color="white" />
+            </Pressable>
+            <Pressable style={styles.validateButton} onPress={handleShowResult}>
               <FontAwesome name="angle-up" size={30} color="white" />
             </Pressable>
           </View>
@@ -268,25 +271,24 @@ export default function SearchScreen({ navigation }) {
     );
   } else if (typeContent === "result") {
     if (!originCountry || !destinationCountry) {
-      setTypeContent("default"); // On revient au contenu par défaut
+      content = (
+       <View><Text>Aîe</Text></View>
+      );
     } else {
       content = (
         <View style={styles.fakeModal}>
-          <View style={styles.newResearch}>
-            <Pressable
-              onPress={handleBackToSearch}
-              style={styles.validateButton}
-            >
-              <FontAwesome name="angle-down" size={30} color="white" />
-            </Pressable>
-
+        <View style={styles.newResearch}>
+          {/* Bouton Retour */}
+          <Pressable onPress={handleBackToDefault} style={styles.backButton}>
+            <FontAwesome name="arrow-left" size={24} color="#FF6C02" />
+          </Pressable>
             <View style={styles.resultat}>
-              <>
                 <View>
                   <Text style={styles.result}>
                     {originCountry || "N"} {""}
                   </Text>
                 </View>
+              <>
                 <FontAwesome name="arrow-right" size={10} color="#bbbbbb" />
                 <View>
                   <Text style={styles.result}>
@@ -295,9 +297,17 @@ export default function SearchScreen({ navigation }) {
                 </View>
               </>
             </View>
+          <View style={styles.toptopContent}>
+            <Pressable
+              onPress={handleBackToSearch}
+              style={styles.validateButton}
+            >
+              <FontAwesome name="angle-down" size={30} color="white" />
+            </Pressable>
           </View>
         </View>
-      );
+      </View>
+      )
     }
   }
 
@@ -418,6 +428,13 @@ const styles = StyleSheet.create({
   backButton: {
     alignSelf: "flex-start",
     marginBottom: 10,
+    padding: 10,
+    borderRadius: 50,
+    backgroundColor: "#FFF5E6",
+    shadowColor: "#FF6C02",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
   allInputs: {
     width: "100%",
@@ -454,26 +471,25 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
-
   criteriaText: {
     fontSize: 14,
     fontWeight: "600",
     color: "#FF6C02",
   },
-
   validateButton: {
     height: 55,
     width: 55,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#FF6C02",
-    borderRadius: 28,
+    borderRadius: 50,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
-    marginTop: 15,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 6,
+    borderWidth: 2,
+    borderColor: "#FFFFFF",
   },
   // CONTENU ASSOCIATIONS
   allAssociations: {
@@ -500,31 +516,48 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     alignItems: "center",
     height: "auto",
+    gap: 15,
   },
   newResearch: {
     // CONTIENT TOUT
     width: "90%",
     height: "auto",
     marginTop: 40,
-    flexDirection: "row",
+    flexDirection: 'row',
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
+    gap: 15,
   },
   resultat: {
-    width: "70%",
-    height: "auto",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#bbbbbb",
-    padding: 12,
-    marginHorizontal: 5,
     flexDirection: "row",
-    justifyContent: "center",
     alignItems: "center",
+    justifyContent: "center",
+    width: 'auto',
+    gap: 8,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: "#E0E0E0",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    backgroundColor: "#F9F9F9",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
   },
   result: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
     color: "#FF6C02",
+    textAlign: "center",
+  },
+  toptopContent: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
   },
 });
