@@ -35,6 +35,16 @@ const AssociationCard = ({ association }) => {
     <View style={styles.associationCard}>
       <View style={styles.topAssoContent}>
         <View style={styles.textTitle}>
+          {countryCode ? (
+            <Image
+              source={{
+                uri: `https://flagcdn.com/w320/${countryCode.toLowerCase()}.png`,
+              }}
+              style={styles.drapeau}
+            />
+          ) : (
+            <Text></Text>
+          )}
           <Text style={styles.assoName}>
             {association.name.length > 30
               ? association.name.slice(0, 30) + "..."
@@ -42,16 +52,6 @@ const AssociationCard = ({ association }) => {
           </Text>
 
           {/* Affichage du drapeau s'il est disponible */}
-          {countryCode ? (
-            <Image
-              source={{
-                uri: `https://flagsapi.com/${countryCode}/shiny/64.png`,
-              }}
-              style={styles.drapeau}
-            />
-          ) : (
-            <Text>Pas de nationalité renseignée</Text>
-          )}
         </View>
         <View style={styles.textCategorie}>
           <CategorieRound categorie={association.categorie} />
@@ -62,7 +62,9 @@ const AssociationCard = ({ association }) => {
         source={require("../assets/placeholderImage.png")}
       />
       <Text style={styles.address}>
-      <FontAwesome name="map-pin" size={14} color="#000000" /> {association.address.street}, {association.address.city} {association.address.zipCode}, {association.address.country}
+        <FontAwesome name="map-pin" size={14} color="#000000" />{" "}
+        {association.address.street}, {association.address.city}{" "}
+        {association.address.zipCode}, {association.address.country}
       </Text>
       <Text style={styles.description}>
         {association.description.length > 150
@@ -70,7 +72,14 @@ const AssociationCard = ({ association }) => {
           : association.description}
       </Text>
       <View style={styles.bottomAssoContent}>
-        <FontAwesome name="heart" size={30} color="#000000" style={styles.icon}/>
+        <Pressable>
+          <FontAwesome
+            name="heart"
+            size={28}
+            color="#000000"
+            style={styles.icon}
+          />
+        </Pressable>
         <Pressable style={styles.contact}>
           <Text style={styles.contactText}>Contacter</Text>
         </Pressable>
@@ -83,94 +92,88 @@ export default AssociationCard;
 
 const styles = StyleSheet.create({
   associationCard: {
-    height: "auto",
     width: "100%",
-    borderWidth: 1,
-    borderColor: "#bbbbbb",
-    borderRadius: 8,
-    marginBottom: 15,
-    justifyContent: "flex-start",
-    alignItems: "center",
-    padding: 10,
-    backgroundColor: "white",
+    borderRadius: 12,
+    backgroundColor: "#F9F9F9",
+    padding: 16,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
   },
   image: {
     width: "100%",
-    height: 70,
+    height: 120,
+    borderRadius: 10,
     resizeMode: "cover",
-    borderRadius: 8,
-    paddingHorizontal: 10,
   },
   topAssoContent: {
-    justifyContent: "space-between",
-    alignItems: "flex-start",
     flexDirection: "row",
-    padding: 10,
-    width: "100%",
-    height: 100,
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
   },
   textTitle: {
     flexDirection: "row",
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
-    flexDirection: "column",
-    width: "70%",
-    height: "100%",
-  },
-  assoName: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  textCategorie: {
-    width: "25%",
-    height: "100%",
-    justifyContent: "flex-start",
-    alignItems: "flex-end",
-  },
-  textLogo: {
-    width: "25%",
-    height: "100%",
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
-  },
-  description: {
-    padding: 10,
-    height: 100,
-    width: "100%",
-  },
-  bottomAssoContent: {
-    alignSelf: "center",
-    justifyContent: "flex-end",
     alignItems: "center",
-    flexDirection: "row",
-    gap: 10,
-    width: "100%",
+    flexShrink: 1,
+    width: "75%",
   },
   drapeau: {
-    width: 20,
-    height: 20,
-    resizeMode: "contain",
+    width: 26,
+    height: 26,
+    marginRight: 10,
+    borderRadius: 13,
   },
-  contact: {
-    // BOUTON ENREGISTRER
-    backgroundColor: "#FF6C02",
-    borderRadius: 8,
-    paddingHorizontal: 13,
-    paddingVertical: 10,
-    marginBottom: 7,
+  assoName: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#222",
+    flexShrink: 1,
   },
-  contactText: {
-    color: "white",
-    fontWeight: "600",
+  textCategorie: {
+    alignItems: "center",
+    justifyContent: "center",
   },
   address: {
-    padding: 10,
-    fontSize: 12,
-    width: "100%",
+    fontSize: 13,
+    color: "#666",
+    marginTop: 6,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  description: {
+    fontSize: 14,
+    color: "#444",
+    lineHeight: 20,
+    marginVertical: 8,
+  },
+  bottomAssoContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 12,
   },
   icon: {
-    justifyContent: 'center',
-    alignItems:'center',
-  }
+    fontSize: 28,
+  },
+  contact: {
+    backgroundColor: "#FF6C02",
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    shadowColor: "#FF6C02",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  contactText: {
+    color: "#FFF",
+    fontWeight: "600",
+    fontSize: 15,
+    textAlign: "center",
+  },
 });
