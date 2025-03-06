@@ -418,7 +418,6 @@ const styles = StyleSheet.create({
   backButton: {
     alignSelf: "flex-start",
     marginBottom: 10,
-    padding: 10,
   },
   allInputs: {
     width: "100%",
