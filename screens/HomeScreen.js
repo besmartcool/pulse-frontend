@@ -5,20 +5,15 @@ import Signup from "../components/signup";
 import Signin from "../components/signin";
 import {
   Modal,
-  ImageBackground,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
-  Pressable,
 } from "react-native";
-import Input from "../components/input";
 
 export default function HomeScreen({ navigation }) {
-  const [text, setText] = useState("");
   const [signinVisible, setSigninVisible] = useState(false);
   const [signupVisible, setSignupVisible] = useState(false);
 
