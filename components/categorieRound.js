@@ -1,7 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import { library, icon } from '@fortawesome/fontawesome-svg-core'
 
 const CategorieRound = ({ categorie }) => {
   const categoryIcons = {
@@ -69,12 +68,10 @@ const CategorieRound = ({ categorie }) => {
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
-      <View style={styles.icon}>
-      <FontAwesome name={iconName} size={16} color="white"/>
-      </View>
-      <View style={styles.text}>
-      <Text style={styles.categoryText}>{categorie}</Text>
-      </View>
+      <FontAwesome name={iconName} size={12} color="white" />
+      <Text style={styles.categoryText} numberOfLines={2} adjustsFontSizeToFit>
+        {categorie}
+      </Text>
     </View>
   );
 };
@@ -83,33 +80,24 @@ export default CategorieRound;
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
-    justifyContent: "flex-start",
-    width: 80,
+    width: 60,
     height: 60,
-    padding: 10,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#bbbbbb"
-  },
-  icon: {
-    height: '40%',
-    width: '100%',
+    borderRadius: 40, // Cercle parfait
+    backgroundColor: "#bdc3c7",
     alignItems: "center",
     justifyContent: "center",
-  },
-  text: {
-    height: '60%',
-    width: '100%',
-    alignItems: "center",
-    justifyContent: "flex-start",
+    padding: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
   },
   categoryText: {
-    fontSize: 7,
-    width: '100%',
-    fontWeight: "light",
-    marginTop: 5,
+    fontSize: 6,
+    fontWeight: "bold",
     textAlign: "center",
     color: "white",
+    marginTop: 4,
   },
 });

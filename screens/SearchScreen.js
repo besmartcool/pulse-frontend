@@ -31,7 +31,7 @@ export default function SearchScreen({ navigation }) {
 
   // Récupération des associations aléatoires au lancement
   useEffect(() => {
-    fetch("http://10.0.1.57:3000/associations/all")
+    fetch("http://10.0.2.19:3000/associations/all")
       .then((response) => response.json())
       .then((data) => {
         setAssociations(data); // ON LES STOCKE DANS UN STATE
@@ -66,7 +66,7 @@ export default function SearchScreen({ navigation }) {
       queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
     // ON GÉNÉRE LA QUERY AVEC LES FILTRES VOULUS
 
-    fetch(`http://10.0.1.57:3000/associations/search${queryString}`)
+    fetch(`http://10.0.2.19:3000/associations/search${queryString}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
@@ -88,22 +88,25 @@ export default function SearchScreen({ navigation }) {
 
   // Gestion des états d'affichage de la div principale
   // Bouton sur la div principale
-  const handleSearch = () => {
+  const handleBackToSearch = () => {
     setTypeContent("search");
-    setResultResearch("default");
+  };
+
+  const handleBackToDefault = () => {
+    setTypeContent("default");
+    setResultResearch("default"); // Revient aux associations aléatoires
   };
 
   // Bouton sur la div secondaire
   const handleResearch = () => {
-    setTypeContent("default");
-    setResultResearch("search");
+    setTypeContent("result");
+    setResultResearch("result"); // On garde les résultats affichés
   };
 
   // Bouton pour afficher le résultat de la recherche
-const handleShowResult = () => {
-  setTypeContent("result");
-};
-
+  const handleShowResult = () => {
+    setTypeContent("result");
+  };
 
   // Gestion de la recherche filtrée après la mise à jour des filtres
   useEffect(() => {
@@ -147,50 +150,54 @@ const handleShowResult = () => {
   // Définition des différents contenus
   let content;
   if (typeContent === "default") {
-    // PAR DEFAUT
     content = (
       <View style={styles.fakeModal}>
         <View style={styles.research}>
+          {/* Header avec logo et bouton */}
           <View style={styles.topContent}>
             <Image style={styles.logo} source={require("../assets/Logo.png")} />
             <Pressable style={styles.addAsso}>
-              <Text style={styles.addAssoText}>
-                Enregistrer une association
-              </Text>
+              <Text style={styles.addAssoText}>+ Ajouter une association</Text>
             </Pressable>
           </View>
-          <Pressable style={styles.searchButton} onPress={handleSearch}>
+          {/* Bouton de recherche */}
+          <Pressable
+            style={styles.searchButton}
+            onPress={() => setTypeContent("search")}
+          >
+            <FontAwesome name="search" size={18} color="#FF6C02" />
             <Text style={styles.searchButtonText}>
               Rechercher une association
             </Text>
-            <FontAwesome
-              name="search"
-              size={16}
-              color="#bbbbbb"
-              style={styles.icon}
-            />
           </Pressable>
         </View>
       </View>
     );
-  } else if (typeContent === "search") {
-    // LORSQUE L'ON CLIC SUR RECHERCHER
+  }
+  if (typeContent === "search") {
     content = (
       <View style={styles.fakeModal}>
         <View style={styles.research}>
+          {/* Bouton Retour */}
+          <Pressable onPress={handleBackToDefault} style={styles.backButton}>
+            <FontAwesome name="arrow-left" size={24} color="#FF6C02" />
+          </Pressable>
+
+          {/* Filtres */}
           <View style={styles.allInputs}>
             <View style={styles.dropdown}>
               <CountryDropdown
                 title="Pays d'origine"
-                placeholder="Rechercher un pays..."
+                placeholder="Sélectionner un pays"
                 selectedCountry={originCountry}
                 onSelectCountry={setOriginCountry}
               />
             </View>
+
             <View style={styles.dropdown}>
               <CountryDropdown
                 title="Pays de destination"
-                placeholder="Rechercher un pays..."
+                placeholder="Sélectionner un pays"
                 selectedCountry={destinationCountry}
                 onSelectCountry={(country) => {
                   setDestinationCountry(country);
@@ -206,10 +213,11 @@ const handleShowResult = () => {
                 }}
               />
             </View>
+
             <View style={styles.dropdown}>
               <CityDropdown
                 title="Ville de destination"
-                placeholder="Rechercher une ville..."
+                placeholder="Sélectionner une ville"
                 selectedCity={destinationCity}
                 onSelectCity={(city) => {
                   setDestinationCity(city);
@@ -227,21 +235,17 @@ const handleShowResult = () => {
             </View>
           </View>
 
+          {/* Catégories */}
           <ScrollView
-            horizontal={true}
-            contentContainerStyle={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 10,
-            }}
+            horizontal
+            contentContainerStyle={styles.categoriesContainer}
             showsHorizontalScrollIndicator={false}
-            style={styles.categories}
           >
             {associationsCategories}
           </ScrollView>
 
+          {/* Critères supplémentaires */}
           <View style={styles.criterias}>
-            {/* CRTIERE A RECUPERER DU BACK OU DE QQPART AVEC UN .MAP */}
             <Pressable style={styles.criteria}>
               <Text style={styles.criteriaText}>Récemment créée</Text>
             </Pressable>
@@ -252,26 +256,49 @@ const handleShowResult = () => {
               <Text style={styles.criteriaText}>Statut</Text>
             </Pressable>
           </View>
+
+          {/* Bouton Valider */}
           <View style={styles.bottomContent}>
-          <Pressable style={styles.validateButton} onPress={handleShowResult}>
-            <FontAwesome name="angle-up" size={30} color="white" />
-          </Pressable>
+            <Pressable style={styles.validateButton} onPress={handleShowResult}>
+              <FontAwesome name="angle-up" size={30} color="white" />
+            </Pressable>
           </View>
         </View>
       </View>
     );
   } else if (typeContent === "result") {
-    content = (
-      <View style={styles.fakeModal}>
-        <View style={styles.research}>
-          <View styles={styles.toptopContent}>
-          <Pressable style={styles.validateButton} onPress={handleSearch}>
-            <FontAwesome name="angle-down" size={30} color="white" />
-          </Pressable>
+    if (!originCountry || !destinationCountry) {
+      setTypeContent("default"); // On revient au contenu par défaut
+    } else {
+      content = (
+        <View style={styles.fakeModal}>
+          <View style={styles.newResearch}>
+            <Pressable
+              onPress={handleBackToSearch}
+              style={styles.validateButton}
+            >
+              <FontAwesome name="angle-down" size={30} color="white" />
+            </Pressable>
+
+            <View style={styles.resultat}>
+              <>
+                <View>
+                  <Text style={styles.result}>
+                    {originCountry || "N"} {""}
+                  </Text>
+                </View>
+                <FontAwesome name="arrow-right" size={10} color="#bbbbbb" />
+                <View>
+                  <Text style={styles.result}>
+                    {""} {destinationCountry || "N"}
+                  </Text>
+                </View>
+              </>
+            </View>
           </View>
         </View>
-      </View>
-    );
+      );
+    }
   }
 
   // Détermination du contenu affiché
@@ -310,71 +337,69 @@ const styles = StyleSheet.create({
   // DIV DE RECHERCHE SANS CRITÈRES
   fakeModal: {
     width: "100%",
-    height: "auto",
     justifyContent: "center",
     alignItems: "center",
     borderBottomRightRadius: 36,
     borderBottomLeftRadius: 36,
-    borderWidth: 1,
-    borderColor: "#bbbbbb",
     backgroundColor: "white",
     paddingVertical: 20,
-
-    // Ombre
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.1,
     shadowRadius: 10,
-    elevation: 8,
+    elevation: 5,
   },
   topContent: {
-    // LOGO + BOUTON ENREGISTRER
     width: "100%",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-end",
-    marginBottom: 32,
+    marginBottom: 20,
   },
   logo: {
-    // LOGO
     width: 60,
     height: 60,
     resizeMode: "contain",
   },
   addAsso: {
-    // BOUTON ENREGISTRER
     backgroundColor: "#FF6C02",
-    borderRadius: 8,
-    paddingHorizontal: 13,
+    borderRadius: 20,
     paddingVertical: 10,
-    marginBottom: 7,
-
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
+    paddingHorizontal: 17,
+    shadowColor: "#FF6C02",
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 8,
+    shadowRadius: 5,
+    elevation: 4,
+    marginBottom: 5,
   },
   addAssoText: {
     color: "white",
     fontWeight: "600",
+    fontSize: 14,
   },
   searchButton: {
-    // BOUTON RECHERCHER
-    height: "64",
-    width: "100%",
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    borderWidth: 3,
+    justifyContent: "center",
+    backgroundColor: "white",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 25,
     borderColor: "#FF6C02",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginBottom: 20,
+    borderWidth: 1,
+    width: "100%",
+    shadowColor: "#FF6C02",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 4,
   },
   searchButtonText: {
-    paddingVertical: 10,
-    color: "#bbbbbb",
+    color: "#FF6C02",
+    fontWeight: "600",
+    fontSize: 16,
+    marginLeft: 10,
   },
   line: {
     // SÉPARATEUR
@@ -386,61 +411,69 @@ const styles = StyleSheet.create({
   },
   // DIV DE RECHERCHE AVEC CRITÈRES
   research: {
-    // CONTIENT TOUT
     width: "90%",
     height: "auto",
     marginTop: 30,
   },
+  backButton: {
+    alignSelf: "flex-start",
+    marginBottom: 10,
+  },
   allInputs: {
-    // CONTIENT LES INPUTS
-    height: "auto",
-    justifyContent: "flex-start",
+    width: "100%",
   },
   dropdown: {
-    // LES DROPDOWNS
     width: "auto",
     height: "80",
   },
-  criterias: {
-    // TOUS LES CRIT7RES
-    height: "auto",
-    width: "auto",
+  categoriesContainer: {
     flexDirection: "row",
-    justifyContent: "flex-start",
     alignItems: "center",
     gap: 10,
+    paddingVertical: 12,
+  },
+  criterias: {
+    flexDirection: "row",
+    alignItems: "center",
     flexWrap: "wrap",
-    marginVertical: 20,
+    gap: 10,
+    marginVertical: 8,
+    justifyContent: "flex-start",
   },
-  criteria: {
-    // UN CRITÈRE
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#FF6C02",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    alignSelf: "flex-start",
-  },
-  criteriaText: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "black",
-  },
-  validateButton: {
-    // BOUTON RECHERCHER AVEC FILTRES
-    height: 50,
-    width: 50,
-    justifyContent: "center", // Centre verticalement
-    alignItems: "center", // Centre horizontalement
-    backgroundColor: "#FF6C02",
-    borderRadius: 25, // Pour un bouton bien rond
 
-    // Ombre
+  criteria: {
+    borderRadius: 8,
+    borderWidth: 1.5,
+    borderColor: "#FF6C02",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: "#FFF5E6",
+    shadowColor: "#FF6C02",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+
+  criteriaText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#FF6C02",
+  },
+
+  validateButton: {
+    height: 55,
+    width: 55,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FF6C02",
+    borderRadius: 28,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.3,
-    shadowRadius: 10,
+    shadowRadius: 12,
     elevation: 8,
+    marginTop: 15,
   },
   // CONTENU ASSOCIATIONS
   allAssociations: {
@@ -455,7 +488,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "auto",
     overflow: "hidden",
-    marginTop: 10
+    marginTop: 10,
   },
   buttonUpContent: {
     width: "100%",
@@ -466,9 +499,32 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end",
     alignItems: "center",
-    height: 'auto'
+    height: "auto",
   },
-  toptopContent: {
-    backgroundColor: 'red',
-  }
+  newResearch: {
+    // CONTIENT TOUT
+    width: "90%",
+    height: "auto",
+    marginTop: 40,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  resultat: {
+    width: "70%",
+    height: "auto",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#bbbbbb",
+    padding: 12,
+    marginHorizontal: 5,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  result: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#FF6C02",
+  },
 });
