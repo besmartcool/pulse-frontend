@@ -15,6 +15,7 @@ import { BACKEND_ADDRESS} from "@env";
 
  
 export default function Signup() {
+ 
   const [signUpEmail, setSignUpEmail] = useState("");
   const [signUpPassword, setSignUpPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");

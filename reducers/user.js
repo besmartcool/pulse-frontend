@@ -18,8 +18,11 @@ export const userSlice = createSlice({
     addAssociation: (state, action) => {
       state.value.push(action.payload);
     },
+    addInfoProfile: (state, action) => {
+      state.value.push(action.payload);
+    },
   },
 });
 
-export const { signup, signin, addAssociation } = userSlice.actions;
+export const { signup, signin, addAssociation, addInfoProfile } = userSlice.actions;
 export default userSlice.reducer;

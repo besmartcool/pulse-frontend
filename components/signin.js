@@ -45,8 +45,8 @@ export default function Signin() {
       })
         .then((response) => response.json())
         .then((data) => {
+          console.log("data", data);
           if (data.result) {
-            console.log("data", data);
             dispatch(
               signin({
                 token: data.token,
@@ -69,7 +69,7 @@ export default function Signin() {
     }
   };
   const user = useSelector((state) => state.user.value);
-  console.log("user", user);
+  // console.log("user", user);
   return (
     <View style={styles.modalSignin}>
       <View style={styles.containerLogo}>
