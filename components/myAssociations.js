@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Image,
   ImageBackground,
@@ -15,14 +15,33 @@ import {
 import { useSelector } from "react-redux";
 import AssociationCard from "../components/associationCard";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { BACKEND_ADDRESS } from "@env";
 
 export default function MyAssociations({ handleTypeContent }) {
   const user = useSelector((state) => state.user.value);
+  const [associations, setAssociations] = useState([]);
 
-  const myAssociations = user.associations.map((data, i) => {
+  // Récupération des associations au chargement
+  useEffect(() => {
+      fetch(`${BACKEND_ADDRESS}/associations/getByIds`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify(user.associations),
+      })
+        .then((response) => response.json())
+        .then((data) => setAssociations(data.data))
+        .catch((error) =>
+          console.error("Erreur lors de la récupération :", error)
+        );
+    }, [user.associations]);
+
+  const myAssociations = associations.map((association, index) => {
     return (
       <View key={i} style={styles.favoriteContainer}>
-        <AssociationCard />
+        <AssociationCard key={index} association={association}/>
       </View>
     );
   });
@@ -39,7 +58,7 @@ export default function MyAssociations({ handleTypeContent }) {
         <View style = {styles.titalContainer}>
         <Text style={styles.title}>Mes associations</Text>
         </View>
-        <Pressable style={styles.containerbutton} onPress={() => handleTypeContent("form")}>
+        <Pressable style={styles.containerbutton} onPress={handleTypeContent}>
           <FontAwesome name="plus" size={45} color="grey" style={styles.icon} />
         </Pressable>
       </View>

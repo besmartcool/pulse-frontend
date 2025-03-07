@@ -8,8 +8,12 @@ export default function AssoScreen() {
 
   const [typeContent, setTypeContent] = useState("default");
 
-  const handleTypeContent = (type) => {
-    setTypeContent(type);
+  const handleBackToDefault = () => {
+    setTypeContent("default");
+  }
+
+  const handleTypeContent = () => {
+    setTypeContent("form");
   }
 
   let content;
@@ -17,7 +21,7 @@ export default function AssoScreen() {
   if (typeContent == "default") {
     content = <MyAssociations handleTypeContent={handleTypeContent} />;
   } else if (typeContent == "form") {
-    content = <NewAssociationForm />;
+    content = <NewAssociationForm handleBackToDefault={handleBackToDefault}/>;
   }
 
 

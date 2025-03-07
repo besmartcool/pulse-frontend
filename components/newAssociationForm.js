@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   StyleSheet,
   Text,
   ScrollView,
   TouchableOpacity,
   View,
+  Pressable,
 } from "react-native";
 import Input from "../components/input";
 import CountryDropdown from "../components/countryDropdown";
@@ -16,21 +17,24 @@ import DatePickerInput from "../components/dateTimePicker";
 import InternalDataSetDropdown from "../components/internalDataSetDropdown";
 import PhoneInput from "../components/phoneInput";
 import MessageModal from "../components/messageModal";
-import { BACKEND_ADDRESS} from "@env";
+import { BACKEND_ADDRESS } from "@env";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import {addAssociation} from "../reducers/user";
 
-export default function NewAssociationForm() {
+export default function NewAssociationForm({ handleBackToDefault }) {
 
-  //Etats pour les données de l'association
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [nationalities, setNationalities] = useState([]);
-  const [residenceCountry, setResidenceCountry] = useState("");
-  const [categories, setCategories] = useState([]);
-  const [phone, setPhone] = useState([]);
-  const [email, setEmail] = useState("");
-  const [streetNumberAndLabel, setStreetNumberAndLabel] = useState("");
-  const [zipcode, setZipcode] = useState(null);
-  const [city, setCity] = useState("");
+    
+    //Etats pour les données de l'association
+    const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
+    const [nationalities, setNationalities] = useState([]);
+    const [residenceCountry, setResidenceCountry] = useState("");
+    const [categories, setCategories] = useState([]);
+    const [phone, setPhone] = useState([]);
+    const [email, setEmail] = useState("");
+    const [streetNumberAndLabel, setStreetNumberAndLabel] = useState("");
+    const [zipcode, setZipcode] = useState(null);
+    const [city, setCity] = useState("");
   const [department, setDepartment] = useState("");
   const [country, setCountry] = useState("");
   const [languages, setLanguages] = useState([]);
@@ -47,11 +51,14 @@ export default function NewAssociationForm() {
   // Récupération infos utilisateur
   const user = useSelector((state) => state.user.value);
 
+  // Initialisation du dispatch
+  const dispatch = useDispatch();
+
   // Etats et fonction pour dynamisation du formulaire d'enregistrement d'une association
 
   // Champs d'identification de l'association
   const categoriesDataSet = categoriesList.map((category, i) => ({
-    id: `${i}`,
+      id: `${i}`,
     title: category,
   }));
 
@@ -165,7 +172,7 @@ export default function NewAssociationForm() {
     }
   };
 
-    // Champs informations légales
+  // Champs informations légales
   const selectCreationDate = (date) => {
     if (date) {
       setCreationDate(date);
@@ -178,7 +185,7 @@ export default function NewAssociationForm() {
     }
   };
 
-    // Champs autres informations
+  // Champs autres informations
   const selectInterventionZone = (country) => {
     if (country) {
       setInterventionZone((interventionZone) => [...interventionZone, country]);
@@ -255,7 +262,7 @@ export default function NewAssociationForm() {
   const [message, setMessage] = useState("");
   const [isSuccess, setIsSuccess] = useState(null);
 
-    // Envoi des données de l'association au backend et affichage de la modale
+  // Envoi des données de l'association au backend et affichage de la modale
   const handleRegistrationSubmit = () => {
     fetch(`${BACKEND_ADDRESS}/associations/creation`, {
       method: "POST",
@@ -270,6 +277,8 @@ export default function NewAssociationForm() {
         if (data.result) {
           setMessage("✅ Association créée avec succès !");
           setIsSuccess(true);
+          dispatch(addAssociation(data.newAssociation));
+          handleBackToDefault();
         } else {
           setMessage("❌ Erreur lors de la création de l'association.");
           setIsSuccess(false);
@@ -287,9 +296,12 @@ export default function NewAssociationForm() {
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.mainHeaderContainer}>
-        <Text style={styles.mainHeader}>Enregistrer votre association</Text>
-        <View style={styles.bottomBorder} />
+        <Pressable onPress={handleBackToDefault} style={styles.backButton}>
+          <FontAwesome name="arrow-left" size={24} color="#FF6C02" />
+        </Pressable>
+          <Text style={styles.mainHeader}>Enregistrer votre association</Text>
       </View>
+      <View style={styles.bottomBorder} />
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
@@ -493,24 +505,35 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 50,
     alignItems: "center",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  bottomBorder: {
-    //Trait en bas du titre
+  backButton: {
+    borderRadius: 50,
+    backgroundColor: "white",
+    shadowColor: "#FF6C02",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
+    width: "auto",
+    height: "auto",
     position: "absolute",
-    bottom: 0,
-    width: "90%",
-    height: 2, // Épaisseur de la bordure
-    backgroundColor: "black",
+    left: 25,
   },
   mainHeader: {
     fontSize: 20,
     fontWeight: "bold",
-    margin: 10,
-    position: "absolute",
-    top: 0,
-    width: "100%",
-    height: 50,
     textAlign: "center",
+  },
+  bottomBorder: {
+    //Trait en bas du titre
+    bottom: 0,
+    width: "90%",
+    height: 2, // Épaisseur de la bordure
+    backgroundColor: "black",
+    alignSelf: "center",
   },
   firstSubSectionContainer: {
     width: "100%",
@@ -585,4 +608,3 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 });
-
