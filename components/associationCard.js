@@ -6,12 +6,13 @@ import CategorieRound from "../components/categorieRound";
 const AssociationCard = ({ association }) => {
   const [countryCode, setCountryCode] = useState("");
 
+  // FONCTION QUI NOUS PERMET DE RETROUVER LE CODE DU PAYS
   const getCountryCode = (countryName) => {
     return fetch(`https://restcountries.com/v3.1/name/${countryName}`)
       .then((response) => response.json())
       .then((data) => {
         if (data && data.length > 0) {
-          return data[0].cca2; // Récupère le code ISO alpha-2
+          return data[0].cca2;
         }
         return null;
       })
@@ -21,6 +22,7 @@ const AssociationCard = ({ association }) => {
       });
   };
 
+  // PERMET DE RÉCUPÉRER LES DRAPEAUX POUR CHAQUE ASSOCIATION
   useEffect(() => {
     if (association.nationality) {
       getCountryCode(association.nationality).then((code) => {
@@ -35,6 +37,7 @@ const AssociationCard = ({ association }) => {
     <View style={styles.associationCard}>
       <View style={styles.topAssoContent}>
         <View style={styles.textTitle}>
+          {/* AFFICHAGE DU DRAPEAU SI LA NATIONALITÉ DE L'ASSO EXISTE */}
           {countryCode ? (
             <Image
               source={{
@@ -46,12 +49,12 @@ const AssociationCard = ({ association }) => {
             <Text></Text>
           )}
           <Text style={styles.assoName}>
+            {/* TRONCAGE DE LA DESCRIPTION DE L4ASSO */}
             {association.name.length > 30
               ? association.name.slice(0, 30) + "..."
               : association.name}
           </Text>
 
-          {/* Affichage du drapeau s'il est disponible */}
         </View>
         <View style={styles.textCategorie}>
           <CategorieRound categorie={association.categorie} />
