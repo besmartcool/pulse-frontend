@@ -148,6 +148,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
     flexDirection: "row",
     alignItems: "center",
+    marginRight: 4
   },
   description: {
     fontSize: 14,

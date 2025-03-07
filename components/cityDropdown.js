@@ -80,12 +80,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#bbbbbb",
     borderRadius: 8,
-    backgroundColor: "white",
+    backgroundColor: 'white'
   },
   input: {
     padding: 8,
     fontSize: 14,
-    color: "#2c3e50",
+    color: "gray",
   },
   suggestionsList: {
     backgroundColor: "white",

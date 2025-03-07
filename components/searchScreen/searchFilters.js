@@ -73,10 +73,10 @@ export default function SearchFilters({
         {criteriasView && (
           <View style={styles.criteriasContainer}>
             <Pressable style={styles.criteria}>
-              <Text style={styles.criteriaText}>Récemment créée</Text>
+              <Text style={styles.criteriaText}>A-Z</Text>
             </Pressable>
             <Pressable style={styles.criteria}>
-              <Text style={styles.criteriaText}>Taille</Text>
+              <Text style={styles.criteriaText}>Date de création</Text>
             </Pressable>
             <Pressable style={styles.criteria}>
               <Text style={styles.criteriaText}>Statut</Text>

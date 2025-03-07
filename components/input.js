@@ -10,6 +10,7 @@ const Input = ({ title, placeholder, value, onChangeText, secureTextEntry, keybo
         <TextInput
           style={styles.inputText}
           placeholder={placeholder}
+          placeholderTextColor={'gray'}
           value={value}
           onChangeText={onChangeText}
           secureTextEntry={secureTextEntry}
@@ -41,11 +42,12 @@ const styles = StyleSheet.create({
     borderColor: "#bbbbbb",
     borderRadius: 8,
     paddingHorizontal: 10,
+    backgroundColor: 'white',
   },
   inputText: {
     flex: 1,
     paddingVertical: 10,
-    fontSize: 12,
+    fontSize: 14,
   },
   icon: {
     marginLeft: 8,
