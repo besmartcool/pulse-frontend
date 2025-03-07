@@ -9,6 +9,9 @@ import categoriesList from "../assets/categoriesList";
 import { BACKEND_ADDRESS} from "@env";
 
 export default function SearchScreen({ navigation }) {
+
+  console.log("test backend-address", BACKEND_ADDRESS);
+
   // États principaux
   const [typeContent, setTypeContent] = useState("default");
   const [resultResearch, setResultResearch] = useState("default");
