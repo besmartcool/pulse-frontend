@@ -11,6 +11,8 @@ import {
   View,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { BACKEND_ADDRESS} from "@env";
+
 
 export default function Signup() {
   const [signUpEmail, setSignUpEmail] = useState("");
@@ -35,7 +37,7 @@ export default function Signup() {
     }
 
     if (EMAIL_REGEX.test(signUpEmail)) {
-      fetch("http://10.0.1.90:3000/users/signup", {
+      fetch(`${BACKEND_ADDRESS}/users/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

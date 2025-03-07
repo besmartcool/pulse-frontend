@@ -17,8 +17,7 @@ import DatePickerInput from "../components/dateTimePicker";
 import InternalDataSetDropdown from "../components/internalDataSetDropdown";
 import PhoneInput from "../components/phoneInput";
 import MessageModal from "../components/messageModal";
-
-const BACKEND_ADDRESS = "http://10.0.1.62:3000";
+import { BACKEND_ADDRESS} from "@env";
 
 export default function AssoScreen() {
 

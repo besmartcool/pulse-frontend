@@ -6,6 +6,7 @@ import SearchResult from "../components/searchResult";
 import AssociationCard from "../components/associationCard";
 import CategorieRound from "../components/categorieRound";
 import categoriesList from "../assets/categoriesList";
+import { BACKEND_ADDRESS} from "@env";
 
 export default function SearchScreen({ navigation }) {
   // États principaux
@@ -25,7 +26,7 @@ export default function SearchScreen({ navigation }) {
 
   // Récupération des associations au chargement
   useEffect(() => {
-    fetch("http://10.0.2.19:3000/associations/all")
+    fetch(`${BACKEND_ADDRESS}/associations/all`)
       .then((response) => response.json())
       .then((data) => setAssociations(data))
       .catch((error) =>
@@ -47,7 +48,7 @@ export default function SearchScreen({ navigation }) {
     const queryString =
       queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
 
-    fetch(`http://10.0.2.19:3000/associations/search${queryString}`)
+    fetch(`${BACKEND_ADDRESS}/associations/search${queryString}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
