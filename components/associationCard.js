@@ -4,8 +4,6 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import CategorieRound from "../components/categorieRound";
 
 const AssociationCard = ({ association }) => {
-
-    console.log("test chargement composant");
   const [countryCode, setCountryCode] = useState("");
 
   const getCountryCode = (countryName) => {

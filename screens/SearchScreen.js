@@ -6,7 +6,7 @@ import SearchResult from "../components/searchResult";
 import AssociationCard from "../components/associationCard";
 import CategorieRound from "../components/categorieRound";
 import categoriesList from "../assets/categoriesList";
-import { BACKEND_ADDRESS} from "@env";
+import { BACKEND_ADDRESS } from "@env";
 
 export default function SearchScreen({ navigation }) {
 
@@ -29,9 +29,9 @@ export default function SearchScreen({ navigation }) {
 
   // Récupération des associations au chargement
   useEffect(() => {
-    fetch(`${BACKEND_ADDRESS}/associations/all`)
+    fetch(`${BACKEND_ADDRESS}/associations/randomall`)
       .then((response) => response.json())
-      .then((data) => setAssociations(data))
+      .then((data) => setAssociations(data.data))
       .catch((error) =>
         console.error("Erreur lors de la récupération :", error)
       );
