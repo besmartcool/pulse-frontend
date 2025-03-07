@@ -10,6 +10,7 @@ import FavoriteScreen from "./screens/FavoriteScreen";
 import AssoScreen from "./screens/AssoScreen";
 import ChatScreen from "./screens/ChatScreen";
 import ProfileScreen from "./screens/ProfileScreen";
+import DescriptionScreen from "./screens/DescriptionScreen";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import user from './reducers/user';
@@ -20,6 +21,15 @@ const Tab = createBottomTabNavigator();
 const store = configureStore({
   reducer: { user },
 });
+
+const SearchStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="SearchHome" component={SearchScreen} />
+      <Stack.Screen name="Description" component={DescriptionScreen} />
+    </Stack.Navigator>
+  );
+};
 
 const TabNavigator = () => {
   return (
@@ -47,7 +57,7 @@ const TabNavigator = () => {
         headerShown: false,
       })}
     >
-      <Tab.Screen name="Search" component={SearchScreen} />
+      <Tab.Screen name="Search" component={SearchStack} />
       <Tab.Screen name="Favorite" component={FavoriteScreen} />
       <Tab.Screen name="Asso" component={AssoScreen} />
       <Tab.Screen name="Chat" component={ChatScreen} />

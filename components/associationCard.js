@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useNavigation } from "@react-navigation/native";
 import { View, Text, StyleSheet, Image, Pressable } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import CategorieRound from "../components/categorieRound";
 
 const AssociationCard = ({ association }) => {
   const [countryCode, setCountryCode] = useState("");
+  const navigation = useNavigation();
 
   // FONCTION QUI NOUS PERMET DE RETROUVER LE CODE DU PAYS
   const getCountryCode = (countryName) => {
@@ -35,6 +37,7 @@ const AssociationCard = ({ association }) => {
 
   return (
     <View style={styles.associationCard}>
+      <Pressable onPress={() => navigation.navigate("Description", { association })}>
       <View style={styles.topAssoContent}>
         <View style={styles.textTitle}>
           {/* AFFICHAGE DU DRAPEAU SI LA NATIONALITÉ DE L'ASSO EXISTE */}
@@ -49,7 +52,7 @@ const AssociationCard = ({ association }) => {
             <Text></Text>
           )}
           <Text style={styles.assoName}>
-            {/* TRONCAGE DE LA DESCRIPTION DE L4ASSO */}
+            {/* TRONCAGE DU NOM DE L'ASSO */}
             {association.name.length > 30
               ? association.name.slice(0, 30) + "..."
               : association.name}
@@ -60,20 +63,19 @@ const AssociationCard = ({ association }) => {
           <CategorieRound categorie={association.categorie} />
         </View>
       </View>
-      <Image
-        style={styles.image}
-        source={require("../assets/placeholderImage.png")}
-      />
+
       <Text style={styles.address}>
-        <FontAwesome name="map-pin" size={14} color="#000000" />{" "}
-        {association.address.street}, {association.address.city}{" "}
+        <FontAwesome name="map-pin" size={14} color="#000000" />{"  "}
+        {association.address.city.toUpperCase()}{" "}
         {association.address.zipCode}, {association.address.country}
       </Text>
       <Text style={styles.description}>
+        {/* TRONCAGE DE LA DESCRIPTION DE L'ASSO */}
         {association.description.length > 150
           ? association.description.slice(0, 150) + "..."
           : association.description}
       </Text>
+      </Pressable>
       <View style={styles.bottomAssoContent}>
         <Pressable>
           <FontAwesome

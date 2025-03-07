@@ -1,8 +1,8 @@
 import React from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import CityDropdown from "./cityDropdown";
-import CountryDropdown from "./countryDropdown";
+import CityDropdown from "../cityDropdown";
+import CountryDropdown from "../countryDropdown";
 
 export default function SearchFilters({
   handleBackToDefault,

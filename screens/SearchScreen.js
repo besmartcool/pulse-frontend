@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View, Text, Pressable } from "react-native";
-import SearchHome from "../components/searchHome";
-import SearchFilters from "../components/searchFilters";
-import SearchResult from "../components/searchResult";
+import SearchHome from "../components/searchScreen/searchHome";
+import SearchFilters from "../components/searchScreen/searchFilters";
+import SearchResult from "../components/searchScreen/searchResult";
 import AssociationCard from "../components/associationCard";
 import CategorieRound from "../components/categorieRound";
 import categoriesList from "../assets/categoriesList";
 import { BACKEND_ADDRESS } from "@env";
 
 export default function SearchScreen({ navigation }) {
-
-  console.log("test backend-address", BACKEND_ADDRESS);
 
   // États principaux
   const [typeContent, setTypeContent] = useState("default");
@@ -44,8 +42,11 @@ export default function SearchScreen({ navigation }) {
     category = selectedCategory
   ) => {
     let queryParams = [];
+
     if (country) queryParams.push(`country=${encodeURIComponent(country)}`);
+
     if (city) queryParams.push(`city=${encodeURIComponent(city)}`);
+
     if (category) queryParams.push(`category=${encodeURIComponent(category)}`);
 
     const queryString =
