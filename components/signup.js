@@ -12,7 +12,6 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { BACKEND_ADDRESS } from "../assets/url";
-import { BACKEND_ADDRESS } from "../assets/url";
 
 export default function Signup() {
 
