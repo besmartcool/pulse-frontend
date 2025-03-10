@@ -8,15 +8,15 @@ import {
   View,
   Pressable,
 } from "react-native";
-import Input from "../components/input";
-import CountryDropdown from "../components/countryDropdown";
-import AddressDropdown from "../components/addressDropdown";
+import Input from "./input";
+import CountryDropdown from "./countryDropdown";
+import AddressDropdown from "./addressDropdown";
 import categoriesList from "../assets/categoriesList";
 import languagesListFrench from "../assets/languagesList";
-import DatePickerInput from "../components/dateTimePicker";
-import InternalDataSetDropdown from "../components/internalDataSetDropdown";
-import PhoneInput from "../components/phoneInput";
-import MessageModal from "../components/messageModal";
+import DatePickerInput from "./dateTimePicker";
+import InternalDataSetDropdown from "./internalDataSetDropdown";
+import PhoneInput from "./phoneInput";
+import MessageModal from "./messageModal";
 import { BACKEND_ADDRESS } from "@env";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {addAssociation} from "../reducers/user";

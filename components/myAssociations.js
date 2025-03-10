@@ -13,7 +13,7 @@ import {
 } from "react-native";
 
 import { useSelector } from "react-redux";
-import AssociationCard from "../components/associationCard";
+import AssociationCard from "./associationCard";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { BACKEND_ADDRESS } from "@env";
 

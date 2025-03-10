@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Image } from "expo-image";
 import { useDispatch, useSelector } from "react-redux";
 import { signup } from "../reducers/user";
-import Input from "../components/input";
+import Input from "./input";
 import {
   StyleSheet,
   Text,

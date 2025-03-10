@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { View, Text, StyleSheet, Image, Pressable } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import CategorieRound from "../components/categorieRound";
+import CategorieRound from "./categorieRound";
 
 const AssociationCard = ({ association }) => {
   const [countryCode, setCountryCode] = useState("");
