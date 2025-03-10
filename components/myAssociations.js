@@ -15,26 +15,24 @@ import {
 import { useSelector } from "react-redux";
 import AssociationCard from "./associationCard";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { BACKEND_ADDRESS } from "../assets/url";
 
 export default function MyAssociations({ handleTypeContent }) {
-  const BACKEND_ADDRESS = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
 
   const user = useSelector((state) => state.user.value);
   const [associations, setAssociations] = useState([]);
 
   // Récupération des associations au chargement
   useEffect(() => {
-      fetch(`${BACKEND_ADDRESS}/associations/getByIds`, {
-        method: "POST",
+      fetch(`${BACKEND_ADDRESS}/associations/getAssociationsByIds/${user.token}`, {
+        method: "GET",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${user.token}`,
         },
-        body: JSON.stringify(user.associations),
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log(data)
+          console.log("réponse backend", data)
           setAssociations(data.data)})
         .catch((error) =>
           console.error("Erreur lors de la récupération :", error)
@@ -43,7 +41,7 @@ export default function MyAssociations({ handleTypeContent }) {
 
   const myAssociations = associations.map((association, index) => {
     return (
-      <View key={i} style={styles.favoriteContainer}>
+      <View key={index} style={styles.favoriteContainer}>
         <AssociationCard key={index} association={association}/>
       </View>
     );
