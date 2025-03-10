@@ -6,10 +6,10 @@ import SearchResult from "../components/searchScreen/searchResult";
 import AssociationCard from "../components/associationCard";
 import CategorieRound from "../components/categorieRound";
 import categoriesList from "../assets/categoriesList";
-import { BACKEND_ADDRESS } from "@env";
 
 export default function SearchScreen({ navigation }) {
-// const BACKEND_ADDRESS = process.env.BACKEND_ADDRESS
+  const BACKEND_ADDRESS = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
+
   // États principaux
   const [typeContent, setTypeContent] = useState("default");
   const [resultResearch, setResultResearch] = useState("default");

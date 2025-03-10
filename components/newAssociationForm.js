@@ -17,13 +17,12 @@ import DatePickerInput from "./dateTimePicker";
 import InternalDataSetDropdown from "./internalDataSetDropdown";
 import PhoneInput from "./phoneInput";
 import MessageModal from "./messageModal";
-import { BACKEND_ADDRESS } from "@env";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {addAssociation} from "../reducers/user";
 
 export default function NewAssociationForm({ handleBackToDefault }) {
+  const BACKEND_ADDRESS = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
 
-    
     //Etats pour les données de l'association
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");

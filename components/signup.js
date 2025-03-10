@@ -11,11 +11,10 @@ import {
   View,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { BACKEND_ADDRESS} from "@env";
 
- 
 export default function Signup() {
- 
+  const BACKEND_ADDRESS = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
+
   const [signUpEmail, setSignUpEmail] = useState("");
   const [signUpPassword, setSignUpPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
