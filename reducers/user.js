@@ -16,7 +16,7 @@ export const userSlice = createSlice({
       state.value.token = action.payload.token;
     },
     addAssociation: (state, action) => {
-      state.value.push(action.payload);
+      state.value.associations.push(action.payload);
     },
     addInfoProfile: (state, action) => {
       state.value.push(action.payload);

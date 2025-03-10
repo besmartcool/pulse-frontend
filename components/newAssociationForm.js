@@ -262,6 +262,15 @@ export default function NewAssociationForm({ handleBackToDefault }) {
   const [message, setMessage] = useState("");
   const [isSuccess, setIsSuccess] = useState(null);
 
+  const handleClose = () => {
+    if (isSuccess) {
+      setModalVisible(false);
+      handleBackToDefault();
+    } else {
+      setModalVisible(false);
+    }
+  }
+
   // Envoi des données de l'association au backend et affichage de la modale
   const handleRegistrationSubmit = () => {
     fetch(`${BACKEND_ADDRESS}/associations/creation`, {
@@ -275,12 +284,12 @@ export default function NewAssociationForm({ handleBackToDefault }) {
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
+          console.log("réponse backend", data);
           setMessage("✅ Association créée avec succès !");
           setIsSuccess(true);
           dispatch(addAssociation(data.newAssociation));
-          handleBackToDefault();
         } else {
-          setMessage("❌ Erreur lors de la création de l'association.");
+          setMessage("❌ Une association du même nom existe déjà.");
           setIsSuccess(false);
         }
         setModalVisible(true); // Afficher la modale
@@ -292,6 +301,10 @@ export default function NewAssociationForm({ handleBackToDefault }) {
         setModalVisible(true);
       });
   };
+
+  useEffect(() => {
+    console.log("user.associations", user.associations);
+  }, [user.associations]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -485,7 +498,7 @@ export default function NewAssociationForm({ handleBackToDefault }) {
         visible={modalVisible}
         message={message}
         isSuccess={isSuccess}
-        onClose={() => setModalVisible(false)}
+        onClose={() => handleClose()}
       />
     </View>
   );

@@ -32,7 +32,9 @@ export default function MyAssociations({ handleTypeContent }) {
         body: JSON.stringify(user.associations),
       })
         .then((response) => response.json())
-        .then((data) => setAssociations(data.data))
+        .then((data) => {
+          console.log(data)
+          setAssociations(data.data)})
         .catch((error) =>
           console.error("Erreur lors de la récupération :", error)
         );
