@@ -6,7 +6,6 @@ import SearchResult from "../components/searchScreen/searchResult";
 import AssociationCard from "../components/associationCard";
 import CategorieRound from "../components/categorieRound";
 import categoriesList from "../assets/categoriesList";
-import { useSelector } from "react-redux";
 
 import { BACKEND_ADDRESS } from "../assets/url";
 
@@ -22,17 +21,11 @@ export default function SearchScreen({ navigation }) {
   const [destinationCity, setDestinationCity] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [showCriterias, setShowCriterias] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
 
   // États pour stocker les associations
   const [associations, setAssociations] = useState([]);
   const [filteredAssociations, setFilteredAssociations] = useState([]);
-
-  const favorites = useSelector((state) => state.user.value.favorites);
-
-  useEffect(() => {
-    console.log("Favorites updated:", favorites);
-  }, [favorites]);
-
 
   // Récupération des associations au chargement
   useEffect(() => {
@@ -115,6 +108,10 @@ export default function SearchScreen({ navigation }) {
     setShowCriterias(!showCriterias);
   };
 
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
+  };
+
   const handleShowResult = () => {
     setTypeContent("result");
   };
@@ -147,6 +144,7 @@ export default function SearchScreen({ navigation }) {
             setDestinationCity={setDestinationCity}
             associationsCategories={associationsCategories}
             criteriasView={showCriterias}
+            filtersView={showFilters}
             toggleCriterias={toggleCriterias}
             handleShowResult={handleShowResult}
           />

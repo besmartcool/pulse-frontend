@@ -111,6 +111,8 @@ const styles = StyleSheet.create({
     height: 26,
     marginRight: 10,
     borderRadius: 13,
+    borderWidth: 1,
+    borderColor: "#bbbbbb"
   },
   assoName: {
     fontSize: 20,

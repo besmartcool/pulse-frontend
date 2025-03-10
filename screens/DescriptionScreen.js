@@ -192,6 +192,28 @@ export default function DescriptionScreen({ route }) {
                   : "Non renseignée"}
               </Text>
             </View>
+            <Text style={styles.title}>Contact</Text>
+            <View style={styles.legalInfos}>
+              <Text>Téléphone : </Text>
+              <Text style={styles.bold}>{association.phone ? association.phone : "Non renseigné"}</Text>
+            </View>
+            <View style={styles.legalInfos}>
+              <Text>E-mail : </Text>
+              <Text style={styles.bold}>{association.email == "" ? association.email : "Non renseignée"}</Text>
+            </View>
+            <Text style={styles.title}>Réseaux sociaux</Text>
+            <View style={styles.legalInfos}>
+              <Text>Réseau social 1 : </Text>
+              <Text style={styles.bold}>{association.email == "" ? association.email : "Non renseigné"}</Text>
+            </View>
+            <View style={styles.legalInfos}>
+              <Text>Réseau social 2 : </Text>
+              <Text style={styles.bold}>{association.email == "" ? association.email : "Non renseigné"}</Text>
+            </View>
+            <View style={styles.legalInfos}>
+              <Text>Réseau social 3 : </Text>
+              <Text style={styles.bold}>{association.email == "" ? association.email : "Non renseigné"}</Text>
+            </View>
             <Text style={styles.title}>Membres</Text>
             {association.members.length > 0 ? (
               <>
@@ -377,12 +399,14 @@ const styles = StyleSheet.create({
     color: "#FF6C02",
     fontWeight: "bold",
     marginTop: 5,
-    fontStyle: "italic"
+    textDecorationLine: "underline"
   },
   drapeau: {
     width: 26,
     height: 26,
     borderRadius: 13,
+    borderWidth: 1,
+    borderColor: "#bbbbbb"
   },
   legalInfos: {
     flexDirection: "row",
