@@ -24,10 +24,10 @@ export default function Signup() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
 console.log(BACKEND_ADDRESS)
-  // Convertir en minuscule le text de l'input email
-  const handleChangeText = (text) => {
-    setSignUpEmail(text.toLowerCase());
-  };
+  // // Convertir en minuscule le text de l'input email
+  // const handleChangeText = (text) => {
+  //   setSignUpEmail(text);
+  // };
 
   const handleSignUp = () => {
     if (!signUpPassword) {
@@ -81,7 +81,7 @@ console.log(BACKEND_ADDRESS)
         autoCapitalize="none"
         placeholder="Email"
         value={signUpEmail}
-        onChangeText={handleChangeText}
+        onChangeText={(value) => setSignUpEmail(value)}
         secureTextEntry={false}
         icon="pencil"
       />

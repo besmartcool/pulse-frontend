@@ -29,10 +29,14 @@ export default function ProfileScreen({ navigation }) {
   const [nationality, setNationality] = useState("");
   const [residenceCountry, setResidenceCountry] = useState("");
   const [destinationCountry, setDestinationCountry] = useState("");
+  const [infos, setInfos] = useState();
   const user = useSelector((state) => state.user.value);
 
-  // const BACKEND_ADDRESS = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
+  const [message, setMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
+  // const BACKEND_ADDRESS = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
+console.log(user)
   const handleChangeNationality = (text, index) => {
     const newInputs = [...nationality];
     newInputs[index] = text;
@@ -47,6 +51,23 @@ export default function ProfileScreen({ navigation }) {
     const newInputs = inputs.filter((_, i) => i !== index);
     setInputs(newInputs.length ? newInputs : [""]); // S'assure qu'il y a toujours au moins un input
   };
+
+  fetch(`${BACKEND_ADDRESS}/users/getInfos`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${user.token}`,
+    },
+    body: JSON.stringify({
+      token: user.token,
+    }),
+  }).then((response) => response.json())
+  .then((data) => {
+    setInfos({...data})
+    console.log(infos)
+  });
+
+
 
   const handleChangeDestination = (text, index) => {
     const newInputs = [...destinationCountry];
@@ -64,10 +85,10 @@ export default function ProfileScreen({ navigation }) {
   };
   const handleRegistrationSubmit = () => {
   fetch(`${BACKEND_ADDRESS}/users`, {
-          method: "POST",
+          method: "PUT",
           headers: { "Content-Type": "application/json" },
-          Authorization: `Bearer ${user.token}`,
           body: JSON.stringify({
+            token: user.token,
             lastname: lastname,
             firstname: firstname,
             username: username,
@@ -78,9 +99,9 @@ export default function ProfileScreen({ navigation }) {
         })
           .then((response) => response.json())
           .then((data) => {
-            console.log(data)
+            console.log("data1", data)
             if (data.result) {
-              console.log(data.result)
+              console.log("data2", data.result)
               dispatch(
                 addInfoProfile({
                   lastname: data.lastname,
@@ -91,9 +112,11 @@ export default function ProfileScreen({ navigation }) {
                   destinationCountry: data.destinationCountry,
                 })
               );
-              setErrorMessage("");
+              setMessage("validated")
+              setLastname();
+              
             } else {
-              setErrorMessage(data.error);
+              setErrorMessage("error");
             }
           });
         }
@@ -121,7 +144,7 @@ export default function ProfileScreen({ navigation }) {
             <Text style={styles.titleInput}>NOM</Text>
             <Input
               style={styles.inputLastname}
-              placeholder="Nom..."
+              placeholder={infos.data.lastname ? infos.data.lastname : "Nom..."}
               value={lastname}
               onChangeText={(value) => setLastname(value)}
               secureTextEntry={false}
@@ -130,7 +153,7 @@ export default function ProfileScreen({ navigation }) {
             <Text style={styles.titleInput}>PRENOM</Text>
             <Input
               style={styles.inputFirstname}
-              placeholder="Prénom..."
+              placeholder={user.firstname ? user.firstname : "Prénom..."}
               value={firstname}
               onChangeText={(value) => setFirstname(value)}
               secureTextEntry={false}
@@ -139,7 +162,7 @@ export default function ProfileScreen({ navigation }) {
             <Text style={styles.titleInput}>PSEUDO</Text>
             <Input
               style={styles.inputUsername}
-              placeholder="Pseudo..."
+              placeholder={user.username ? user.username : "Pseudo..."}
               value={username}
               onChangeText={(value) => setUsername(value)}
               secureTextEntry={false}
@@ -148,7 +171,7 @@ export default function ProfileScreen({ navigation }) {
             <Text style={styles.titleInput}>EMAIL</Text>
             <Input
               style={styles.inputEmail}
-              placeholder="Email..."
+              placeholder={user.email}
               value={email}
               onChangeText={(value) => setEmail(value)}
               secureTextEntry={false}
@@ -184,7 +207,7 @@ export default function ProfileScreen({ navigation }) {
                   }}
                   value={nationality}
                   onChangeText={(text) => handleChangeNationality(text, index)}
-                  placeholder={`Nationalité ${index + 1}`}
+                  placeholder={user.nationality ? user.nationality : `Nationality ${index + 1}`}
                 />
                 {value === "" && inputs.length > 1 && (
                   <TouchableOpacity
@@ -211,10 +234,10 @@ export default function ProfileScreen({ navigation }) {
             <Text style={styles.titleInput}>PAYS DE RESIDENCE</Text>
             <Input
               style={styles.inputResidenceCountry}
-              placeholder="..."
+              placeholder= {user.residenceCountry ? user.residenceCountry : "..."}
               value={residenceCountry}
               onChangeText={(value) => setResidenceCountry(value)}
-              secureTextEntry={true}
+              secureTextEntry={false}
               icon="pencil"
             />
             <Text style={styles.titleInput}>PAYS DE DESTINATION</Text>
@@ -235,7 +258,7 @@ export default function ProfileScreen({ navigation }) {
                   }}
                   value={destinationCountry}
                   onChangeText={(text) => handleChangeDestination(text, index)}
-                  placeholder={`Destination ${index + 1}`}
+                  placeholder={user.destinationCountry ? user.destinationCountry : `Destination ${index + 1}`}
                 />
                 {value === "" && inputs2.length > 1 && (
                   <TouchableOpacity
@@ -266,6 +289,8 @@ export default function ProfileScreen({ navigation }) {
         >
           <Text style={styles.textButton}>Envoyer les modifications</Text>
         </TouchableOpacity>
+        {message && <Text style={styles.message}>{message}</Text>}
+        {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
           </View>
         </ScrollView>
       </View>

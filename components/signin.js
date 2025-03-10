@@ -23,9 +23,9 @@ export default function Signin() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
-  const handleChangeText = (text) => {
-    setSignInEmail(text.toLowerCase()); // Convertir en minuscule
-  };
+  // const handleChangeText = (text) => {
+  //   setSignInEmail(text); // Convertir en minuscule
+  // };
 
   const handleSignIn = () => {
     if (!signInPassword) {
@@ -84,7 +84,7 @@ export default function Signin() {
         autoCapitalize="none"
         placeholder="Email"
         value={signInEmail}
-        onChangeText={handleChangeText}
+        onChangeText={(value) => setSignInEmail(value)}
         secureTextEntry={false}
         icon="pencil"
       />
