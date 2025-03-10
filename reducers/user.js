@@ -23,7 +23,7 @@ export const userSlice = createSlice({
       if (index === -1) {
         state.value.favorites.push(action.payload);
       } else {
-        state.value.favorites.splice(index, 1);
+        state.value.favorites = state.value.favorites.filter(fav => fav.id !== action.payload.id);
       }
     },
     addInfoProfile: (state, action) => {

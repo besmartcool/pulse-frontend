@@ -21,7 +21,7 @@ export default function DescriptionScreen({ route }) {
   const dispatch = useDispatch();
 
   const favorites = useSelector((state) => state.user.value.favorites);
-  const isLiked = favorites.some((fav) => fav.id === association.id);
+  const isLiked = favorites.some((fav) => fav.name === association.name);
 
   const [countryCode, setCountryCode] = useState("");
 
@@ -36,7 +36,9 @@ export default function DescriptionScreen({ route }) {
 
   // FONCTION QUI NOUS PERMET DE RETROUVER LE CODE DU PAYS
   const getCountryCode = (countryName) => {
-    return fetch(`https://restcountries.com/v3.1/name/${countryName}?fullText=false`)
+    return fetch(
+      `https://restcountries.com/v3.1/name/${countryName}?fullText=false`
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data && data.length > 0) {
@@ -149,6 +151,8 @@ export default function DescriptionScreen({ route }) {
             </Text>
 
             {/* TRONCAGE DE LA DESCRIPTION DE L'ASSO */}
+              <Text style={styles.title}>Nom complet </Text>
+              <Text style={styles.bold}>{association.name}</Text>
             <Text style={styles.title}>Description</Text>
             <Text>
               {showFullDescription
@@ -166,27 +170,49 @@ export default function DescriptionScreen({ route }) {
             )}
 
             <Text style={styles.title}>Secteurs d'activités</Text>
-            <CategorieRound categorie={association.categorie} />
+            <CategorieRound categorie={association.category} />
             <Text style={styles.title}>Informations légales</Text>
             <View style={styles.legalInfos}>
-              <Text style={styles.bold}>Numéro légal : </Text>
-              <Text>{association.legalNumber}</Text>
+              <Text>Numéro légal : </Text>
+              <Text style={styles.bold}>{association.legalNumber}</Text>
             </View>
             <View style={styles.legalInfos}>
-              <Text style={styles.bold}>Dernière date de déclaration : </Text>
-              <Text>
+              <Text>Dernière date de déclaration : </Text>
+              <Text style={styles.bold}>
                 {association.lastDeclarationDate
                   ? association.lastDeclarationDate
                   : "Non renseignée"}
               </Text>
             </View>
             <View style={styles.legalInfos}>
-              <Text style={styles.bold}>Date de création : </Text>
-              <Text>
+              <Text>Date de création : </Text>
+              <Text style={styles.bold}>
                 {association.creationDate
                   ? association.creationDate
                   : "Non renseignée"}
               </Text>
+            </View>
+            <Text style={styles.title}>Contact</Text>
+            <View style={styles.legalInfos}>
+              <Text>Téléphone : </Text>
+              <Text style={styles.bold}>{association.phone ? association.phone : "Non renseigné"}</Text>
+            </View>
+            <View style={styles.legalInfos}>
+              <Text>E-mail : </Text>
+              <Text style={styles.bold}>{association.email == "" ? association.email : "Non renseignée"}</Text>
+            </View>
+            <Text style={styles.title}>Réseaux sociaux</Text>
+            <View style={styles.legalInfos}>
+              <Text>Réseau social 1 : </Text>
+              <Text style={styles.bold}>{association.email == "" ? association.email : "Non renseigné"}</Text>
+            </View>
+            <View style={styles.legalInfos}>
+              <Text>Réseau social 2 : </Text>
+              <Text style={styles.bold}>{association.email == "" ? association.email : "Non renseigné"}</Text>
+            </View>
+            <View style={styles.legalInfos}>
+              <Text>Réseau social 3 : </Text>
+              <Text style={styles.bold}>{association.email == "" ? association.email : "Non renseigné"}</Text>
             </View>
             <Text style={styles.title}>Membres</Text>
             {association.members.length > 0 ? (
@@ -264,17 +290,19 @@ export default function DescriptionScreen({ route }) {
           </View>
         </View>
       </ScrollView>
-      <TouchableOpacity onPress={handleLike}>
-                <FontAwesome
-                  name="heart"
-                  size={28}
-                  color={isLiked ? "#FF0000" : "#000000"}
-                  style={styles.icon}
-                />
-              </TouchableOpacity>
-      <TouchableOpacity style={styles.contact}>
-        <Text style={styles.contactText}>Contacter</Text>
-      </TouchableOpacity>
+      <View style={styles.bottomStickyContent}>
+        <TouchableOpacity onPress={handleLike}>
+          <FontAwesome
+            name="heart"
+            size={32}
+            color={isLiked ? "#FF0000" : "#000000"}
+            style={styles.icon}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.contact}>
+          <Text style={styles.contactText}>Contacter</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -289,7 +317,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     borderBottomRightRadius: 36,
     borderBottomLeftRadius: 36,
-    marginBottom: 5,
+    marginBottom: 12,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.1,
@@ -371,20 +399,30 @@ const styles = StyleSheet.create({
     color: "#FF6C02",
     fontWeight: "bold",
     marginTop: 5,
+    textDecorationLine: "underline"
   },
   drapeau: {
     width: 26,
     height: 26,
     borderRadius: 13,
+    borderWidth: 1,
+    borderColor: "#bbbbbb"
   },
   legalInfos: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
   },
+  officialName: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+  },
   bold: {
     color: "#FF6C02",
     fontWeight: "light",
+    fontWeight: "bold"
   },
   categoryText: {
     fontSize: 8,
@@ -446,8 +484,8 @@ const styles = StyleSheet.create({
   },
   contact: {
     backgroundColor: "#FF6C02",
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -456,8 +494,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 3,
     elevation: 3,
-    width: '90%',
-    height: 40
+    width: "85%",
+    height: 40,
   },
   contactText: {
     color: "#FFF",
@@ -465,4 +503,10 @@ const styles = StyleSheet.create({
     fontSize: 15,
     textAlign: "center",
   },
+  bottomStickyContent: {
+    width: '90%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  }
 });

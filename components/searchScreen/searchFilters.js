@@ -15,6 +15,7 @@ export default function SearchFilters({
   setDestinationCity,
   associationsCategories,
   criteriasView,
+  filtersView,
   toggleCriterias,
   handleShowResult,
 }) {
@@ -23,7 +24,7 @@ export default function SearchFilters({
       <View style={styles.research}>
         <View style={styles.top}>
           <TouchableOpacity onPress={handleBackToDefault} style={styles.backButton}>
-            <FontAwesome name="arrow-left" size={24} color="#FF6C02" />
+            <FontAwesome name="arrow-left" size={25} color="#FF6C02" />
           </TouchableOpacity>
         </View>
 
@@ -86,10 +87,10 @@ export default function SearchFilters({
 
         <View style={styles.bottomContent}>
           <TouchableOpacity style={styles.validateButton} onPress={toggleCriterias}>
-            <FontAwesome name="filter" size={30} color="white" />
+            <FontAwesome name="filter" size={25} color="white" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.validateButton} onPress={handleShowResult}>
-            <FontAwesome name="angle-up" size={30} color="white" />
+            <FontAwesome name="arrow-up" size={25} color="white" />
           </TouchableOpacity>
         </View>
       </View>

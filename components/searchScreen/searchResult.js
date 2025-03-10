@@ -12,7 +12,7 @@ export default function SearchResult({
     <View style={styles.fakeModal}>
       <View style={styles.newResearch}>
         <Pressable onPress={handleBackToDefault} style={styles.backButton}>
-          <FontAwesome name="arrow-left" size={24} color="#FF6C02" />
+          <FontAwesome name="arrow-left" size={25} color="#FF6C02" />
         </Pressable>
 
         {originCountry && destinationCountry ? (
@@ -26,7 +26,7 @@ export default function SearchResult({
         ) : null}
 
         <Pressable onPress={handleBackToSearch} style={styles.angleDown}>
-          <FontAwesome name="angle-down" size={30} color="white" />
+          <FontAwesome name="arrow-down" size={25} color="white" />
         </Pressable>
       </View>
     </View>

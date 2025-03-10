@@ -108,21 +108,6 @@ export default function NewAssociationForm({ handleBackToDefault }) {
     );
   });
 
-  let textCategoriesSeleted = categories.length > 0 && (
-    <View style={styles.dataSelected}>
-      <Text>Sélection:</Text>
-    </View>
-  );
-
-  const categoriesSelected = categories?.map((data, i) => {
-    return (
-      <View key={i}>
-        <Text style={{ marginRight: 5, marginLeft: 5, color: "blue" }}>
-          {data}
-        </Text>
-      </View>
-    );
-  });
 
   //Vérificationd de l'email
   const [errorEmail, setErrorEmail] = useState("");
@@ -217,8 +202,8 @@ export default function NewAssociationForm({ handleBackToDefault }) {
     name,
     description,
     residenceCountry,
-    nationalities,
-    categories,
+    nationality,
+    category,
     address: {
       street: streetNumberAndLabel,
       zipcode,
@@ -343,7 +328,7 @@ export default function NewAssociationForm({ handleBackToDefault }) {
               title="Secteurs d'activité"
               dataSet={categoriesDataSet}
               placeholder="Choisir un ou plusieurs secteurs"
-              value={categories}
+              value={category}
               onSelectItem={(item) => {
                 selectCategory(item?.title);
               }}
@@ -452,10 +437,6 @@ export default function NewAssociationForm({ handleBackToDefault }) {
                 onSelectCountry={selectInterventionZone}
                 selectedCountry={interventionZone}
               />
-            </View>
-            <View style={styles.dataSelected}>
-              {textNationalitiesSeleted}
-              {interventionZoneSelected}
             </View>
           </View>
         </View>

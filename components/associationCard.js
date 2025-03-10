@@ -10,10 +10,10 @@ const AssociationCard = ({ association }) => {
   const [countryCode, setCountryCode] = useState("");
 
   const navigation = useNavigation();
-  const dispatch = useDispatch();
 
+  const dispatch = useDispatch();
   const favorites = useSelector((state) => state.user.value.favorites);
-  const isLiked = favorites.some((fav) => fav.id === association.id);
+  const isLiked = favorites.some((fav) => fav.name === association.name);
 
   const handleLike = () => {
     dispatch(liked(association));
@@ -49,7 +49,7 @@ const AssociationCard = ({ association }) => {
             </Text>
           </View>
           <View style={styles.textCategorie}>
-            <CategorieRound categorie={association.categorie} />
+            <CategorieRound categorie={association.category} />
           </View>
         </View>
         <Text style={styles.address}>
@@ -61,9 +61,9 @@ const AssociationCard = ({ association }) => {
         </Text>
       </TouchableOpacity>
       <View style={styles.bottomAssoContent}>
-        <TouchableOpacity onPress={handleLike}>
-          <FontAwesome name="heart" size={28} color={isLiked ? "#FF0000" : "#000000"} style={styles.icon} />
-        </TouchableOpacity>
+      <TouchableOpacity onPress={handleLike}>
+        <FontAwesome name="heart" size={28} color={isLiked ? "#FF0000" : "#000000"} style={styles.icon} />
+      </TouchableOpacity>
         <TouchableOpacity style={styles.contact}>
           <Text style={styles.contactText}>Contacter</Text>
         </TouchableOpacity>
@@ -111,6 +111,8 @@ const styles = StyleSheet.create({
     height: 26,
     marginRight: 10,
     borderRadius: 13,
+    borderWidth: 1,
+    borderColor: "#bbbbbb"
   },
   assoName: {
     fontSize: 20,
