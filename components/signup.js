@@ -11,9 +11,10 @@ import {
   View,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { BACKEND_ADDRESS } from "../assets/url";
 
 export default function Signup() {
-  const BACKEND_ADDRESS = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
+  // const BACKEND_ADDRESS = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
 
   const [signUpEmail, setSignUpEmail] = useState("");
   const [signUpPassword, setSignUpPassword] = useState("");
@@ -23,7 +24,7 @@ export default function Signup() {
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   const dispatch = useDispatch();
   const navigation = useNavigation();
-
+console.log(BACKEND_ADDRESS)
   // Convertir en minuscule le text de l'input email
   const handleChangeText = (text) => {
     setSignUpEmail(text.toLowerCase());
