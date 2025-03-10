@@ -170,23 +170,23 @@ export default function DescriptionScreen({ route }) {
             )}
 
             <Text style={styles.title}>Secteurs d'activités</Text>
-            <CategorieRound categorie={association.categorie} />
+            <CategorieRound categorie={association.category} />
             <Text style={styles.title}>Informations légales</Text>
             <View style={styles.legalInfos}>
-              <Text style={styles.bold}>Numéro légal : </Text>
-              <Text>{association.legalNumber}</Text>
+              <Text>Numéro légal : </Text>
+              <Text style={styles.bold}>{association.legalNumber}</Text>
             </View>
             <View style={styles.legalInfos}>
-              <Text style={styles.bold}>Dernière date de déclaration : </Text>
-              <Text>
+              <Text>Dernière date de déclaration : </Text>
+              <Text style={styles.bold}>
                 {association.lastDeclarationDate
                   ? association.lastDeclarationDate
                   : "Non renseignée"}
               </Text>
             </View>
             <View style={styles.legalInfos}>
-              <Text style={styles.bold}>Date de création : </Text>
-              <Text>
+              <Text>Date de création : </Text>
+              <Text style={styles.bold}>
                 {association.creationDate
                   ? association.creationDate
                   : "Non renseignée"}
@@ -377,6 +377,7 @@ const styles = StyleSheet.create({
     color: "#FF6C02",
     fontWeight: "bold",
     marginTop: 5,
+    fontStyle: "italic"
   },
   drapeau: {
     width: 26,
@@ -397,6 +398,7 @@ const styles = StyleSheet.create({
   bold: {
     color: "#FF6C02",
     fontWeight: "light",
+    fontWeight: "bold"
   },
   categoryText: {
     fontSize: 8,
