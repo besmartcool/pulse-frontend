@@ -26,9 +26,9 @@ export default function NewAssociationForm({ handleBackToDefault }) {
     //Etats pour les données de l'association
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
-    const [nationalities, setNationalities] = useState([]);
+    const [nationality, setNationality] = useState("");
     const [residenceCountry, setResidenceCountry] = useState("");
-    const [categories, setCategories] = useState([]);
+    const [category, setCategory] = useState("");
     const [phone, setPhone] = useState([]);
     const [email, setEmail] = useState("");
     const [streetNumberAndLabel, setStreetNumberAndLabel] = useState("");
@@ -68,15 +68,15 @@ export default function NewAssociationForm({ handleBackToDefault }) {
     }
   };
 
-  const selectNationalities = (country) => {
+  const selectNationality = (country) => {
     if (country) {
-      setNationalities((nationalities) => [...nationalities, country]);
+      setNationality(country);
     }
   };
 
-  const selectCategories = (category) => {
+  const selectCategory = (category) => {
     if (category) {
-      setCategories((categories) => [...categories, category]);
+      setCategory(category);
     }
   };
 
@@ -103,22 +103,6 @@ export default function NewAssociationForm({ handleBackToDefault }) {
       <View key={i}>
         <Text style={{ marginRight: 5, marginLeft: 5, color: "blue" }}>
           Tél {i + 1}: {formatFrenchPhoneNumber(data)}
-        </Text>
-      </View>
-    );
-  });
-
-  let textNationalitiesSeleted = nationalities.length > 0 && (
-    <View style={styles.dataSelected}>
-      <Text>Sélection:</Text>
-    </View>
-  );
-
-  const nationalitiesSelected = nationalities?.map((data, i) => {
-    return (
-      <View key={i}>
-        <Text style={{ marginRight: 5, marginLeft: 5, color: "blue" }}>
-          {data}
         </Text>
       </View>
     );
@@ -351,13 +335,9 @@ export default function NewAssociationForm({ handleBackToDefault }) {
               <CountryDropdown
                 title="Pays d'origine des membres"
                 placeholder="Choisir un ou plusieurs pays"
-                onSelectCountry={selectNationalities}
-                selectedCountry={nationalities}
+                onSelectCountry={selectNationality}
+                selectedCountry={nationality}
               />
-            </View>
-            <View style={styles.dataSelected}>
-              {textNationalitiesSeleted}
-              {nationalitiesSelected}
             </View>
             <InternalDataSetDropdown
               title="Secteurs d'activité"
@@ -365,13 +345,9 @@ export default function NewAssociationForm({ handleBackToDefault }) {
               placeholder="Choisir un ou plusieurs secteurs"
               value={categories}
               onSelectItem={(item) => {
-                selectCategories(item?.title);
+                selectCategory(item?.title);
               }}
             />
-            <View style={styles.dataSelected}>
-              {textCategoriesSeleted}
-              {categoriesSelected}
-            </View>
           </View>
           <View style={styles.subSectionContainer}>
             <Text style={styles.subSectionHeader}>Informations de contact</Text>

@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import { useSelector } from "react-redux";
 import { addInfoProfile } from "../reducers/user";
+import { BACKEND_ADDRESS } from "../assets/url";
 
 export default function ProfileScreen({ navigation }) {
   const [inputs, setInputs] = useState([""]);
@@ -29,6 +30,8 @@ export default function ProfileScreen({ navigation }) {
   const [residenceCountry, setResidenceCountry] = useState("");
   const [destinationCountry, setDestinationCountry] = useState("");
   const user = useSelector((state) => state.user.value);
+
+  // const BACKEND_ADDRESS = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
 
   const handleChangeNationality = (text, index) => {
     const newInputs = [...nationality];
@@ -59,32 +62,41 @@ export default function ProfileScreen({ navigation }) {
     const newInputs = inputs2.filter((_, i) => i !== index);
     setInputs2(newInputs.length ? newInputs : [""]); // S'assure qu'il y a toujours au moins un input
   };
-
-  // fetch(`${BACKEND_ADDRESS}/users`, {
-  //         method: "POST",
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify({
-  //           lastname: lastname,
-            
-  //         }),
-  //       })
-  //         .then((response) => response.json())
-  //         .then((data) => {
-  //           if (data.result) {
-  //             dispatch(
-  //               addInfoProfile({
-  //                 token: data.token,
-  //                 email: data.email,
-  //               })
-  //             );
-  //             setSignUpEmail("");
-  //             setSignUpPassword("");
-  //             setErrorMessage("");
-  //             navigation.navigate("TabNavigator", { screen: "Search" });
-  //           } else {
-  //             setErrorMessage(data.error);
-  //           }
-  //         });
+  const handleRegistrationSubmit = () => {
+  fetch(`${BACKEND_ADDRESS}/users`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          Authorization: `Bearer ${user.token}`,
+          body: JSON.stringify({
+            lastname: lastname,
+            firstname: firstname,
+            username: username,
+            nationality: nationality,
+            residenceCountry: residenceCountry,
+            destinationCountry: destinationCountry,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data)
+            if (data.result) {
+              console.log(data.result)
+              dispatch(
+                addInfoProfile({
+                  lastname: data.lastname,
+                  firstname: data.firstname,
+                  username: data.username,
+                  nationality: data.nationality,
+                  residenceCountry: data.residenceCountry,
+                  destinationCountry: data.destinationCountry,
+                })
+              );
+              setErrorMessage("");
+            } else {
+              setErrorMessage(data.error);
+            }
+          });
+        }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -112,7 +124,7 @@ export default function ProfileScreen({ navigation }) {
               placeholder="Nom..."
               value={lastname}
               onChangeText={(value) => setLastname(value)}
-              secureTextEntry={true}
+              secureTextEntry={false}
               icon="pencil"
             />
             <Text style={styles.titleInput}>PRENOM</Text>
@@ -121,7 +133,7 @@ export default function ProfileScreen({ navigation }) {
               placeholder="Prénom..."
               value={firstname}
               onChangeText={(value) => setFirstname(value)}
-              secureTextEntry={true}
+              secureTextEntry={false}
               icon="pencil"
             />
             <Text style={styles.titleInput}>PSEUDO</Text>
@@ -130,7 +142,7 @@ export default function ProfileScreen({ navigation }) {
               placeholder="Pseudo..."
               value={username}
               onChangeText={(value) => setUsername(value)}
-              secureTextEntry={true}
+              secureTextEntry={false}
               icon="pencil"
             />
             <Text style={styles.titleInput}>EMAIL</Text>
@@ -139,8 +151,8 @@ export default function ProfileScreen({ navigation }) {
               placeholder="Email..."
               value={email}
               onChangeText={(value) => setEmail(value)}
-              secureTextEntry={true}
-              icon="pencil"
+              secureTextEntry={false}
+              // icon="pencil"
             />
             {/* <Text style={styles.titleInput}>PASSWORD</Text>
           <Input
@@ -247,6 +259,13 @@ export default function ProfileScreen({ navigation }) {
                 )}
               </View>
             ))}
+          <TouchableOpacity
+          onPress={() => handleRegistrationSubmit()}
+          style={styles.button}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.textButton}>Envoyer les modifications</Text>
+        </TouchableOpacity>
           </View>
         </ScrollView>
       </View>
@@ -305,7 +324,31 @@ const styles = StyleSheet.create({
   icon: {
     alignSelf: "center",
   },
+  button: {
+    marginTop: 30,
+    alignSelf: "center",
+    justifyContent: "center",
+    width: "100%",
+    height: 43,
+    borderWidth: 1,
+    borderColor: "#bbbbbb",
+    backgroundColor: "#FF6C02",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+
+    // Ombre sur Android
+    elevation: 8,
+  },
+  textButton: {
+    alignSelf: "center",
+    color: "white",
+    fontWeight: 900,
+  },
   scrollContainer: {
     width: "100%",
   },
+
 });
