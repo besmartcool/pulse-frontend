@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from "react";
 import {
   Image,
-  ImageBackground,
-  KeyboardAvoidingView,
-  Platform,
+  ScrollView,
   Pressable,
   StyleSheet,
   Text,
-  TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 
@@ -18,31 +14,34 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { BACKEND_ADDRESS } from "../assets/url";
 
 export default function MyAssociations({ handleTypeContent }) {
-
   const user = useSelector((state) => state.user.value);
   const [associations, setAssociations] = useState([]);
 
   // Récupération des associations au chargement
   useEffect(() => {
-      fetch(`${BACKEND_ADDRESS}/associations/getAssociationsByIds/${user.token}`, {
+    fetch(
+      `${BACKEND_ADDRESS}/associations/getAssociationsByIds/${user.token}`,
+      {
         method: "GET",
         headers: {
           Authorization: `Bearer ${user.token}`,
         },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("réponse backend", data);
+        setAssociations(data.data);
       })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("réponse backend", data)
-          setAssociations(data.data)})
-        .catch((error) =>
-          console.error("Erreur lors de la récupération :", error)
-        );
-    }, [user.associations]);
+      .catch((error) =>
+        console.error("Erreur lors de la récupération :", error)
+      );
+  }, [user.associations]);
 
   const myAssociations = associations.map((association, index) => {
     return (
       <View key={index} style={styles.favoriteContainer}>
-        <AssociationCard key={index} association={association}/>
+        <AssociationCard key={index} association={association} />
       </View>
     );
   });
@@ -56,15 +55,15 @@ export default function MyAssociations({ handleTypeContent }) {
             source={require("../assets/Logo_Letter.png")}
           />
         </View>
-        <View style = {styles.titalContainer}>
-        <Text style={styles.title}>Mes associations</Text>
+        <View style={styles.titalContainer}>
+          <Text style={styles.title}>Mes associations</Text>
         </View>
         <Pressable style={styles.containerbutton} onPress={handleTypeContent}>
           <FontAwesome name="plus" size={45} color="grey" style={styles.icon} />
         </Pressable>
       </View>
       <View style={styles.line}></View>
-      {myAssociations}
+      <ScrollView style={styles.allAssociations}>{myAssociations}</ScrollView>
     </View>
   );
 }
@@ -81,17 +80,16 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     padding: 10,
   },
-  containerLogo: {
-  },
+  containerLogo: {},
   logo: {
     width: 50,
     height: 50,
   },
-    titalContainer: {
-       textAlign: "center",
-       justifyContent: "center",
-       alignItems: "center",
-    },
+  titalContainer: {
+    textAlign: "center",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   title: {
     fontWeight: 900,
     fontSize: 20,
@@ -113,5 +111,10 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     marginBottom: 20,
     marginTop: 20,
+  },
+  allAssociations: {
+    width: "90%",
+    height: "auto",
+    marginTop: 30,
   },
 });
