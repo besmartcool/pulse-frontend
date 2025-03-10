@@ -1,99 +1,79 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { View, Text, StyleSheet, Image, Pressable } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import CategorieRound from "./categorieRound";
+import { useDispatch, useSelector } from "react-redux";
+import { liked } from "../reducers/user";
 
 const AssociationCard = ({ association }) => {
   const [countryCode, setCountryCode] = useState("");
-  const navigation = useNavigation();
 
-  // FONCTION QUI NOUS PERMET DE RETROUVER LE CODE DU PAYS
-  const getCountryCode = (countryName) => {
-    return fetch(`https://restcountries.com/v3.1/name/${countryName}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data && data.length > 0) {
-          return data[0].cca2;
-        }
-        return null;
-      })
-      .catch((error) => {
-        console.error("Erreur lors de la récupération du code pays :", error);
-        return null;
-      });
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+  const favorites = useSelector((state) => state.user.value.favorites);
+  const isLiked = favorites.some((fav) => fav.id === association.id);
+
+  const handleLike = () => {
+    dispatch(liked(association));
   };
 
-  // PERMET DE RÉCUPÉRER LES DRAPEAUX POUR CHAQUE ASSOCIATION
+  // Récupération du code pays
   useEffect(() => {
     if (association.nationality) {
-      getCountryCode(association.nationality).then((code) => {
-        if (code) {
-          setCountryCode(code);
-        }
-      });
+      fetch(`https://restcountries.com/v3.1/name/${association.nationality}`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data && data.length > 0) {
+            setCountryCode(data[0].cca2);
+          }
+        })
+        .catch((error) => console.error("Erreur lors de la récupération du code pays :", error));
     }
   }, [association.nationality]);
 
   return (
     <View style={styles.associationCard}>
-      <Pressable onPress={() => navigation.navigate("Description", { association })}>
-      <View style={styles.topAssoContent}>
-        <View style={styles.textTitle}>
-          {/* AFFICHAGE DU DRAPEAU SI LA NATIONALITÉ DE L'ASSO EXISTE */}
-          {countryCode ? (
-            <Image
-              source={{
-                uri: `https://flagcdn.com/w320/${countryCode.toLowerCase()}.png`,
-              }}
-              style={styles.drapeau}
-            />
-          ) : (
-            <Text></Text>
-          )}
-          <Text style={styles.assoName}>
-            {/* TRONCAGE DU NOM DE L'ASSO */}
-            {association.name.length > 30
-              ? association.name.slice(0, 30) + "..."
-              : association.name}
-          </Text>
-
+      <TouchableOpacity onPress={() => navigation.navigate("Description", { association })}>
+        <View style={styles.topAssoContent}>
+          <View style={styles.textTitle}>
+            {countryCode ? (
+              <Image
+                source={{ uri: `https://flagcdn.com/w320/${countryCode.toLowerCase()}.png` }}
+                style={styles.drapeau}
+              />
+            ) : null}
+            <Text style={styles.assoName}>
+              {association.name.length > 30 ? association.name.slice(0, 30) + "..." : association.name}
+            </Text>
+          </View>
+          <View style={styles.textCategorie}>
+            <CategorieRound categorie={association.categorie} />
+          </View>
         </View>
-        <View style={styles.textCategorie}>
-          <CategorieRound categorie={association.categorie} />
-        </View>
-      </View>
-
-      <Text style={styles.address}>
-        <FontAwesome name="map-pin" size={14} color="#000000" />{"  "}
-        {association.address.city.toUpperCase()}{" "}
-        {association.address.zipCode}, {association.address.country}
-      </Text>
-      <Text style={styles.description}>
-        {/* TRONCAGE DE LA DESCRIPTION DE L'ASSO */}
-        {association.description.length > 150
-          ? association.description.slice(0, 150) + "..."
-          : association.description}
-      </Text>
-      </Pressable>
+        <Text style={styles.address}>
+          <FontAwesome name="map-pin" size={14} color="#000000" />{" "}
+          {association.address.city.toUpperCase()} {association.address.zipCode}, {association.address.country}
+        </Text>
+        <Text style={styles.description}>
+          {association.description.length > 150 ? association.description.slice(0, 150) + "..." : association.description}
+        </Text>
+      </TouchableOpacity>
       <View style={styles.bottomAssoContent}>
-        <Pressable>
-          <FontAwesome
-            name="heart"
-            size={28}
-            color="#000000"
-            style={styles.icon}
-          />
-        </Pressable>
-        <Pressable style={styles.contact}>
+        <TouchableOpacity onPress={handleLike}>
+          <FontAwesome name="heart" size={28} color={isLiked ? "#FF0000" : "#000000"} style={styles.icon} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.contact}>
           <Text style={styles.contactText}>Contacter</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
     </View>
   );
 };
 
 export default AssociationCard;
+
 
 const styles = StyleSheet.create({
   associationCard: {
@@ -148,7 +128,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
     flexDirection: "row",
     alignItems: "center",
-    marginRight: 4
+    marginRight: 4,
   },
   description: {
     fontSize: 14,

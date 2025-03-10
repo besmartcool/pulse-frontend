@@ -11,9 +11,9 @@ import {
   View,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { BACKEND_ADDRESS } from "../assets/url";
 
 export default function Signin() {
-  const BACKEND_ADDRESS = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
 
   const [signInEmail, setSignInEmail] = useState("");
   const [signInPassword, setSignInPassword] = useState("");

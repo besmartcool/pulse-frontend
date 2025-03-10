@@ -19,9 +19,9 @@ import PhoneInput from "./phoneInput";
 import MessageModal from "./messageModal";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {addAssociation} from "../reducers/user";
+import { BACKEND_ADDRESS } from "../assets/url";
 
 export default function NewAssociationForm({ handleBackToDefault }) {
-  const BACKEND_ADDRESS = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
 
     //Etats pour les données de l'association
     const [name, setName] = useState("");

@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import CityDropdown from "../cityDropdown";
 import CountryDropdown from "../countryDropdown";
@@ -22,9 +22,9 @@ export default function SearchFilters({
     <View style={styles.fakeModal}>
       <View style={styles.research}>
         <View style={styles.top}>
-          <Pressable onPress={handleBackToDefault} style={styles.backButton}>
+          <TouchableOpacity onPress={handleBackToDefault} style={styles.backButton}>
             <FontAwesome name="arrow-left" size={24} color="#FF6C02" />
-          </Pressable>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.allInputs}>
@@ -72,25 +72,25 @@ export default function SearchFilters({
 
         {criteriasView && (
           <View style={styles.criteriasContainer}>
-            <Pressable style={styles.criteria}>
+            <TouchableOpacity style={styles.criteria}>
               <Text style={styles.criteriaText}>A-Z</Text>
-            </Pressable>
-            <Pressable style={styles.criteria}>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.criteria}>
               <Text style={styles.criteriaText}>Date de création</Text>
-            </Pressable>
-            <Pressable style={styles.criteria}>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.criteria}>
               <Text style={styles.criteriaText}>Statut</Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         )}
 
         <View style={styles.bottomContent}>
-          <Pressable style={styles.validateButton} onPress={toggleCriterias}>
+          <TouchableOpacity style={styles.validateButton} onPress={toggleCriterias}>
             <FontAwesome name="filter" size={30} color="white" />
-          </Pressable>
-          <Pressable style={styles.validateButton} onPress={handleShowResult}>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.validateButton} onPress={handleShowResult}>
             <FontAwesome name="angle-up" size={30} color="white" />
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </View>
     </View>

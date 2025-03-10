@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, View, Text, Pressable } from "react-native";
+import { ScrollView, StyleSheet, View, Text, Pressable, TouchableOpacity } from "react-native";
 import SearchHome from "../components/searchScreen/searchHome";
 import SearchFilters from "../components/searchScreen/searchFilters";
 import SearchResult from "../components/searchScreen/searchResult";
 import AssociationCard from "../components/associationCard";
 import CategorieRound from "../components/categorieRound";
 import categoriesList from "../assets/categoriesList";
+import { useSelector } from "react-redux";
+
+import { BACKEND_ADDRESS } from "../assets/url";
 
 export default function SearchScreen({ navigation }) {
-  const BACKEND_ADDRESS = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
 
   // États principaux
   const [typeContent, setTypeContent] = useState("default");
@@ -24,6 +26,13 @@ export default function SearchScreen({ navigation }) {
   // États pour stocker les associations
   const [associations, setAssociations] = useState([]);
   const [filteredAssociations, setFilteredAssociations] = useState([]);
+
+  const favorites = useSelector((state) => state.user.value.favorites);
+
+  useEffect(() => {
+    console.log("Favorites updated:", favorites);
+  }, [favorites]);
+
 
   // Récupération des associations au chargement
   useEffect(() => {
@@ -52,18 +61,24 @@ export default function SearchScreen({ navigation }) {
     const queryString =
       queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
 
-    fetch(`${BACKEND_ADDRESS}/associations/search${queryString}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.result) {
-          setFilteredAssociations(data.associations);
-          setResultResearch("search");
-        } else {
-          setFilteredAssociations([]);
-          setResultResearch("search");
-        }
-      })
-      .catch((error) => console.error("Erreur lors de la recherche :", error));
+    if (!queryString) {
+      setFilteredAssociations(associations);
+    } else {
+      fetch(`${BACKEND_ADDRESS}/associations/search${queryString}`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.result) {
+            setFilteredAssociations(data.associations);
+            setResultResearch("search");
+          } else {
+            setFilteredAssociations([]);
+            setResultResearch("search");
+          }
+        })
+        .catch((error) =>
+          console.error("Erreur lors de la recherche :", error)
+        );
+    }
   };
 
   // Gestion du clic sur une catégorie
@@ -76,11 +91,11 @@ export default function SearchScreen({ navigation }) {
   const associationsCategories =
     categoriesList.length > 0 ? (
       categoriesList.map((category, index) => (
-        <Pressable key={index} onPress={() => handleCategoryClick(category)}>
+        <TouchableOpacity key={index} onPress={() => handleCategoryClick(category)}>
           <View style={{ marginRight: 5 }}>
             <CategorieRound categorie={category} />
           </View>
-        </Pressable>
+        </TouchableOpacity>
       ))
     ) : (
       <Text>Aucune catégorie trouvée.</Text>
@@ -106,13 +121,13 @@ export default function SearchScreen({ navigation }) {
 
   // Affichage des associations
   const resultFromResearch =
-    resultResearch === "default"
-      ? associations.map((association, index) => (
-          <AssociationCard key={index} association={association} />
-        ))
-      : filteredAssociations.map((association, index) => (
-          <AssociationCard key={index} association={association} />
-        ));
+  resultResearch === "default"
+    ? associations.map((association) => (
+          <AssociationCard key={association.id} association={association} />
+      ))
+    : filteredAssociations.map((association) => (
+          <AssociationCard key={association.id} association={association} />
+      ));
 
   return (
     <View style={styles.container}>

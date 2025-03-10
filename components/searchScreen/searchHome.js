@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 export default function SearchHome({ setTypeContent }) {
@@ -8,11 +8,11 @@ export default function SearchHome({ setTypeContent }) {
       <View style={styles.research}>
         <View style={styles.topContent}>
           <Image style={styles.logo} source={require("../../assets/Logo.png")} />
-          <Pressable style={styles.addAsso}>
+          <TouchableOpacity style={styles.addAsso}>
             <Text style={styles.addAssoText}>+ Ajouter une association</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
-        <Pressable
+        <TouchableOpacity
           style={styles.searchButton}
           onPress={() => setTypeContent("search")}
         >
@@ -20,7 +20,7 @@ export default function SearchHome({ setTypeContent }) {
           <Text style={styles.searchButtonText}>
             Rechercher une association
           </Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
     </View>
   );

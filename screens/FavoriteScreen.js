@@ -16,18 +16,15 @@ import AssociationCard from "../components/associationCard";
 
 
 export default function FavoriteScreen({ navigation }) {
+  const user = useSelector((state) => state.user.value.favorites);
+  console.log(user)
+
+  const favorites = user.map((association, i) => (
+    <View key={i} style={styles.favoriteContainer}>
+      <AssociationCard association={association} />
+    </View>
+  ));
   
-  const user = useSelector((state) => state.user.value);
-
-
-  const favorites = user.favorites.map((data, i) => {
-    return (
-      <View key={i} style={styles.favoriteContainer}>
-        <AssociationCard/>
-      </View>
-    );
-  });
-
 
   return (
     <View style={styles.container}>

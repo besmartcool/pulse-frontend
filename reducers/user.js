@@ -18,11 +18,19 @@ export const userSlice = createSlice({
     addAssociation: (state, action) => {
       state.value.associations.push(action.payload);
     },
+    liked: (state, action) => {
+      const index = state.value.favorites.findIndex((fav) => fav.id === action.payload.id);
+      if (index === -1) {
+        state.value.favorites.push(action.payload);
+      } else {
+        state.value.favorites.splice(index, 1);
+      }
+    },
     addInfoProfile: (state, action) => {
       state.value.push(action.payload);
     },
   },
 });
 
-export const { signup, signin, addAssociation, addInfoProfile } = userSlice.actions;
+export const { signup, signin, addAssociation, liked, addInfoProfile } = userSlice.actions;
 export default userSlice.reducer;

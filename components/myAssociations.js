@@ -15,9 +15,9 @@ import {
 import { useSelector } from "react-redux";
 import AssociationCard from "./associationCard";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { BACKEND_ADDRESS } from "../assets/url";
 
 export default function MyAssociations({ handleTypeContent }) {
-  const BACKEND_ADDRESS = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
 
   const user = useSelector((state) => state.user.value);
   const [associations, setAssociations] = useState([]);
