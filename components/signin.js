@@ -13,7 +13,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { BACKEND_ADDRESS } from "../assets/url";
 
-export default function Signin() {
+export default function Signin({ setSignInVisible }) {
 
   const [signInEmail, setSignInEmail] = useState("");
   const [signInPassword, setSignInPassword] = useState("");
@@ -57,7 +57,7 @@ export default function Signin() {
 
             setSignInPassword("");
             setErrorMessage("");
-
+            setSignInVisible(false);
             navigation.navigate("TabNavigator", { screen: "Search" });
           } else {
             setErrorMessage(data.error);
