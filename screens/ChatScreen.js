@@ -16,7 +16,7 @@ import { BACKEND_ADDRESS } from "../assets/url";
 const pusher = new Pusher("PUSHER_KEY", { cluster: "PUSHER_CLUSTER" });
 
 export default function ChatScreen({ navigation, route: { params } }) {
-  const { email, roomId } = params;
+  const { email, roomId, user } = params;
   const [messages, setMessages] = useState([]);
   const [messageText, setMessageText] = useState("");
 
@@ -68,7 +68,9 @@ export default function ChatScreen({ navigation, route: { params } }) {
         >
           <FontAwesome name="arrow-left" color="#FF6C02" size={25} />
         </TouchableOpacity>
-        <Text style={styles.greetingText}>Chat Room {roomId}</Text>
+        <Text style={styles.greetingText}>
+          Chat avec {user.firstname} {user.lastname}
+        </Text>
       </View>
 
       <View style={styles.inset}>
@@ -78,23 +80,27 @@ export default function ChatScreen({ navigation, route: { params } }) {
               key={i}
               style={[
                 styles.messageWrapper,
-                message.email === email ? styles.messageSent : styles.messageRecieved,
+                message.email === email
+                  ? styles.messageSent
+                  : styles.messageRecieved,
               ]}
             >
               <View
                 style={[
                   styles.message,
-                  message.email === email ? styles.messageSentBg : styles.messageRecievedBg,
+                  message.email === email
+                    ? styles.messageSentBg
+                    : styles.messageRecievedBg,
                 ]}
               >
                 <Text style={styles.messageText}>{message.text}</Text>
               </View>
               <Text style={styles.timeText}>
-                {new Date(message.timestamp).getHours()}:
-                {String(new Date(message.timestamp).getMinutes()).padStart(
-                  2,
-                  "0"
-                )}
+                {message.timestamp
+                  ? `${new Date(message.timestamp).getHours()}:${String(
+                      new Date(message.timestamp).getMinutes()
+                    ).padStart(2, "0")}`
+                  : ""}
               </Text>
             </View>
           ))}
