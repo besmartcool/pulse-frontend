@@ -52,20 +52,20 @@ console.log(user)
     setInputs(newInputs.length ? newInputs : [""]); // S'assure qu'il y a toujours au moins un input
   };
 
-  fetch(`${BACKEND_ADDRESS}/users/getInfos`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${user.token}`,
-    },
-    body: JSON.stringify({
-      token: user.token,
-    }),
-  }).then((response) => response.json())
-  .then((data) => {
-    setInfos({...data})
-    console.log(infos)
-  });
+  // fetch(`${BACKEND_ADDRESS}/users/getInfos`, {
+  //   method: "POST",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //     Authorization: `Bearer ${user.token}`,
+  //   },
+  //   body: JSON.stringify({
+  //     token: user.token,
+  //   }),
+  // }).then((response) => response.json())
+  // .then((data) => {
+  //   setInfos({...data})
+  //   console.log(infos)
+  // });
 
 
 
@@ -144,7 +144,7 @@ console.log(user)
             <Text style={styles.titleInput}>NOM</Text>
             <Input
               style={styles.inputLastname}
-              placeholder={infos.data.lastname ? infos.data.lastname : "Nom..."}
+              placeholder={user.lastname ? user.lastname : "Nom..."}
               value={lastname}
               onChangeText={(value) => setLastname(value)}
               secureTextEntry={false}
