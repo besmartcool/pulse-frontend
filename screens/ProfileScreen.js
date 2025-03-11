@@ -14,42 +14,27 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { addInfoProfile } from "../reducers/user";
 import { BACKEND_ADDRESS } from "../assets/url";
 
 export default function ProfileScreen({ navigation }) {
-  const [inputs, setInputs] = useState([""]);
-  const [inputs2, setInputs2] = useState([""]);
+  const [inputs, setInputs] = useState([]);
+  const [inputs2, setInputs2] = useState([]);
   const [lastname, setLastname] = useState("");
   const [firstname, setFirstname] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [newNationality, setNewNationality] = useState("");
+  const [newNationality, setNewNationality] = useState([]);
   const [residenceCountry, setResidenceCountry] = useState("");
-  const [newDestinationCountry, setNewDestinationCountry] = useState("");
+  const [newDestinationCountry, setNewDestinationCountry] = useState([]);
   const [infos, setInfos] = useState();
   const user = useSelector((state) => state.user.value);
+  const dispatch = useDispatch();
 
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-
-  // const BACKEND_ADDRESS = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
-  const handleChangeNationality = (text, index) => {
-    const newInputs = [...newNationality];
-    newInputs[index] = text;
-    setNewNationality(newInputs);
-
-    // Ajoute un nouvel input s'il n'est pas vide et si c'est le dernier
-    if (text !== "" && index === inputs.length - 1) {
-      setInputs([...newInputs, ""]);
-    }
-  };
-  const removeInput = (index) => {
-    const newInputs = inputs.filter((_, i) => i !== index);
-    setInputs(newInputs.length ? newInputs : [""]); // S'assure qu'il y a toujours au moins un input
-  };
 
   useEffect(() => {
     fetch(`${BACKEND_ADDRESS}/users/getInfos`, {
@@ -62,61 +47,97 @@ export default function ProfileScreen({ navigation }) {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Fetched data:", data); // Debugging
-        setInfos(data);
+        if (data.result) {
+          setLastname(data.data.lastname || "");
+          setFirstname(data.data.firstname || "");
+          setUsername(data.data.username || "");
+          setEmail(data.data.email || "");
+          setNewNationality(data.data.nationality || []);
+          setResidenceCountry(data.data.residenceCountry || "");
+          setNewDestinationCountry(data.data.destinationCountry || []);
+          setInfos(data.data); // Stockez les informations initiales
+          setInputs(data.data.nationality || []); // Initialisez les inputs avec les valeurs initiales
+          setInputs2(data.data.destinationCountry || []); // Initialisez les inputs2 avec les valeurs initiales
+        }
       })
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-  const handleChangeDestination = (text, index) => {
-    const newInputs = [...newDestinationCountry];
-    newInputs[index] = text;
-    setNewDestinationCountry(newInputs);
-
-    // Ajoute un nouvel input s'il n'est pas vide et si c'est le dernier
-    if (text !== "" && index === inputs2.length - 1) {
-      setInputs2([...newInputs, ""]);
-    }
+  const handleChangeNationality = (text, index) => {
+    setNewNationality((prev) => {
+      const updated = [...prev];
+      updated[index] = text;
+      return updated;
+    });
   };
+
+  const removeInput = (index) => {
+    const newInputs = inputs.filter((_, i) => i !== index);
+    setInputs(newInputs.length ? newInputs : [""]);
+    setNewNationality(newInputs);
+  };
+
+  const handleChangeDestination = (text, index) => {
+    setNewDestinationCountry((prev) => {
+      const updated = [...prev];
+      updated[index] = text;
+      return updated;
+    });
+  };
+
   const removeInput2 = (index) => {
     const newInputs = inputs2.filter((_, i) => i !== index);
-    setInputs2(newInputs.length ? newInputs : [""]); // S'assure qu'il y a toujours au moins un input
+    setInputs2(newInputs.length ? newInputs : [""]);
+    setNewDestinationCountry(newInputs);
   };
+
   const handleRegistrationSubmit = () => {
+    const updatedData = {
+      token: user.token,
+      lastname: lastname || infos?.lastname,
+      firstname: firstname || infos?.firstname,
+      username: username || infos?.username,
+      nationality: newNationality.length ? newNationality : infos?.nationality,
+      residenceCountry: residenceCountry || infos?.residenceCountry,
+      destinationCountry: newDestinationCountry.length ? newDestinationCountry : infos?.destinationCountry,
+    };
+
     fetch(`${BACKEND_ADDRESS}/users`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        token: user.token,
-        lastname: lastname,
-        firstname: firstname,
-        username: username,
-        nationality: newNationality,
-        residenceCountry: residenceCountry,
-        destinationCountry: newDestinationCountry,
-      }),
+      body: JSON.stringify(updatedData),
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("data1", data);
         if (data.result) {
-          console.log("data2", data.result);
-          dispatch(
-            addInfoProfile({
-              lastname: data.lastname,
-              firstname: data.firstname,
-              username: data.username,
-              nationality: data.newNationality,
-              residenceCountry: data.residenceCountry,
-              destinationCountry: data.newDestinationCountry,
-            })
-          );
-          setMessage("validated");
-          setLastname();
+          dispatch(addInfoProfile(updatedData));
+          console.log("user", user)
+          setMessage("Mise à jour réussie !");
         } else {
-          setErrorMessage("error");
+          setErrorMessage("Erreur lors de la mise à jour.");
         }
-      });
+      })
+      .catch((error) => console.error("Erreur lors de la mise à jour:", error));
+  };
+
+  const handleChangeLastname = (text) => {
+    setLastname(text);
+  };
+
+  const handleChangeFirstname = (text) => {
+    setFirstname(text);
+  };
+
+  const handleChangeUsername = (text) => {
+    setUsername(text);
+  };
+
+  const handleChangeResidenceCountry = (text) => {
+    setResidenceCountry(text);
+  };
+
+  const handleDeconnexion = () => {
+
   };
 
   return (
@@ -142,33 +163,27 @@ export default function ProfileScreen({ navigation }) {
             <Text style={styles.titleInput}>NOM</Text>
             <Input
               style={styles.inputLastname}
-              placeholder={
-                infos?.data.lastname ? infos.data.lastname : "Nom..."
-              }
+              placeholder={infos?.lastname || "Nom..."}
               value={lastname}
-              onChangeText={(value) => setLastname(value)}
+              onChangeText={handleChangeLastname}
               secureTextEntry={false}
               icon="pencil"
             />
             <Text style={styles.titleInput}>PRENOM</Text>
             <Input
               style={styles.inputFirstname}
-              placeholder={
-                infos?.data.firstname ? infos.data.firstname : "Prénom..."
-              }
+              placeholder={infos?.firstname || "Prénom..."}
               value={firstname}
-              onChangeText={(value) => setFirstname(value)}
+              onChangeText={handleChangeFirstname}
               secureTextEntry={false}
               icon="pencil"
             />
             <Text style={styles.titleInput}>PSEUDO</Text>
             <Input
               style={styles.inputUsername}
-              placeholder={
-                infos?.data.username ? infos.data.username : "Pseudo..."
-              }
+              placeholder={infos?.username || "Pseudo..."}
               value={username}
-              onChangeText={(value) => setUsername(value)}
+              onChangeText={handleChangeUsername}
               secureTextEntry={false}
               icon="pencil"
             />
@@ -179,20 +194,8 @@ export default function ProfileScreen({ navigation }) {
               value={email}
               onChangeText={(value) => setEmail(value)}
               secureTextEntry={false}
-              // icon="pencil"
             />
-            {/* <Text style={styles.titleInput}>PASSWORD</Text>
-          <Input
-            style={styles.inputPassword}
-            placeholder="Password..."
-            value={password}
-            onChangeText={(value) => setPassword(value)}
-            secureTextEntry={true}
-            icon="pencil"
-          /> */}
-
             <View style={styles.seperateLine}></View>
-
             <Text style={styles.titleInput}>NATIONALITE</Text>
             {inputs.map((value, index) => (
               <View
@@ -205,19 +208,16 @@ export default function ProfileScreen({ navigation }) {
                     borderWidth: 1,
                     padding: 10,
                     marginVertical: 10,
+                    backgroundColor: "#ffffff",
                     borderRadius: 8,
                     borderColor: "#bbbbbb",
                     fontSize: 12,
                   }}
-                  value={newNationality[index]}
+                  value={newNationality[index] || ""}
                   onChangeText={(text) => handleChangeNationality(text, index)}
-                  placeholder={
-                    infos?.data.nationality[0]
-                      ? infos.nationality[index]
-                      : `Nationality ${index + 1}`
-                  }
+                  placeholder={`Nationality ${index + 1}`}
                 />
-                {value === "" && inputs.length > 1 && (
+                {inputs.length > 1 && (
                   <TouchableOpacity
                     onPress={() => removeInput(index)}
                     style={{
@@ -242,13 +242,9 @@ export default function ProfileScreen({ navigation }) {
             <Text style={styles.titleInput}>PAYS DE RESIDENCE</Text>
             <Input
               style={styles.inputResidenceCountry}
-              placeholder={
-                infos?.data.residenceCountry
-                  ? infos.data.residenceCountry
-                  : "..."
-              }
+              placeholder={infos?.residenceCountry || "..."}
               value={residenceCountry}
-              onChangeText={(value) => setResidenceCountry(value)}
+              onChangeText={handleChangeResidenceCountry}
               secureTextEntry={false}
               icon="pencil"
             />
@@ -266,17 +262,14 @@ export default function ProfileScreen({ navigation }) {
                     marginVertical: 10,
                     borderRadius: 8,
                     borderColor: "#bbbbbb",
+                    backgroundColor: "#ffffff",
                     fontSize: 12,
                   }}
-                  value={newDestinationCountry[index]}
+                  value={newDestinationCountry[index] || ""}
                   onChangeText={(text) => handleChangeDestination(text, index)}
-                  placeholder={
-                    infos?.data.destinationCountry[0]
-                      ? infos.data.destinationCountry[index]
-                      : `Destination ${index + 1}`
-                  }
+                  placeholder={`Destination ${index + 1}`}
                 />
-                {value === "" && inputs2.length > 1 && (
+                {inputs2.length > 1 && (
                   <TouchableOpacity
                     onPress={() => removeInput2(index)}
                     style={{
@@ -298,7 +291,8 @@ export default function ProfileScreen({ navigation }) {
                 )}
               </View>
             ))}
-
+              {message && <Text style={styles.message}>{message}</Text>}
+              {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
             <TouchableOpacity
               onPress={() => handleRegistrationSubmit()}
               style={styles.button}
@@ -306,8 +300,13 @@ export default function ProfileScreen({ navigation }) {
             >
               <Text style={styles.textButton}>Envoyer les modifications</Text>
             </TouchableOpacity>
-            {message && <Text style={styles.message}>{message}</Text>}
-            {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
+            <TouchableOpacity
+              onPress={() => handleDeconnexion()}
+              style={styles.buttonDeconnexion}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.textButtonDeconnexion}>Se déconnecter</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </View>
@@ -319,6 +318,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
+    marginBottom: 30,
   },
   containerLogo: {
     position: "absolute",
@@ -380,8 +380,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.3,
     shadowRadius: 10,
-
-    // Ombre sur Android
+    paddingLeft: 20,
+    paddingRight: 20,
     elevation: 8,
   },
   textButton: {
@@ -389,7 +389,38 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: 900,
   },
+  buttonDeconnexion: {
+    marginTop: 30,
+    alignSelf: "center",
+    justifyContent: "center",
+    width: "100%",
+    height: 43,
+    borderWidth: 1,
+    borderColor: "#bbbbbb",
+    backgroundColor: "white",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    paddingLeft: 20,
+    paddingRight: 20,
+    elevation: 8,
+  },
+  textButtonDeconnexion: {
+    alignSelf: "center",
+    color: "#FF6C02",
+    fontWeight: 900,
+  },
   scrollContainer: {
     width: "100%",
+  },
+  error: {
+    color: "red",
+    alignSelf: "center",
+  },
+  message: {
+    color: "green",
+    alignSelf: "center",
   },
 });
