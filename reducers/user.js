@@ -11,9 +11,14 @@ export const userSlice = createSlice({
     signup: (state, action) => {
       state.value.token = action.payload.token;
       state.value.email = action.payload.email;
+      state.value.firstname = action.payload.firstname;
+      state.value.lastname = action.payload.lastname;
     },
     signin: (state, action) => {
       state.value.token = action.payload.token;
+      state.value.email = action.payload.email;
+      state.value.firstname = action.payload.firstname;
+      state.value.lastname = action.payload.lastname;
     },
     addAssociation: (state, action) => {
       state.value.associations.push(action.payload);
