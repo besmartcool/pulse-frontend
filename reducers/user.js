@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
+import UpdateAssociationInfo from "../components/updateAssociationInfo";
 
 const initialState = {
-  value: { token: null, email: null, favorites: [], associations: [] },
+  value: { token: null, email: null, favorites: [], associations: [], AssociationUpdated: null },
 };
 
 export const userSlice = createSlice({
@@ -34,8 +35,11 @@ export const userSlice = createSlice({
     addInfoProfile: (state, action) => {
       state.value.push(action.payload);
     },
+    saveAssociationForUpdate: (state, action) => {
+      state.value.AssociationUpdated = action.payload;
+    },
   },
 });
 
-export const { signup, signin, addAssociation, liked, addInfoProfile } = userSlice.actions;
+export const { signup, signin, addAssociation, liked, addInfoProfile, saveAssociationForUpdate } = userSlice.actions;
 export default userSlice.reducer;
