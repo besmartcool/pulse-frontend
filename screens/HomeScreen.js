@@ -47,7 +47,7 @@ export default function HomeScreen({ navigation }) {
               behavior={Platform.OS === "ios" ? "padding" : "height"}
               style={styles.containerKeyboardAvoidingView}
             >
-              <Signup />
+              <Signup setSignupVisible={setSignupVisible} />
             </KeyboardAvoidingView>
           </View>
         </View>
@@ -69,7 +69,7 @@ export default function HomeScreen({ navigation }) {
               behavior={Platform.OS === "ios" ? "padding" : "height"}
               style={styles.containerKeyboardAvoidingView}
             >
-              <Signin />
+              <Signin setSigninVisible={setSigninVisible} />
             </KeyboardAvoidingView>
           </View>
         </View>
