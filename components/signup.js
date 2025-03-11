@@ -23,7 +23,6 @@ export default function Signup() {
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   const dispatch = useDispatch();
   const navigation = useNavigation();
-console.log(BACKEND_ADDRESS)
   // // Convertir en minuscule le text de l'input email
   // const handleChangeText = (text) => {
   //   setSignUpEmail(text);
