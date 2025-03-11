@@ -2,6 +2,7 @@ import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import NewAssociationForm from "../components/newAssociationForm";
 import MyAssociations from "../components/myAssociations";
+import UpdateAssociationInfo from "../components/updateAssociationInfo"
 import React, { useState } from "react";
 
 export default function AssoScreen({ navigation }) {
@@ -13,17 +14,18 @@ export default function AssoScreen({ navigation }) {
   }
 
   const handleTypeContent = () => {
-    setTypeContent("form");
+    setTypeContent("NewAssociationForm");
   }
 
   let content;
 
   if (typeContent == "default") {
     content = <MyAssociations handleTypeContent={handleTypeContent} />;
-  } else if (typeContent == "form") {
+  } else if (typeContent == "NewAssociationForm") {
     content = <NewAssociationForm handleBackToDefault={handleBackToDefault}/>;
+  } else if (typeContent == "UpdateAssociationForm") {
+    content = <UpdateAssociationInfo handleBackToDefault={handleBackToDefault}/>
   }
-
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

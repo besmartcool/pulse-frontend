@@ -21,7 +21,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {addAssociation} from "../reducers/user";
 import { BACKEND_ADDRESS } from "../assets/url";
 
-export default function NewAssociationForm({ handleBackToDefault }) {
+export default function UpdateAssociationInfo({ handleBackToDefault }) {
 
   //Etats pour les données de l'association
   const [name, setName] = useState("");
@@ -280,7 +280,7 @@ export default function NewAssociationForm({ handleBackToDefault }) {
         <Pressable onPress={handleBackToDefault} style={styles.backButton}>
           <FontAwesome name="arrow-left" size={24} color="#FF6C02" />
         </Pressable>
-          <Text style={styles.mainHeader}>Enregistrer votre association</Text>
+          <Text style={styles.mainHeader}>Modification informations association</Text>
       </View>
       <View style={styles.bottomBorder} />
       <ScrollView
