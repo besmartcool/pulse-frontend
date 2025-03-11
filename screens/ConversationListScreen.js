@@ -31,7 +31,7 @@ export default function ConversationListScreen({ navigation, route }) {
       <View style={styles.fakeModal}>
         <View style={styles.research}>
           <Text style={styles.title}>
-            {user.firstname}   {user.lastname}
+            {user.firstname} {user.lastname}
           </Text>
         </View>
       </View>
