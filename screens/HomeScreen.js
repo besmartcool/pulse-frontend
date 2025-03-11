@@ -113,7 +113,7 @@ export default function HomeScreen({ navigation }) {
       </View>
       <View style={styles.containerTextFooter}>
         <Text style={styles.textFooter}>@Pulse | 2025</Text>
-        <Text style={styles.textFooter}>Besoin d'aide ? Nous contacter</Text>
+        {/* <Text style={styles.textFooter}>Besoin d'aide ? Nous contacter</Text> */}
       </View>
     </View>
   );

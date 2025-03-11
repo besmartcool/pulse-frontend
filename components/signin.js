@@ -54,7 +54,6 @@ export default function Signin({ setSignInVisible }) {
             );
 
             setSignInEmail("");
-
             setSignInPassword("");
             setErrorMessage("");
             setSignInVisible(false);
