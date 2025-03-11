@@ -84,7 +84,7 @@ export default function SearchScreen({ navigation }) {
   const associationsCategories =
     categoriesList.length > 0 ? (
       categoriesList.map((category, index) => (
-        <TouchableOpacity key={index} onPress={() => handleCategoryClick(category)}>
+        <TouchableOpacity key={category} onPress={() => handleCategoryClick(category)}>
           <View style={{ marginRight: 5 }}>
             <CategorieRound categorie={category} />
           </View>
@@ -120,10 +120,10 @@ export default function SearchScreen({ navigation }) {
   const resultFromResearch =
   resultResearch === "default"
     ? associations.map((association) => (
-          <AssociationCard key={association.id} association={association} />
+          <AssociationCard key={association.name} association={association} />
       ))
     : filteredAssociations.map((association) => (
-          <AssociationCard key={association.id} association={association} />
+          <AssociationCard key={association.name} association={association} />
       ));
 
   return (

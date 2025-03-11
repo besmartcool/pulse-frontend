@@ -101,6 +101,7 @@ const TabNavigator = () => {
         component={ChatStack}
         initialParams={{ email: userInfo.email }}
       />
+
       <Tab.Screen
         name="Profile"
         component={!userInfo.token ? HomeScreen : ProfileScreen}

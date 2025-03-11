@@ -31,18 +31,23 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* Modal signup avec composant signup */}
+      {/* Modal Signup */}
       <Modal
         animationType="slide"
         transparent={true}
         visible={signupVisible}
-        onRequestClose={() => {
-          // Alert.alert("Modal has been closed.");
-          setSignupVisible(!signupVisible);
-        }}
+        onRequestClose={() => setSignupVisible(false)}
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
+            {/* Bouton Close */}
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => setSignupVisible(false)}
+            >
+              <Text style={styles.closeButtonText}>X</Text>
+            </TouchableOpacity>
+
             <KeyboardAvoidingView
               behavior={Platform.OS === "ios" ? "padding" : "height"}
               style={styles.containerKeyboardAvoidingView}
@@ -53,18 +58,23 @@ export default function HomeScreen({ navigation }) {
         </View>
       </Modal>
 
-      {/* Modal signin avec composant signin */}
+      {/* Modal Signin */}
       <Modal
         animationType="slide"
         transparent={true}
         visible={signinVisible}
-        onRequestClose={() => {
-          // Alert.alert("Modal has been closed.");
-          setSigninVisible(!signinVisible);
-        }}
+        onRequestClose={() => setSigninVisible(false)}
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
+            {/* Bouton Close */}
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => setSigninVisible(false)}
+            >
+              <Text style={styles.closeButtonText}>X</Text>
+            </TouchableOpacity>
+
             <KeyboardAvoidingView
               behavior={Platform.OS === "ios" ? "padding" : "height"}
               style={styles.containerKeyboardAvoidingView}
@@ -74,8 +84,9 @@ export default function HomeScreen({ navigation }) {
           </View>
         </View>
       </Modal>
+
+      {/* Contenu principal */}
       <View style={styles.containerImageSign}>
-        {/* Background Linear Gradient */}
         <LinearGradient
           colors={["#FFFFFF", "#A3E2F8"]}
           start={{ x: 0.5, y: 0.3 }}
@@ -86,23 +97,26 @@ export default function HomeScreen({ navigation }) {
           <View style={styles.containerSign}>
             <Text style={styles.text}>Vous avez déjà un compte ?</Text>
             <TouchableOpacity
-              onPress={() => handleClickModalSignin()}
+              onPress={handleClickModalSignin}
               style={styles.buttonSignin}
               activeOpacity={0.8}
             >
               <Text style={styles.textButtonSignin}>Sign in</Text>
             </TouchableOpacity>
+
             <View style={styles.line}></View>
+
             <Text style={styles.text}>Inscrivez-vous</Text>
             <TouchableOpacity
-              onPress={() => handleClickModalSignup()}
+              onPress={handleClickModalSignup}
               style={styles.buttonSignup}
               activeOpacity={0.8}
             >
               <Text style={styles.textButtonSignup}>Sign up</Text>
             </TouchableOpacity>
+
             <TouchableOpacity
-              onPress={() => handleSubmit()}
+              onPress={handleSubmit}
               style={styles.buttonContinue}
               activeOpacity={0.8}
             >
@@ -111,9 +125,9 @@ export default function HomeScreen({ navigation }) {
           </View>
         </LinearGradient>
       </View>
+
       <View style={styles.containerTextFooter}>
         <Text style={styles.textFooter}>@Pulse | 2025</Text>
-        {/* <Text style={styles.textFooter}>Besoin d'aide ? Nous contacter</Text> */}
       </View>
     </View>
   );
@@ -131,14 +145,10 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 36,
     borderBottomLeftRadius: 36,
     paddingBottom: 50,
-
-    // Ombre sur iOS
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.3,
     shadowRadius: 10,
-
-    // Ombre sur Android
     elevation: 8,
   },
   container: {
@@ -176,8 +186,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.3,
     shadowRadius: 10,
-
-    // Ombre sur Android
     elevation: 8,
   },
   line: {
@@ -191,10 +199,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: "100%",
     height: 43,
-    backgroundColor: "red",
+    backgroundColor: "white",
     borderWidth: 1,
     borderColor: "#bbbbbb",
-    backgroundColor: "white",
     borderRadius: 8,
   },
   buttonContinue: {
@@ -203,10 +210,9 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 43,
     marginTop: 80,
-    backgroundColor: "red",
+    backgroundColor: "white",
     borderWidth: 1,
     borderColor: "#bbbbbb",
-    backgroundColor: "white",
     borderRadius: 8,
   },
   text: {
@@ -214,15 +220,15 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   textButton: {
-    fontWeight: 900,
+    fontWeight: "900",
     color: "black",
   },
   textButtonSignin: {
-    fontWeight: 900,
+    fontWeight: "900",
     color: "#FF6C02",
   },
   textButtonSignup: {
-    fontWeight: 900,
+    fontWeight: "900",
     color: "white",
   },
   containerTextFooter: {
@@ -231,7 +237,7 @@ const styles = StyleSheet.create({
   },
   textFooter: {
     fontSize: 10,
-    fontWeight: 900,
+    fontWeight: "900",
   },
   // CSS Modal
   centeredView: {
@@ -248,32 +254,32 @@ const styles = StyleSheet.create({
     padding: 35,
     alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
   },
-  button: {
-    borderRadius: 20,
+  backButton: {
+    top: 15,
+    right: 15,
+    position: "absolute",
     padding: 10,
-    elevation: 2,
+    zIndex: 10,
+    width: 40,
+    height: 40,
+    borderRadius: 180,
+    backgroundColor: "#FFF5E6",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#FF6C02",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 4,
   },
-  buttonOpen: {
-    backgroundColor: "#F194FF",
-  },
-  buttonClose: {
-    backgroundColor: "#2196F3",
-  },
-  textStyle: {
-    color: "white",
+  closeButtonText: {
+    color: "#FF6C02",
     fontWeight: "bold",
-    textAlign: "center",
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center",
+    fontSize: 16,
   },
 });

@@ -19,33 +19,55 @@ const AssociationCard = ({ association }) => {
     dispatch(liked(association));
   };
 
+  const countryOverrides = {
+    Chine: "China", // Pour éviter "Taiwan"
+  };
+
   // Récupération du code pays
   useEffect(() => {
     if (association.nationality) {
-      fetch(`https://restcountries.com/v3.1/name/${association.nationality}`)
+      // Vérifie si le pays est dans countryOverrides, sinon garde le même nom
+      const countryName =
+        countryOverrides[association.nationality] || association.nationality;
+
+      fetch(
+        `https://restcountries.com/v3.1/name/${encodeURIComponent(
+          countryName
+        )}?fullText=true`
+      )
         .then((response) => response.json())
         .then((data) => {
           if (data && data.length > 0) {
-            setCountryCode(data[0].cca2);
+            setCountryCode(data[0].cca2); // Récupère le code alpha2 internationale
           }
         })
-        .catch((error) => console.error("Erreur lors de la récupération du code pays :", error));
+        .catch((error) =>
+          console.error("Erreur lors de la récupération du code pays :", error)
+        );
     }
   }, [association.nationality]);
 
   return (
     <View style={styles.associationCard}>
-      <TouchableOpacity onPress={() => navigation.navigate("Description", { association })}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("Description", { association })}
+      >
         <View style={styles.topAssoContent}>
           <View style={styles.textTitle}>
             {countryCode ? (
               <Image
-                source={{ uri: `https://flagcdn.com/w320/${countryCode.toLowerCase()}.png` }}
+                source={{
+                  uri: `https://flagcdn.com/w320/${countryCode.toLowerCase()}.png`,
+                }}
                 style={styles.drapeau}
               />
-            ) : <View style={styles.drapeauDefault}></View>}
+            ) : (
+              <View style={styles.drapeauDefault}></View>
+            )}
             <Text style={styles.assoName}>
-              {association.name.length > 30 ? association.name.slice(0, 30) + "..." : association.name}
+              {association.name.length > 30
+                ? association.name.slice(0, 30) + "..."
+                : association.name}
             </Text>
           </View>
           <View style={styles.textCategorie}>
@@ -54,16 +76,23 @@ const AssociationCard = ({ association }) => {
         </View>
         <Text style={styles.address}>
           <FontAwesome name="map-pin" size={14} color="#000000" />{" "}
-          {association.address.city.toUpperCase()} {association.address.zipCode}, {association.address.country}
+          {association.address.city.toUpperCase()} {association.address.zipCode}
+          , {association.address.country}
         </Text>
         <Text style={styles.description}>
-          {association.description.length > 150 ? association.description.slice(0, 150) + "..." : association.description}
+          {association.description.length > 150
+            ? association.description.slice(0, 150) + "..."
+            : association.description}
         </Text>
       </TouchableOpacity>
       <View style={styles.bottomAssoContent}>
-      <TouchableOpacity onPress={handleLike}>
-        <FontAwesome name="heart" size={28} color={isLiked ? "#FF0000" : "#000000"} style={styles.icon} />
-      </TouchableOpacity>
+        <TouchableOpacity onPress={handleLike}>
+          <FontAwesome
+            name="heart"
+            size={25}
+            color={isLiked ? "#FF0000" : "#000000"}
+          />
+        </TouchableOpacity>
         <TouchableOpacity style={styles.contact}>
           <Text style={styles.contactText}>Contacter</Text>
         </TouchableOpacity>
@@ -73,7 +102,6 @@ const AssociationCard = ({ association }) => {
 };
 
 export default AssociationCard;
-
 
 const styles = StyleSheet.create({
   associationCard: {
@@ -112,7 +140,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
     borderRadius: 13,
     borderWidth: 1,
-    borderColor: "#bbbbbb"
+    borderColor: "#bbbbbb",
   },
   drapeauDefault: {
     width: 26,
@@ -121,7 +149,7 @@ const styles = StyleSheet.create({
     borderRadius: 13,
     borderWidth: 1,
     borderColor: "#bbbbbb",
-    backgroundColor: '#bbbbbb'
+    backgroundColor: "#bbbbbb",
   },
   assoName: {
     fontSize: 20,
@@ -170,7 +198,7 @@ const styles = StyleSheet.create({
   contactText: {
     color: "#FFF",
     fontWeight: "600",
-    fontSize: 15,
+    fontSize: 12,
     textAlign: "center",
   },
 });
