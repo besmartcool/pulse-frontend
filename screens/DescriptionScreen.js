@@ -13,10 +13,12 @@ import { useNavigation } from "@react-navigation/native";
 import MapView, { Marker } from "react-native-maps";
 import CategorieRound from "../components/categorieRound";
 import { useDispatch, useSelector } from "react-redux";
-import { liked } from "../reducers/user";
+import { liked, saveAssociationForUpdate } from "../reducers/user";
 import { BACKEND_ADDRESS } from "../assets/url";
 
 export default function DescriptionScreen({ route }) {
+
+ 
   const { association } = route.params;
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -109,7 +111,6 @@ export default function DescriptionScreen({ route }) {
       )
         .then((response) => response.json())
         .then((data) => {
-          console.log("réponse backend", data)
           if (data.result) {
             setIsAdmin(true);
           } else {
@@ -121,7 +122,6 @@ export default function DescriptionScreen({ route }) {
         );
     }, []);
 
-    console.log("admin status ", isAdmin)
   return (
     <View style={styles.fakeModal}>
       <View style={styles.globalHeader}>
@@ -157,7 +157,7 @@ export default function DescriptionScreen({ route }) {
                 </Text>
               </View>
             ) : (
-              <Text></Text>
+              null
             )}
           </View>
         </View>
@@ -175,6 +175,10 @@ export default function DescriptionScreen({ route }) {
             name="pencil"
             size={24}
             color="black"
+            onPress={() => {
+              dispatch(saveAssociationForUpdate(association.name))
+              navigation.navigate('Asso')
+            }}
           />
         </View>}
 
