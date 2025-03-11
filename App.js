@@ -9,11 +9,12 @@ import SearchScreen from "./screens/SearchScreen";
 import FavoriteScreen from "./screens/FavoriteScreen";
 import AssoScreen from "./screens/AssoScreen";
 import ChatScreen from "./screens/ChatScreen";
+import ConversationListScreen from "./screens/ConversationListScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import DescriptionScreen from "./screens/DescriptionScreen";
 import { Provider, useSelector } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import user from './reducers/user';
+import user from "./reducers/user";
 import React, { useState, useEffect } from "react";
 
 const Stack = createNativeStackNavigator();
@@ -23,12 +24,24 @@ const store = configureStore({
   reducer: { user },
 });
 
-
 const SearchStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="SearchHome" component={SearchScreen} />
       <Stack.Screen name="Description" component={DescriptionScreen} />
+      <Stack.Screen name="ChatScreen" component={ChatScreen} />
+    </Stack.Navigator>
+  );
+};
+
+const ChatStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen
+        name="ConversationList"
+        component={ConversationListScreen}
+      />
+      <Stack.Screen name="ChatScreen" component={ChatScreen} />
     </Stack.Navigator>
   );
 };
@@ -36,12 +49,11 @@ const SearchStack = () => {
 // const [showModal, setShowModal] = useState(false);
 
 const TabNavigator = () => {
-
   //Import pour vérifier que l'utilisateur est connecté (voir propriété "component" des tabScreen)
-  const userInfo = useSelector((state) => state.user.value)
+  const userInfo = useSelector((state) => state.user.value);
 
-   // Fonction pour gérer la navigation conditionnelle
-   const handleProtectedNavigation = (screenName) => {
+  // Fonction pour gérer la navigation conditionnelle
+  const handleProtectedNavigation = (screenName) => {
     if (!userInfo.token) {
       setShowModal(true); // Affiche la modale si l'utilisateur n'est pas connecté
     } else {
@@ -76,18 +88,28 @@ const TabNavigator = () => {
     >
       <Tab.Screen name="Search" component={SearchStack} />
       {/* Provisoire, à remplacer par un listener et une modale qui affiche le message "veuilelz vous connecter" */}
-      <Tab.Screen name="Favorite" component={!userInfo.token? HomeScreen : FavoriteScreen} /> 
-      <Tab.Screen name="Asso" component={!userInfo.token? HomeScreen : AssoScreen} />
-      <Tab.Screen name="Chat" component={!userInfo.token? HomeScreen : ChatScreen} />
-      <Tab.Screen name="Profile" component={!userInfo.token? HomeScreen : ProfileScreen} />
-
+      <Tab.Screen
+        name="Favorite"
+        component={!userInfo.token ? HomeScreen : FavoriteScreen}
+      />
+      <Tab.Screen
+        name="Asso"
+        component={!userInfo.token ? HomeScreen : AssoScreen}
+      />
+      <Tab.Screen
+        name="Chat"
+        component={ChatStack}
+        initialParams={{ email: userInfo.email }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={!userInfo.token ? HomeScreen : ProfileScreen}
+      />
     </Tab.Navigator>
   );
 };
 
 export default function App() {
-
-
   return (
     <Provider store={store}>
       <NavigationContainer>

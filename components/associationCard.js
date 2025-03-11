@@ -43,7 +43,7 @@ const AssociationCard = ({ association }) => {
                 source={{ uri: `https://flagcdn.com/w320/${countryCode.toLowerCase()}.png` }}
                 style={styles.drapeau}
               />
-            ) : null}
+            ) : <View style={styles.drapeauDefault}></View>}
             <Text style={styles.assoName}>
               {association.name.length > 30 ? association.name.slice(0, 30) + "..." : association.name}
             </Text>
@@ -113,6 +113,15 @@ const styles = StyleSheet.create({
     borderRadius: 13,
     borderWidth: 1,
     borderColor: "#bbbbbb"
+  },
+  drapeauDefault: {
+    width: 26,
+    height: 26,
+    marginRight: 10,
+    borderRadius: 13,
+    borderWidth: 1,
+    borderColor: "#bbbbbb",
+    backgroundColor: '#bbbbbb'
   },
   assoName: {
     fontSize: 20,
