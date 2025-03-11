@@ -4,7 +4,7 @@ import NewAssociationForm from "../components/newAssociationForm";
 import MyAssociations from "../components/myAssociations";
 import React, { useState } from "react";
 
-export default function AssoScreen() {
+export default function AssoScreen({ navigation }) {
 
   const [typeContent, setTypeContent] = useState("default");
 

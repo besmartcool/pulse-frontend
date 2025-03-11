@@ -85,17 +85,27 @@ const TabNavigator = () => {
   );
 };
 
-export default function App() {
+//composant enfant qui sera englobé dans le provider afin de pouvoir utilier les informations utilisateurs stockées dans le store
+function MainNavigator() {
+  const userInfo = useSelector((state) => state.user.value);
 
+  return (
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Asso" component={userInfo?.token ? AssoScreen : HomeScreen} />
+        <Stack.Screen name="TabNavigator" component={TabNavigator} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+
+export default function App() {
 
   return (
     <Provider store={store}>
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="TabNavigator" component={TabNavigator} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <MainNavigator /> {/* Appelle le composant qui utilise useSelector */}
     </Provider>
   );
 }

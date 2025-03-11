@@ -130,7 +130,7 @@ export default function SearchScreen({ navigation }) {
     <View style={styles.container}>
       <View style={styles.allContent}>
         {typeContent === "default" && (
-          <SearchHome setTypeContent={setTypeContent} />
+          <SearchHome setTypeContent={setTypeContent} navigation = {() => navigation.navigate("Asso")}/>
         )}
         {typeContent === "search" && (
           <SearchFilters

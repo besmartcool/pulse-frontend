@@ -20,7 +20,9 @@ export default function DescriptionScreen({ route }) {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
-  const favorites = useSelector((state) => state.user.value.favorites);
+  const user = useSelector((state) => state.user.value);
+
+  const favorites = user.favorites;
   const isLiked = favorites.some((fav) => fav.name === association.name);
 
   const [countryCode, setCountryCode] = useState("");
@@ -89,40 +91,63 @@ export default function DescriptionScreen({ route }) {
     dispatch(liked(association));
   };
 
+
+  //PERMET DE SAVOIR SI L'UTILISATEUR EST ADMIN DE L'ASSOCIATION
+
+  
   return (
     <View style={styles.fakeModal}>
-      <View style={styles.newResearch}>
-        <View style={styles.button}>
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={styles.backButton}
-          >
-            <FontAwesome name="arrow-left" size={24} color="#FF6C02" />
-          </TouchableOpacity>
+      <View style={styles.globalHeader}>
+        <View style={styles.newResearch}>
+          <View style={styles.button}>
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              style={styles.backButton}
+            >
+              <FontAwesome name="arrow-left" size={24} color="#FF6C02" />
+            </TouchableOpacity>
+          </View>
+
+          <Text style={styles.assoName}>
+            {/* TRONCAGE DU NOM DE L'ASSO */}
+            {association.name.length > 20
+              ? association.name.slice(0, 20) + "..."
+              : association.name}
+          </Text>
+
+          <View style={styles.button}>
+            {/* AFFICHAGE DU DRAPEAU SI LA NATIONALITÉ DE L'ASSO EXISTE */}
+            {countryCode ? (
+              <View style={styles.rightRound}>
+                <Image
+                  source={{
+                    uri: `https://flagcdn.com/w320/${countryCode.toLowerCase()}.png`,
+                  }}
+                  style={styles.drapeau}
+                />
+                <Text style={styles.categoryText}>
+                  {association.nationality}
+                </Text>
+              </View>
+            ) : (
+              <Text></Text>
+            )}
+          </View>
         </View>
 
-        <Text style={styles.assoName}>
-          {/* TRONCAGE DU NOM DE L'ASSO */}
-          {association.name.length > 20
-            ? association.name.slice(0, 20) + "..."
-            : association.name}
-        </Text>
-
-        <View style={styles.button}>
-          {/* AFFICHAGE DU DRAPEAU SI LA NATIONALITÉ DE L'ASSO EXISTE */}
-          {countryCode ? (
-            <View style={styles.rightRound}>
-              <Image
-                source={{
-                  uri: `https://flagcdn.com/w320/${countryCode.toLowerCase()}.png`,
-                }}
-                style={styles.drapeau}
-              />
-              <Text style={styles.categoryText}>{association.nationality}</Text>
-            </View>
-          ) : (
-            <Text></Text>
-          )}
+        <View style={styles.admin}>
+          <FontAwesome
+            style={styles.icons}
+            name="comment"
+            size={24}
+            color="black"
+          />
+          <FontAwesome
+            style={styles.icons}
+            name="pencil"
+            size={24}
+            color="black"
+          />
         </View>
       </View>
 
@@ -151,8 +176,8 @@ export default function DescriptionScreen({ route }) {
             </Text>
 
             {/* TRONCAGE DE LA DESCRIPTION DE L'ASSO */}
-              <Text style={styles.title}>Nom complet </Text>
-              <Text style={styles.bold}>{association.name}</Text>
+            <Text style={styles.title}>Nom complet </Text>
+            <Text style={styles.bold}>{association.name}</Text>
             <Text style={styles.title}>Description</Text>
             <Text>
               {showFullDescription
@@ -195,24 +220,34 @@ export default function DescriptionScreen({ route }) {
             <Text style={styles.title}>Contact</Text>
             <View style={styles.legalInfos}>
               <Text>Téléphone : </Text>
-              <Text style={styles.bold}>{association.phone ? association.phone : "Non renseigné"}</Text>
+              <Text style={styles.bold}>
+                {association.phone ? association.phone : "Non renseigné"}
+              </Text>
             </View>
             <View style={styles.legalInfos}>
               <Text>E-mail : </Text>
-              <Text style={styles.bold}>{association.email == "" ? association.email : "Non renseignée"}</Text>
+              <Text style={styles.bold}>
+                {association.email == "" ? association.email : "Non renseignée"}
+              </Text>
             </View>
             <Text style={styles.title}>Réseaux sociaux</Text>
             <View style={styles.legalInfos}>
               <Text>Réseau social 1 : </Text>
-              <Text style={styles.bold}>{association.email == "" ? association.email : "Non renseigné"}</Text>
+              <Text style={styles.bold}>
+                {association.email == "" ? association.email : "Non renseigné"}
+              </Text>
             </View>
             <View style={styles.legalInfos}>
               <Text>Réseau social 2 : </Text>
-              <Text style={styles.bold}>{association.email == "" ? association.email : "Non renseigné"}</Text>
+              <Text style={styles.bold}>
+                {association.email == "" ? association.email : "Non renseigné"}
+              </Text>
             </View>
             <View style={styles.legalInfos}>
               <Text>Réseau social 3 : </Text>
-              <Text style={styles.bold}>{association.email == "" ? association.email : "Non renseigné"}</Text>
+              <Text style={styles.bold}>
+                {association.email == "" ? association.email : "Non renseigné"}
+              </Text>
             </View>
             <Text style={styles.title}>Membres</Text>
             {association.members.length > 0 ? (
@@ -302,7 +337,9 @@ export default function DescriptionScreen({ route }) {
         <TouchableOpacity style={styles.contact}>
           <Text style={styles.contactText}>Contacter</Text>
         </TouchableOpacity>
+        
       </View>
+      
     </View>
   );
 }
@@ -324,22 +361,39 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 5,
   },
-  newResearch: {
+  globalHeader: {
     width: "90%",
     height: "auto",
     marginTop: 60,
+    // gap: 8,
+    position: "absolute",
+    backgroundColor: "white",
+  },
+
+  newResearch: {
+    width: "100%",
+    height: "auto",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 10,
-    position: "absolute",
+    // zIndex: 10,
     backgroundColor: "white",
-    zIndex: 10,
+  },
+
+  admin: {
+    height: 100,
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginRight: 20,
+  },
+  icons: {
+    color: "#3BC3FF",
   },
   scrollView: {
-    marginTop: 100,
+    marginTop: 115,
     width: "90%",
-    marginBottom: 15,
+    marginBottom: 25,
   },
   content: {
     width: "100%",
@@ -399,14 +453,14 @@ const styles = StyleSheet.create({
     color: "#FF6C02",
     fontWeight: "bold",
     marginTop: 5,
-    textDecorationLine: "underline"
+    textDecorationLine: "underline",
   },
   drapeau: {
     width: 26,
     height: 26,
     borderRadius: 13,
     borderWidth: 1,
-    borderColor: "#bbbbbb"
+    borderColor: "#bbbbbb",
   },
   legalInfos: {
     flexDirection: "row",
@@ -422,7 +476,7 @@ const styles = StyleSheet.create({
   bold: {
     color: "#FF6C02",
     fontWeight: "light",
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   categoryText: {
     fontSize: 8,
@@ -504,9 +558,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   bottomStickyContent: {
-    width: '90%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  }
+    width: "90%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
 });

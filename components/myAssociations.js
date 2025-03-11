@@ -30,7 +30,6 @@ export default function MyAssociations({ handleTypeContent }) {
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log("réponse backend", data);
         setAssociations(data.data);
       })
       .catch((error) =>

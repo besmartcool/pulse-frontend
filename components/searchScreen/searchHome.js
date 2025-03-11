@@ -2,14 +2,14 @@ import React from "react";
 import { Image, Pressable, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
-export default function SearchHome({ setTypeContent }) {
+export default function SearchHome({ setTypeContent, navigation }) {
   return (
     <View style={styles.fakeModal}>
       <View style={styles.research}>
         <View style={styles.topContent}>
           <Image style={styles.logo} source={require("../../assets/Logo.png")} />
           <TouchableOpacity style={styles.addAsso}>
-            <Text style={styles.addAssoText}>+ Ajouter une association</Text>
+            <Text style={styles.addAssoText} onPress={navigation} >+ Ajouter une association</Text>
           </TouchableOpacity>
         </View>
         <TouchableOpacity
