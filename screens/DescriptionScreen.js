@@ -13,9 +13,12 @@ import { useNavigation } from "@react-navigation/native";
 import MapView, { Marker } from "react-native-maps";
 import CategorieRound from "../components/categorieRound";
 import { useDispatch, useSelector } from "react-redux";
-import { liked } from "../reducers/user";
+import { liked, saveAssociationForUpdate } from "../reducers/user";
+import { BACKEND_ADDRESS } from "../assets/url";
 
 export default function DescriptionScreen({ route }) {
+
+ 
   const { association } = route.params;
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -94,7 +97,31 @@ export default function DescriptionScreen({ route }) {
 
   //PERMET DE SAVOIR SI L'UTILISATEUR EST ADMIN DE L'ASSOCIATION
 
-  
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+      fetch(
+        `${BACKEND_ADDRESS}/associations/getAssociationByName/${association.name}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.result) {
+            setIsAdmin(true);
+          } else {
+            setIsAdmin(false)
+          }
+        })
+        .catch((error) =>
+          console.error("Erreur lors de la récupération :", error)
+        );
+    }, []);
+
   return (
     <View style={styles.fakeModal}>
       <View style={styles.globalHeader}>
@@ -130,11 +157,12 @@ export default function DescriptionScreen({ route }) {
                 </Text>
               </View>
             ) : (
-              <Text></Text>
+              null
             )}
           </View>
         </View>
 
+        {isAdmin &&
         <View style={styles.admin}>
           <FontAwesome
             style={styles.icons}
@@ -147,8 +175,13 @@ export default function DescriptionScreen({ route }) {
             name="pencil"
             size={24}
             color="black"
+            onPress={() => {
+              dispatch(saveAssociationForUpdate(association.name))
+              navigation.navigate('Asso')
+            }}
           />
-        </View>
+        </View>}
+
       </View>
 
       <ScrollView style={styles.scrollView}>

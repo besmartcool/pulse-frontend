@@ -14,9 +14,10 @@ import { useNavigation } from "@react-navigation/native";
 import { BACKEND_ADDRESS } from "../assets/url";
 
 export default function Signup({ setSignupVisible }) {
-
   const [signUpEmail, setSignUpEmail] = useState("");
   const [signUpPassword, setSignUpPassword] = useState("");
+  const [signUpFirstName, setSignUpFirstName] = useState("");
+  const [signUpLastName, setSignUpLastName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   const EMAIL_REGEX =
@@ -42,6 +43,8 @@ export default function Signup({ setSignupVisible }) {
         body: JSON.stringify({
           email: signUpEmail,
           password: signUpPassword,
+          firstname: signUpFirstName,
+          lastname: signUpLastName,
         }),
       })
         .then((response) => response.json())
@@ -51,6 +54,8 @@ export default function Signup({ setSignupVisible }) {
               signup({
                 token: data.token,
                 email: data.email,
+                firstname: data.firstname,
+                lastname: data.lastname,
               })
             );
             setSignUpEmail("");
@@ -77,6 +82,22 @@ export default function Signup({ setSignupVisible }) {
       </View>
       <Input
         style={styles.input}
+        placeholder="Prénom"
+        value={signUpFirstName}
+        onChangeText={(value) => setSignUpFirstName(value)}
+        secureTextEntry={false}
+        icon="pencil"
+      />
+      <Input
+        style={styles.input}
+        placeholder="Nom"
+        value={signUpLastName}
+        onChangeText={(value) => setSignUpLastName(value)}
+        secureTextEntry={false}
+        icon="pencil"
+      />
+      <Input
+        style={styles.input}
         keyboardType="email-address"
         autoCapitalize="none"
         placeholder="Email"
@@ -88,7 +109,7 @@ export default function Signup({ setSignupVisible }) {
 
       <Input
         style={styles.input}
-        placeholder="Password"
+        placeholder="Mot de passe"
         value={signUpPassword}
         onChangeText={(value) => setSignUpPassword(value)}
         secureTextEntry={true}

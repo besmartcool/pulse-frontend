@@ -13,8 +13,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { BACKEND_ADDRESS } from "../assets/url";
 
-export default function Signin({ setSignInVisible }) {
-
+export default function Signin({ setSigninVisible }) {
   const [signInEmail, setSignInEmail] = useState("");
   const [signInPassword, setSignInPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -30,8 +29,10 @@ export default function Signin({ setSignInVisible }) {
   const handleSignIn = () => {
     if (!signInPassword) {
       setErrorMessage("password required");
+      return;
     } else if (signInPassword.length < 8) {
       setErrorMessage("password must have 8 characters");
+      return;
     }
 
     if (EMAIL_REGEX.test(signInEmail)) {
@@ -45,28 +46,33 @@ export default function Signin({ setSignInVisible }) {
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log("data", data);
+          console.log("Réponse du backend:", data); // Vérifie la réponse ici
+
           if (data.result) {
             dispatch(
               signin({
                 token: data.token,
+                email: data.email,
+                firstname: data.firstname,
+                lastname: data.lastname
               })
             );
 
             setSignInEmail("");
             setSignInPassword("");
             setErrorMessage("");
-            setSignInVisible(false);
+            setSigninVisible(false);
             navigation.navigate("TabNavigator", { screen: "Search" });
           } else {
             setErrorMessage(data.error);
           }
-        });
+        })
+        .catch((error) => console.log("Erreur fetch:", error));
     } else {
       setErrorMessage("password or email invalid");
-      console.log(errorMessage);
     }
   };
+
   const user = useSelector((state) => state.user.value);
   // console.log("user", user);
   return (

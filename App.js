@@ -101,6 +101,7 @@ const TabNavigator = () => {
         component={ChatStack}
         initialParams={{ email: userInfo.email }}
       />
+
       <Tab.Screen
         name="Profile"
         component={!userInfo.token ? HomeScreen : ProfileScreen}
@@ -109,7 +110,7 @@ const TabNavigator = () => {
   );
 };
 
-//composant enfant qui sera englobé dans le provider afin de pouvoir utilier les informations utilisateurs stockées dans le store
+//composant enfant qui sera englobé dans le provider afin de pouvoir utiliser les informations utilisateurs stockées dans le store
 function MainNavigator() {
   const userInfo = useSelector((state) => state.user.value);
 

@@ -21,7 +21,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {addAssociation} from "../reducers/user";
 import { BACKEND_ADDRESS } from "../assets/url";
 
-export default function NewAssociationForm({ handleBackToDefault }) {
+export default function UpdateAssociationInfo({ handleBackToDefault }) {
 
   //Etats pour les données de l'association
   const [name, setName] = useState("");
@@ -239,7 +239,13 @@ export default function NewAssociationForm({ handleBackToDefault }) {
     }
   }
 
-  // Envoi des données de l'association au backend et affichage de la modale
+      // MISE A JOUR DES INFORMATIONS DE L'ASSOCIATION
+      useEffect(() => {
+        console.log("user.associations", user.AssociationUpdated);
+      }, [user.AssociationUpdated]);
+
+
+  // Adapter le fetch pour la modification, d'abord un fetch pour récupérer les infos, ensuite le fetch de modification
   const handleRegistrationSubmit = () => {
     fetch(`${BACKEND_ADDRESS}/associations/creation`, {
       method: "POST",
@@ -252,7 +258,6 @@ export default function NewAssociationForm({ handleBackToDefault }) {
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
-          console.log("réponse backend", data);
           setMessage("✅ Association créée avec succès !");
           setIsSuccess(true);
           dispatch(addAssociation(data.newAssociation));
@@ -270,9 +275,6 @@ export default function NewAssociationForm({ handleBackToDefault }) {
       });
   };
 
-  useEffect(() => {
-    console.log("user.associations", user.associations);
-  }, [user.associations]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -280,7 +282,7 @@ export default function NewAssociationForm({ handleBackToDefault }) {
         <Pressable onPress={handleBackToDefault} style={styles.backButton}>
           <FontAwesome name="arrow-left" size={24} color="#FF6C02" />
         </Pressable>
-          <Text style={styles.mainHeader}>Enregistrer votre association</Text>
+          <Text style={styles.mainHeader}>Modif infos association</Text>
       </View>
       <View style={styles.bottomBorder} />
       <ScrollView

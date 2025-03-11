@@ -93,10 +93,10 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
     borderWidth: 2,
-    borderColor: '#bbbbbb'
+    borderColor: '#d0d0d0'
   },
   categoryText: {
-    fontSize: 6,
+    fontSize: 8,
     fontWeight: "bold",
     textAlign: "center",
     color: "white",
