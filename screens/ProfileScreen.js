@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Input from "../components/input";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -26,9 +26,9 @@ export default function ProfileScreen({ navigation }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [nationality, setNationality] = useState("");
+  const [newNationality, setNewNationality] = useState("");
   const [residenceCountry, setResidenceCountry] = useState("");
-  const [destinationCountry, setDestinationCountry] = useState("");
+  const [newDestinationCountry, setNewDestinationCountry] = useState("");
   const [infos, setInfos] = useState();
   const user = useSelector((state) => state.user.value);
 
@@ -36,11 +36,10 @@ export default function ProfileScreen({ navigation }) {
   const [errorMessage, setErrorMessage] = useState("");
 
   // const BACKEND_ADDRESS = process.env.EXPO_PUBLIC_BACKEND_ADDRESS
-console.log(user)
   const handleChangeNationality = (text, index) => {
-    const newInputs = [...nationality];
+    const newInputs = [...newNationality];
     newInputs[index] = text;
-    setNationality(newInputs);
+    setNewNationality(newInputs);
 
     // Ajoute un nouvel input s'il n'est pas vide et si c'est le dernier
     if (text !== "" && index === inputs.length - 1) {
@@ -52,27 +51,27 @@ console.log(user)
     setInputs(newInputs.length ? newInputs : [""]); // S'assure qu'il y a toujours au moins un input
   };
 
-  // fetch(`${BACKEND_ADDRESS}/users/getInfos`, {
-  //   method: "POST",
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //     Authorization: `Bearer ${user.token}`,
-  //   },
-  //   body: JSON.stringify({
-  //     token: user.token,
-  //   }),
-  // }).then((response) => response.json())
-  // .then((data) => {
-  //   setInfos({...data})
-  //   console.log(infos)
-  // });
-
-
+  useEffect(() => {
+    fetch(`${BACKEND_ADDRESS}/users/getInfos`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.token}`,
+      },
+      body: JSON.stringify({ token: user.token }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Fetched data:", data); // Debugging
+        setInfos(data);
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
 
   const handleChangeDestination = (text, index) => {
-    const newInputs = [...destinationCountry];
+    const newInputs = [...newDestinationCountry];
     newInputs[index] = text;
-    setDestinationCountry(newInputs);
+    setNewDestinationCountry(newInputs);
 
     // Ajoute un nouvel input s'il n'est pas vide et si c'est le dernier
     if (text !== "" && index === inputs2.length - 1) {
@@ -84,42 +83,41 @@ console.log(user)
     setInputs2(newInputs.length ? newInputs : [""]); // S'assure qu'il y a toujours au moins un input
   };
   const handleRegistrationSubmit = () => {
-  fetch(`${BACKEND_ADDRESS}/users`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            token: user.token,
-            lastname: lastname,
-            firstname: firstname,
-            username: username,
-            nationality: nationality,
-            residenceCountry: residenceCountry,
-            destinationCountry: destinationCountry,
-          }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            console.log("data1", data)
-            if (data.result) {
-              console.log("data2", data.result)
-              dispatch(
-                addInfoProfile({
-                  lastname: data.lastname,
-                  firstname: data.firstname,
-                  username: data.username,
-                  nationality: data.nationality,
-                  residenceCountry: data.residenceCountry,
-                  destinationCountry: data.destinationCountry,
-                })
-              );
-              setMessage("validated")
-              setLastname();
-              
-            } else {
-              setErrorMessage("error");
-            }
-          });
+    fetch(`${BACKEND_ADDRESS}/users`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        token: user.token,
+        lastname: lastname,
+        firstname: firstname,
+        username: username,
+        nationality: newNationality,
+        residenceCountry: residenceCountry,
+        destinationCountry: newDestinationCountry,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("data1", data);
+        if (data.result) {
+          console.log("data2", data.result);
+          dispatch(
+            addInfoProfile({
+              lastname: data.lastname,
+              firstname: data.firstname,
+              username: data.username,
+              nationality: data.newNationality,
+              residenceCountry: data.residenceCountry,
+              destinationCountry: data.newDestinationCountry,
+            })
+          );
+          setMessage("validated");
+          setLastname();
+        } else {
+          setErrorMessage("error");
         }
+      });
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -144,7 +142,9 @@ console.log(user)
             <Text style={styles.titleInput}>NOM</Text>
             <Input
               style={styles.inputLastname}
-              placeholder={user.lastname ? user.lastname : "Nom..."}
+              placeholder={
+                infos?.data.lastname ? infos.data.lastname : "Nom..."
+              }
               value={lastname}
               onChangeText={(value) => setLastname(value)}
               secureTextEntry={false}
@@ -153,7 +153,9 @@ console.log(user)
             <Text style={styles.titleInput}>PRENOM</Text>
             <Input
               style={styles.inputFirstname}
-              placeholder={user.firstname ? user.firstname : "Prénom..."}
+              placeholder={
+                infos?.data.firstname ? infos.data.firstname : "Prénom..."
+              }
               value={firstname}
               onChangeText={(value) => setFirstname(value)}
               secureTextEntry={false}
@@ -162,7 +164,9 @@ console.log(user)
             <Text style={styles.titleInput}>PSEUDO</Text>
             <Input
               style={styles.inputUsername}
-              placeholder={user.username ? user.username : "Pseudo..."}
+              placeholder={
+                infos?.data.username ? infos.data.username : "Pseudo..."
+              }
               value={username}
               onChangeText={(value) => setUsername(value)}
               secureTextEntry={false}
@@ -205,9 +209,13 @@ console.log(user)
                     borderColor: "#bbbbbb",
                     fontSize: 12,
                   }}
-                  value={nationality}
+                  value={newNationality[index]}
                   onChangeText={(text) => handleChangeNationality(text, index)}
-                  placeholder={user.nationality ? user.nationality : `Nationality ${index + 1}`}
+                  placeholder={
+                    infos?.data.nationality[0]
+                      ? infos.nationality[index]
+                      : `Nationality ${index + 1}`
+                  }
                 />
                 {value === "" && inputs.length > 1 && (
                   <TouchableOpacity
@@ -234,7 +242,11 @@ console.log(user)
             <Text style={styles.titleInput}>PAYS DE RESIDENCE</Text>
             <Input
               style={styles.inputResidenceCountry}
-              placeholder= {user.residenceCountry ? user.residenceCountry : "..."}
+              placeholder={
+                infos?.data.residenceCountry
+                  ? infos.data.residenceCountry
+                  : "..."
+              }
               value={residenceCountry}
               onChangeText={(value) => setResidenceCountry(value)}
               secureTextEntry={false}
@@ -256,9 +268,13 @@ console.log(user)
                     borderColor: "#bbbbbb",
                     fontSize: 12,
                   }}
-                  value={destinationCountry}
+                  value={newDestinationCountry[index]}
                   onChangeText={(text) => handleChangeDestination(text, index)}
-                  placeholder={user.destinationCountry ? user.destinationCountry : `Destination ${index + 1}`}
+                  placeholder={
+                    infos?.data.destinationCountry[0]
+                      ? infos.data.destinationCountry[index]
+                      : `Destination ${index + 1}`
+                  }
                 />
                 {value === "" && inputs2.length > 1 && (
                   <TouchableOpacity
@@ -282,15 +298,16 @@ console.log(user)
                 )}
               </View>
             ))}
-          <TouchableOpacity
-          onPress={() => handleRegistrationSubmit()}
-          style={styles.button}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.textButton}>Envoyer les modifications</Text>
-        </TouchableOpacity>
-        {message && <Text style={styles.message}>{message}</Text>}
-        {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
+
+            <TouchableOpacity
+              onPress={() => handleRegistrationSubmit()}
+              style={styles.button}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.textButton}>Envoyer les modifications</Text>
+            </TouchableOpacity>
+            {message && <Text style={styles.message}>{message}</Text>}
+            {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
           </View>
         </ScrollView>
       </View>
@@ -375,5 +392,4 @@ const styles = StyleSheet.create({
   scrollContainer: {
     width: "100%",
   },
-
 });
