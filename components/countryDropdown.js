@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import {
   AutocompleteDropdown,
@@ -10,10 +10,13 @@ const CountryDropdown = ({
   placeholder,
   selectedCountry,
   onSelectCountry,
+  resetInput,
 }) => {
   const [searchText, setSearchText] = useState(selectedCountry || "");
   const [suggestions, setSuggestions] = useState([]);
   const [allCountries, setAllCountries] = useState([]);
+  const firstRender = useRef(true); // ✅ useRef pour suivre la première exécution
+
 
   // ON STOCK LA LISTE DES PAYS TRADUITE DANS LE STATE ALLCOUNTRIES
   useEffect(() => {
@@ -33,6 +36,13 @@ const CountryDropdown = ({
   }, []);
 
   useEffect(() => {
+
+    // Ignore la première exécution afin de faire des suggestions uniquement après la première saisie
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
+
     if (!searchText) {
       setSuggestions([]);
       return;
@@ -58,6 +68,10 @@ const CountryDropdown = ({
           onSelectItem={(item) => {
             setSearchText(item?.title || "");
             onSelectCountry(item?.title);
+          }}
+          onClear = {() => {
+            setSearchText("")
+            resetInput()
           }}
           dataSet={suggestions}
           textInputProps={{

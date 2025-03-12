@@ -49,7 +49,7 @@ export default function ChatScreen({ navigation, route: { params } }) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [roomId]);
+  }, [roomId]); // Met à jour les messages en temps réel
 
   // Scroll automatique en bas quand un message est reçu
   useEffect(() => {
@@ -137,11 +137,12 @@ export default function ChatScreen({ navigation, route: { params } }) {
                 </Text>
               </View>
               <Text style={styles.timeText}>
-                {message.timestamp
-                  ? `${new Date(message.timestamp).getHours()}:${String(
-                      new Date(message.timestamp).getMinutes()
-                    ).padStart(2, "0")}`
-                  : ""}
+              {message.timestamp && (
+                <Text style={styles.timeText}>
+                  {new Date(message.timestamp).getHours()}:
+                  {String(new Date(message.timestamp).getMinutes()).padStart(2, "0")}
+                </Text>
+              )}
               </Text>
             </View>
           ))}
@@ -167,7 +168,6 @@ export default function ChatScreen({ navigation, route: { params } }) {
     </KeyboardAvoidingView>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {

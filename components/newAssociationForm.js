@@ -69,11 +69,20 @@ export default function NewAssociationForm({ handleBackToDefault }) {
     }
   };
 
+  const resetResidenceCountry = () => {
+    setResidenceCountry("")
+    setCountry("")
+  }
+
   const selectNationality = (country) => {
     if (country) {
       setNationality(country);
     }
   };
+
+  const resetNationality = () => {
+    setNationality("")
+  }
 
   const selectCategory = (category) => {
     if (category) {
@@ -246,6 +255,14 @@ export default function NewAssociationForm({ handleBackToDefault }) {
 
   // Envoi des données de l'association au backend et affichage de la modale
   const handleRegistrationSubmit = () => {
+
+    if (!name || !description || !nationality || !category || !residenceCountry) {
+      setMessage(`❌ Veuillez compléter tous les champs de la section "Identification de l'association".`);
+        setIsSuccess(false);
+        setModalVisible(true);
+        return
+  }
+
     fetch(`${BACKEND_ADDRESS}/associations/creation`, {
       method: "POST",
       headers: {
@@ -297,7 +314,11 @@ export default function NewAssociationForm({ handleBackToDefault }) {
               title="Nom de l'association"
               placeholder="Nom de l'association"
               value={name}
-              onChangeText={(value) => setName(value)}
+              onChangeText={(value) => {
+                if (value.length <= 150) {
+                  setName(value);
+                }
+              }}
               secureTextEntry={false}
               icon="pencil"
             />
@@ -305,30 +326,36 @@ export default function NewAssociationForm({ handleBackToDefault }) {
               title="Description"
               placeholder="Objet de l'association"
               value={description}
-              onChangeText={(value) => setDescription(value)}
+              onChangeText={(value) => {
+                if (value.length <= 1000) {
+                  setDescription(value);
+                }
+              }}
               secureTextEntry={false}
               icon="pencil"
             />
             <View style={styles.dropdown}>
               <CountryDropdown
                 title="Pays de résidence de l'asso"
-                placeholder="Choisir un pays"
+                placeholder= {residenceCountry || "Choisir un pays"}
                 onSelectCountry={selectResidenceCountry}
                 selectedCountry={residenceCountry}
+                resetInput = {() => resetResidenceCountry()}
               />
             </View>
             <View style={styles.dropdown}>
               <CountryDropdown
                 title="Pays d'origine des membres"
-                placeholder="Choisir un ou plusieurs pays"
+                placeholder={nationality || "Choisir un pays"}
                 onSelectCountry={selectNationality}
                 selectedCountry={nationality}
+                resetInput = {() => resetNationality()}
               />
             </View>
             <InternalDataSetDropdown
               title="Secteurs d'activité"
               dataSet={categoriesDataSet}
-              placeholder="Choisir un ou plusieurs secteurs"
+              placeholder={category ||"Choisir un secteur"}
               value={category}
               onSelectItem={(item) => {
                 selectCategory(item?.title);
@@ -342,7 +369,11 @@ export default function NewAssociationForm({ handleBackToDefault }) {
               keyboardType="email-address"
               placeholder="Email"
               value={email}
-              onChangeText={(value) => setEmail(value)}
+              onChangeText={(value) => {
+                if (value.length <= 100) {
+                  setEmail(value);
+                }
+              }}
               secureTextEntry={false}
               icon="pencil"
             />
@@ -410,28 +441,44 @@ export default function NewAssociationForm({ handleBackToDefault }) {
               title="Code postal"
               placeholder="Exemple: 75008"
               value={zipcode}
-              onChangeText={(value) => setZipcode(value)}
+              onChangeText={(value) => {
+                if (value.length <= 20) {
+                  setZipcode(value);
+                }
+              }}
               secureTextEntry={false}
             />
             <Input
               title="Ville"
               placeholder="Exemple: Paris"
               value={city}
-              onChangeText={(value) => setCity(value)}
+              onChangeText={(value) => {
+                if (value.length <= 150) {
+                  setCity(value);
+                }
+              }}
               secureTextEntry={false}
             />
             <Input
               title="N° de département"
               placeholder="Exemple: 75"
               value={department}
-              onChangeText={(value) => setDepartment(value)}
+              onChangeText={(value) => {
+                if (value.length <= 150) {
+                  setDepartment(value);
+                }
+              }}
               secureTextEntry={false}
             />
             <Input
               title="Pays"
               placeholder="Exemple: France"
               value={country}
-              onChangeText={(value) => setCountry(value)}
+              onChangeText={(value) => {
+                if (value.length <= 150) {
+                  setCountry(value);
+                }
+              }}
               secureTextEntry={false}
             />
           </View>
@@ -446,7 +493,11 @@ export default function NewAssociationForm({ handleBackToDefault }) {
               title="Numéro d'identification"
               placeholder="Exemple: W111000000"
               value={legalNumber}
-              onChangeText={(value) => setLegalNumber(value)}
+              onChangeText={(value) => {
+                if (value.length <= 150) {
+                  setLegalNumber(value);
+                }
+              }}
               secureTextEntry={false}
               icon="pencil"
             />
