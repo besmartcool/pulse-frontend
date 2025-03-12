@@ -21,7 +21,9 @@ export default function ConversationListScreen({ navigation, route }) {
   useEffect(() => {
     fetch(`${BACKEND_ADDRESS}/rooms/${email}`)
       .then((response) => response.json())
-      .then((data) => setRooms(data))
+      .then((data) => {
+        setRooms(data);
+      })
       .catch((error) =>
         console.error("Erreur lors de la récupération des rooms :", error)
       );
@@ -47,52 +49,70 @@ export default function ConversationListScreen({ navigation, route }) {
 
   const openChat = (otherUser) => {
     if (!otherUser || !otherUser.email) {
-      console.error("⚠️ Erreur : utilisateur invalide", otherUser);
+      console.error("Erreur : utilisateur invalide", otherUser);
       return;
     }
-  
-    console.log(`📨 Envoi d'une requête pour ouvrir un chat avec ${otherUser.email}`);
-  
-    fetch(`${BACKEND_ADDRESS}/rooms/private`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user1: email, user2: otherUser.email }),
-    })
-      .then((response) => {
-        console.log("✅ Réponse reçue du serveur");
-        return response.text(); // 🔥 Lire la réponse brute pour debug
+
+    // Vérifie si une room existe déjà
+    const existingRoom = rooms.find(
+      (room) =>
+        room.users.includes(email) && room.users.includes(otherUser.email)
+    );
+
+    if (existingRoom) {
+      navigation.navigate("ChatScreen", {
+        email,
+        roomId: existingRoom._id,
+        user: otherUser,
+      });
+    } else {
+      fetch(`${BACKEND_ADDRESS}/rooms/private`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user1: email, user2: otherUser.email }),
       })
-      .then((text) => {
-        console.log("📄 Réponse brute du serveur :", text);
-  
-        try {
-          const data = JSON.parse(text); // 🔥 Essayer de parser en JSON
-  
+        .then((response) => response.json())
+        .then((data) => {
           if (data.result && data.room && data.room._id) {
-            console.log(`🚀 Navigation vers ChatScreen avec la room ${data.room._id}`);
+            setRooms((prevRooms) => [...prevRooms, data.room]);
+
             navigation.navigate("ChatScreen", {
               email,
               roomId: data.room._id,
               user: otherUser,
             });
-          } else {
-            console.warn("⚠️ Erreur dans la réponse du serveur :", data);
           }
-        } catch (error) {
-          console.error("❌ Erreur de parsing JSON :", error);
-        }
-      })
-      .catch((error) => {
-        console.error("❌ Erreur lors de l'ouverture du chat :", error);
-      });
+        })
+        .catch((error) => {
+          console.error("Erreur lors de l'ouverture du chat :", error);
+        });
+    }
   };
-  
+
+  const navigateToChat = (room) => {
+    const otherUserEmail = room.users.find((u) => u !== email);
+    const otherUser = users.find((u) => u.email === otherUserEmail);
+
+    if (!room._id || !otherUser) {
+      console.error("Données manquantes :", {
+        room,
+        otherUser,
+      });
+      return;
+    }
+
+    navigation.navigate("ChatScreen", {
+      email,
+      roomId: room._id,
+      user: otherUser,
+    });
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.fakeModal}>
         <View style={styles.newResearch}>
-          <Text style={styles.title}>
+          <Text style={styles.bigTitle}>
             {user.firstname ? user.firstname : ""}{" "}
             {user.lastname ? user.lastname : ""}
           </Text>
@@ -115,22 +135,36 @@ export default function ConversationListScreen({ navigation, route }) {
         </ScrollView>
       </View>
 
-      {/* Liste des rooms */}
-      <ScrollView contentContainerStyle={styles.roomList}>
-        {rooms.map((item) => {
-          const otherUserEmail =
-            item.users.find((u) => u !== email) || "Inconnu";
-          return (
-            <TouchableOpacity
-              key={item._id}
-              onPress={() => openChat(otherUserEmail)}
-              style={styles.roomItem}
-            >
-              <Text style={styles.roomText}>{item.name}</Text>
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
+      <View style={styles.content}>
+        {/* Liste des rooms */}
+        <Text style={styles.title}>Messages</Text>
+        <ScrollView contentContainerStyle={styles.roomList}>
+          {rooms.map((item) => {
+            const otherUserEmail =
+              item.users.find((u) => u !== email) || "Inconnu";
+            return (
+              <TouchableOpacity
+                key={item._id}
+                style={styles.roomItem}
+                onPress={() => navigateToChat(item)}
+              >
+                <FontAwesome name="user-circle" size={40} color="#FF6C02" />
+                <View>
+                  <Text style={styles.roomText}>{otherUserEmail}</Text>
+                  {item.lastMessageAt && (
+                    <Text style={styles.lastMessageTime}>
+                      {new Date(item.lastMessageAt).toLocaleTimeString()}
+                    </Text>
+                  )}
+                  <Text style={styles.lastMessage}>
+                    {item.lastMessage ? item.lastMessage : "Aucun message"}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      </View>
     </View>
   );
 }
@@ -159,12 +193,16 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: 600,
     fontSize: 20,
+    marginVertical: 10,
+  },
+  bigTitle: {
+    fontWeight: 600,
+    fontSize: 30,
     marginTop: 10,
   },
   newResearch: {
     width: "90%",
     height: "auto",
-    marginTop: 30,
     alignItems: "flex-start",
     marginTop: 40,
   },
@@ -175,15 +213,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     width: "100%",
     height: "auto",
-    backgroundColor: "red",
   },
   scrollViewUsers: {
-    marginTop: 10,
+    marginTop: 20,
     width: "90%",
   },
   userItem: {
     alignItems: "center",
     marginHorizontal: 10,
+    width: "auto",
   },
   userText: {
     fontSize: 12,
@@ -191,15 +229,33 @@ const styles = StyleSheet.create({
     color: "#222",
     textAlign: "center",
   },
+  content: {
+    width: "90%",
+  },
+  roomList: {
+    width: "100%",
+  },
   roomItem: {
-    padding: 15,
+    paddingVertical: 15,
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
     width: "100%",
+    flexDirection: "row",
+    justifyContent: "flex-start",
     alignItems: "center",
+    gap: 20,
   },
   roomText: {
     fontSize: 16,
     fontWeight: "500",
+  },
+  lastMessage: {
+    fontSize: 14,
+    color: "#555",
+    marginTop: 2,
+  },
+  lastMessageTime: {
+    fontSize: 12,
+    color: "#888",
   },
 });

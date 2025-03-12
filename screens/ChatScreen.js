@@ -13,7 +13,12 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Pusher from "pusher-js/react-native";
 import { BACKEND_ADDRESS } from "../assets/url";
 
-const pusher = new Pusher("PUSHER_KEY", { cluster: "PUSHER_CLUSTER" });
+// Connection à Pusher
+const pusher = new Pusher("55d828cade0571956384", {
+  cluster: "eu",
+  forceTLS: true,
+  enabledTransports: ["ws", "wss"], // Active les WebSockets
+});
 
 export default function ChatScreen({ navigation, route: { params } }) {
   const { email, roomId, user } = params;
@@ -21,39 +26,45 @@ export default function ChatScreen({ navigation, route: { params } }) {
   const [messageText, setMessageText] = useState("");
 
   useEffect(() => {
-    fetch(`${BACKEND_ADDRESS}/messages/${roomId}`)
+    fetch(`${BACKEND_ADDRESS}/chat/messages/${roomId}`) // Permet de charger l'historiques des messages
       .then((response) => response.json())
-      .then((data) => setMessages(data))
+      .then((data) => {
+        if (data && Array.isArray(data)) {
+          setMessages(data);
+        } else {
+          console.error("Données invalides reçues :", data);
+        }
+      })
       .catch((error) =>
-        console.error("Erreur lors de la récupération des messages :", error)
+        console.error("Erreur chargement des messages :", error)
       );
 
+    // Permet d'écouter en live les nouveaux messages via Pusher
     const subscription = pusher.subscribe(`chat-${roomId}`);
-    subscription.bind("message", (data) => {
+    subscription.bind("chat-message", (data) => {
       setMessages((prevMessages) => [...prevMessages, data]);
     });
 
     return () => {
+      // On quitte la room quand on appuie sur back
       subscription.unsubscribe();
     };
-  }, [roomId]);
+  }, [roomId]); // Met à jour les messages en fonction de la room
 
-  const handleSendMessage = () => {
-    if (!messageText) return;
+  const handleSendMessage = () => { // Envoi d'un message
+    if (!messageText.trim()) return;
 
-    const payload = {
-      text: messageText,
-      email,
-      roomId,
-    };
-
-    fetch(`${BACKEND_ADDRESS}/message`, {
+    fetch(`${BACKEND_ADDRESS}/chat/message`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    setMessageText("");
+      body: JSON.stringify({ text: messageText, email, roomId }),
+    })
+      .then(() => {
+        setMessageText(""); // Réinitialise l'input après l'envoi
+      })
+      .catch((error) => {
+        console.error("Erreur lors de l'envoi du message :", error);
+      });
   };
 
   return (
@@ -69,31 +80,35 @@ export default function ChatScreen({ navigation, route: { params } }) {
           <FontAwesome name="arrow-left" color="#FF6C02" size={25} />
         </TouchableOpacity>
         <Text style={styles.greetingText}>
-          Chat avec {user.firstname} {user.lastname}
+          {user.firstname} {user.lastname}
         </Text>
       </View>
 
       <View style={styles.inset}>
         <ScrollView style={styles.scroller}>
           {messages.map((message, i) => (
-            <View
+            <View // Div globale
               key={i}
               style={[
                 styles.messageWrapper,
-                message.email === email
-                  ? styles.messageSent
-                  : styles.messageRecieved,
-              ]}
+                message.senderId === email
+                  ? styles.messageRecieved
+                  : styles.messageSent,
+              ]} // Selon qui envoie le message, tel ou tel style s'applique
             >
-              <View
+              <View // Background
                 style={[
                   styles.message,
-                  message.email === email
+                  message.senderId === email
                     ? styles.messageSentBg
                     : styles.messageRecievedBg,
-                ]}
+                ]} // Selon qui envoie le message, tel ou tel style s'applique
               >
-                <Text style={styles.messageText}>{message.text}</Text>
+                <Text style={[
+                  message.senderId === email
+                    ? styles.messageText
+                    : styles.messageTextRecieved,
+                ]}>{message.text}</Text>
               </View>
               <Text style={styles.timeText}>
                 {message.timestamp
@@ -105,8 +120,9 @@ export default function ChatScreen({ navigation, route: { params } }) {
             </View>
           ))}
         </ScrollView>
-
-        <View style={styles.inputContainer}>
+      </View>
+      <View style={styles.inputContainer}>
+          <View style={styles.inputContainer2}>
           <TextInput
             onChangeText={setMessageText}
             value={messageText}
@@ -119,8 +135,8 @@ export default function ChatScreen({ navigation, route: { params } }) {
           >
             <FontAwesome name="arrow-right" color="#ffffff" size={18} />
           </TouchableOpacity>
+          </View>
         </View>
-      </View>
     </KeyboardAvoidingView>
   );
 }
@@ -129,14 +145,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    backgroundColor: "#FFF",
+    backgroundColor: "white",
     justifyContent: "flex-start",
   },
   banner: {
     width: "100%",
-    backgroundColor: "white",
-    paddingVertical: 20,
+    height: 'auto',
+    marginTop: 40,
     paddingHorizontal: 20,
+    paddingVertical: 20,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
@@ -145,7 +162,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 5,
-    marginTop: 40,
+    borderBottomWidth: 0.2,
+    borderBottomColor: "#bbbbbb"
   },
   backButton: {
     padding: 10,
@@ -166,11 +184,7 @@ const styles = StyleSheet.create({
   inset: {
     flex: 1,
     backgroundColor: "white",
-    width: "100%",
-    paddingTop: 20,
-  },
-  scroller: {
-    paddingHorizontal: 20,
+    width: "90%",
   },
   messageWrapper: {
     marginBottom: 15,
@@ -179,11 +193,10 @@ const styles = StyleSheet.create({
   message: {
     paddingVertical: 12,
     paddingHorizontal: 20,
-    borderRadius: 24,
     maxWidth: "65%",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.1,
     shadowRadius: 6.41,
     elevation: 1.2,
   },
@@ -196,12 +209,22 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   messageSentBg: {
-    backgroundColor: "#FFF5E6",
+    backgroundColor: "#FF6C02",
+    borderRadius: 14,
+    borderBottomRightRadius: 0,
+    padding: 10,
   },
   messageRecievedBg: {
-    backgroundColor: "#F0F0F0",
+    backgroundColor: "#EAEAEA",
+    borderRadius: 14,
+    borderBottomLeftRadius: 0,
+    padding: 10,
   },
   messageText: {
+    color: "white",
+    fontWeight: "400",
+  },
+  messageTextRecieved: {
     color: "#222",
     fontWeight: "400",
   },
@@ -216,14 +239,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginVertical: 20,
-    paddingHorizontal: 20,
+    borderTopWidth: 0.3,
+    borderTopColor: "#bbbbbb",
+  },
+  inputContainer2: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    borderTopWidth: 0.3,
+    borderTopColor: "#bbbbbb",
   },
   input: {
     backgroundColor: "white",
     width: "80%",
     padding: 14,
     borderRadius: 30,
+    marginVertical: 14,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
