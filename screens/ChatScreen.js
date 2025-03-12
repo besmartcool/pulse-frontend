@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -17,16 +17,17 @@ import { BACKEND_ADDRESS } from "../assets/url";
 const pusher = new Pusher("55d828cade0571956384", {
   cluster: "eu",
   forceTLS: true,
-  enabledTransports: ["ws", "wss"], // Active les WebSockets
+  enabledTransports: ["ws", "wss"],
 });
 
 export default function ChatScreen({ navigation, route: { params } }) {
   const { email, roomId, user } = params;
   const [messages, setMessages] = useState([]);
   const [messageText, setMessageText] = useState("");
+  const scrollViewRef = useRef(null);
 
   useEffect(() => {
-    fetch(`${BACKEND_ADDRESS}/chat/messages/${roomId}`) // Permet de charger l'historiques des messages
+    fetch(`${BACKEND_ADDRESS}/chat/messages/${roomId}`)
       .then((response) => response.json())
       .then((data) => {
         if (data && Array.isArray(data)) {
@@ -39,19 +40,25 @@ export default function ChatScreen({ navigation, route: { params } }) {
         console.error("Erreur chargement des messages :", error)
       );
 
-    // Permet d'écouter en live les nouveaux messages via Pusher
+    // Écoute des messages en temps réel avec Pusher
     const subscription = pusher.subscribe(`chat-${roomId}`);
     subscription.bind("chat-message", (data) => {
       setMessages((prevMessages) => [...prevMessages, data]);
     });
 
     return () => {
-      // On quitte la room quand on appuie sur back
       subscription.unsubscribe();
     };
-  }, [roomId]); // Met à jour les messages en fonction de la room
+  }, [roomId]);
 
-  const handleSendMessage = () => { // Envoi d'un message
+  // Scroll automatique en bas quand un message est reçu
+  useEffect(() => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollToEnd({ animated: true });
+    }
+  }, [messages]);
+
+  const handleSendMessage = () => {
     if (!messageText.trim()) return;
 
     fetch(`${BACKEND_ADDRESS}/chat/message`, {
@@ -61,6 +68,11 @@ export default function ChatScreen({ navigation, route: { params } }) {
     })
       .then(() => {
         setMessageText(""); // Réinitialise l'input après l'envoi
+        setTimeout(() => {
+          if (scrollViewRef.current) {
+            scrollViewRef.current.scrollToEnd({ animated: true });
+          }
+        }, 100);
       })
       .catch((error) => {
         console.error("Erreur lors de l'envoi du message :", error);
@@ -85,30 +97,44 @@ export default function ChatScreen({ navigation, route: { params } }) {
       </View>
 
       <View style={styles.inset}>
-        <ScrollView style={styles.scroller}>
+        <ScrollView
+          ref={scrollViewRef}
+          style={styles.scroller}
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ flexGrow: 1 }}
+          onContentSizeChange={() => {
+            if (scrollViewRef.current) {
+              scrollViewRef.current.scrollToEnd({ animated: true });
+            }
+          }}
+        >
           {messages.map((message, i) => (
-            <View // Div globale
+            <View
               key={i}
               style={[
                 styles.messageWrapper,
                 message.senderId === email
                   ? styles.messageRecieved
                   : styles.messageSent,
-              ]} // Selon qui envoie le message, tel ou tel style s'applique
+              ]}
             >
-              <View // Background
+              <View
                 style={[
                   styles.message,
                   message.senderId === email
                     ? styles.messageSentBg
                     : styles.messageRecievedBg,
-                ]} // Selon qui envoie le message, tel ou tel style s'applique
+                ]}
               >
-                <Text style={[
-                  message.senderId === email
-                    ? styles.messageText
-                    : styles.messageTextRecieved,
-                ]}>{message.text}</Text>
+                <Text
+                  style={[
+                    message.senderId === email
+                      ? styles.messageText
+                      : styles.messageTextRecieved,
+                  ]}
+                >
+                  {message.text}
+                </Text>
               </View>
               <Text style={styles.timeText}>
                 {message.timestamp
@@ -121,8 +147,9 @@ export default function ChatScreen({ navigation, route: { params } }) {
           ))}
         </ScrollView>
       </View>
+
       <View style={styles.inputContainer}>
-          <View style={styles.inputContainer2}>
+        <View style={styles.inputContainer2}>
           <TextInput
             onChangeText={setMessageText}
             value={messageText}
@@ -135,11 +162,12 @@ export default function ChatScreen({ navigation, route: { params } }) {
           >
             <FontAwesome name="arrow-right" color="#ffffff" size={18} />
           </TouchableOpacity>
-          </View>
         </View>
+      </View>
     </KeyboardAvoidingView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -150,7 +178,7 @@ const styles = StyleSheet.create({
   },
   banner: {
     width: "100%",
-    height: 'auto',
+    height: "auto",
     marginTop: 40,
     paddingHorizontal: 20,
     paddingVertical: 20,
@@ -163,7 +191,7 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 5,
     borderBottomWidth: 0.2,
-    borderBottomColor: "#bbbbbb"
+    borderBottomColor: "#bbbbbb",
   },
   backButton: {
     padding: 10,
