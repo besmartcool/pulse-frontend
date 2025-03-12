@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
   Pressable,
+  TextInput,
 } from "react-native";
 import Input from "./input";
 import CountryDropdown from "./countryDropdown";
@@ -80,34 +81,28 @@ export default function NewAssociationForm({ handleBackToDefault }) {
     }
   };
 
-  // Champs de contact
+  // CHAMPS CONTACT
+
+  // Numéro de téléphone
   const addPhoneNumber = (phoneNumber) => {
     if (phoneNumber) {
       setPhone((phone) => [...phone, phoneNumber]);
     }
   };
 
-  const formatFrenchPhoneNumber = (phoneNumber) => {
-    if (!/^0\d{9}$/.test(phoneNumber)) return "Numéro invalide";
-    return `+33 ${phoneNumber.slice(1, 2)} ${phoneNumber.slice(
-      2,
-      4
-    )} ${phoneNumber.slice(4, 6)} ${phoneNumber.slice(
-      6,
-      8
-    )} ${phoneNumber.slice(8, 10)}`;
+  const handleChangePhoneNumber = (text, index) => {
+    setPhone((prev) => {
+      const updated = [...prev];
+      updated[index] = text;
+      return updated;
+    });
   };
 
-  const phoneNumbers = phone?.map((data, i) => {
-    return (
-      <View key={i}>
-        <Text style={{ marginRight: 5, marginLeft: 5, color: "blue" }}>
-          Tél {i + 1}: {formatFrenchPhoneNumber(data)}
-        </Text>
-      </View>
-    );
-  });
-
+  const removePhoneNumber = (index) => {
+    const inputs = phone;
+    const newInputs = inputs.filter((_, i) => i !== index);
+    setPhone(newInputs);
+  };
 
   //Vérificationd de l'email
   const [errorEmail, setErrorEmail] = useState("");
@@ -153,49 +148,59 @@ export default function NewAssociationForm({ handleBackToDefault }) {
     }
   };
 
-  // Champs autres informations
+  // CHAMPS AUTRES INFORMATIONS
+
+    // Langues parlées
+    const languagesListFrenchDataSet = languagesListFrench.map((language, i) => ({
+      id: `${i}`,
+      title: language,
+    }));
+
+    const selectLanguages = (language) => {
+      if (language) {
+        setLanguages((languages) => [...languages, language]);
+      }
+    };
+
+    const handleChangeLanguages = (text, index) => {
+      setLanguages((prev) => {
+        const updated = [...prev];
+        updated[index] = text;
+        return updated;
+      });
+    };
+
+    const removeLanguage = (index) => {
+      const inputs = languages;
+      const newInputs = inputs.filter((_, i) => i !== index);
+      setLanguages(newInputs);
+    };
+
+
+  //Zone d'intervention
+
   const selectInterventionZone = (country) => {
     if (country) {
       setInterventionZone((interventionZone) => [...interventionZone, country]);
     }
   };
 
-  const interventionZoneSelected = interventionZone?.map((data, i) => {
-    return (
-      <View key={i}>
-        <Text style={{ marginRight: 5, marginLeft: 5, color: "blue" }}>
-          {data}
-        </Text>
-      </View>
-    );
-  });
+  const handleChangeInterventionZone = (text, index) => {
+      setInterventionZone((prev) => {
+        const updated = [...prev];
+        updated[index] = text;
+        return updated;
+      });
+    };
 
-  const languagesListFrenchDataSet = languagesListFrench.map((language, i) => ({
-    id: `${i}`,
-    title: language,
-  }));
+    const removeInterventionZone = (index) => {
+      const inputs = interventionZone;
+      const newInputs = inputs.filter((_, i) => i !== index);
+      setInterventionZone(newInputs);
+    };
 
-  const selectLanguages = (language) => {
-    if (language) {
-      setLanguages((languages) => [...languages, language]);
-    }
-  };
 
-  let textLanguagesSeleted = languages.length > 0 && (
-    <View style={styles.dataSelected}>
-      <Text>Sélection:</Text>
-    </View>
-  );
 
-  const languagesSelected = languages?.map((data, i) => {
-    return (
-      <View key={i}>
-        <Text style={{ marginRight: 5, marginLeft: 5, color: "blue" }}>
-          {data}
-        </Text>
-      </View>
-    );
-  });
 
   // Récupération des données de l'association dans les états
   const newAsso = {
@@ -252,7 +257,6 @@ export default function NewAssociationForm({ handleBackToDefault }) {
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
-          console.log("réponse backend", data);
           setMessage("✅ Association créée avec succès !");
           setIsSuccess(true);
           dispatch(addAssociation(data.newAssociation));
@@ -270,9 +274,6 @@ export default function NewAssociationForm({ handleBackToDefault }) {
       });
   };
 
-  useEffect(() => {
-    console.log("user.associations", user.associations);
-  }, [user.associations]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -349,13 +350,53 @@ export default function NewAssociationForm({ handleBackToDefault }) {
               <Text style={styles.errorText}>{errorEmail}</Text>
             ) : null}
             <PhoneInput
-              title="Téléphone"
+              title="Téléphone(s)"
               placeholder="06..."
               value={phone}
-              onChangeText={(value) => addPhoneNumber(value)}
+              onChangeText={addPhoneNumber}
               secureTextEntry={false}
             />
-            {phoneNumbers}
+            {phone.map((value, index) => (
+                          <View
+                            key={index}
+                            style={{ flexDirection: "row", alignItems: "center" }}
+                          >
+                            <TextInput
+                              style={{
+                                flex: 1,
+                                borderWidth: 1,
+                                padding: 10,
+                                marginVertical: 10,
+                                backgroundColor: "#ffffff",
+                                borderRadius: 8,
+                                borderColor: "#bbbbbb",
+                                fontSize: 12,
+                              }}
+                              value={phone[index] || ""}
+                              onChangeText={(text) => handleChangePhoneNumber(text, index)}
+                              placeholder={`Phone ${index + 1}`}
+                            />
+                              <TouchableOpacity
+                                onPress={() => removePhoneNumber(index)}
+                                style={{
+                                  width: 40,
+                                  height: 40,
+                                  marginLeft: 10,
+                                  padding: 10,
+                                  backgroundColor: "#FF6C02",
+                                  borderRadius: 180,
+                                }}
+                              >
+                                <FontAwesome
+                                  name={"minus"}
+                                  size={20}
+                                  color="#ffffff"
+                                  style={styles.icon}
+                                />
+                              </TouchableOpacity>
+
+                          </View>
+                        ))}
             <View style={styles.dropdown}>
               <AddressDropdown
                 title="Numéro et libellé de la voie"
@@ -426,17 +467,95 @@ export default function NewAssociationForm({ handleBackToDefault }) {
                 selectLanguages(item?.title);
               }}
             />
-            <View style={styles.dataSelected}>
-              {textLanguagesSeleted}
-              {languagesSelected}
-            </View>
+            {languages.map((value, index) => (
+                          <View
+                            key={index}
+                            style={{ flexDirection: "row", alignItems: "center" }}
+                          >
+                            <TextInput
+                              style={{
+                                flex: 1,
+                                borderWidth: 1,
+                                padding: 10,
+                                marginVertical: 10,
+                                backgroundColor: "#ffffff",
+                                borderRadius: 8,
+                                borderColor: "#bbbbbb",
+                                fontSize: 12,
+                              }}
+                              value={languages[index] || ""}
+                              onChangeText={(text) => handleChangeLanguages(text, index)}
+                              placeholder={`Language ${index + 1}`}
+                            />
+                              <TouchableOpacity
+                                onPress={() => removeLanguage(index)}
+                                style={{
+                                  width: 40,
+                                  height: 40,
+                                  marginLeft: 10,
+                                  padding: 10,
+                                  backgroundColor: "#FF6C02",
+                                  borderRadius: 180,
+                                }}
+                              >
+                                <FontAwesome
+                                  name={"minus"}
+                                  size={20}
+                                  color="#ffffff"
+                                  style={styles.icon}
+                                />
+                              </TouchableOpacity>
+
+                          </View>
+                        ))}
             <View style={styles.dropdown}>
               <CountryDropdown
                 title="Zone d'intervention"
                 placeholder="Sélectionner un ou plusieurs pays"
                 onSelectCountry={selectInterventionZone}
-                selectedCountry={interventionZone}
+                selectedCountry={()=> {}}
               />
+            {interventionZone.map((value, index) => (
+                          <View
+                            key={index}
+                            style={{ flexDirection: "row", alignItems: "center" }}
+                          >
+                            <TextInput
+                              style={{
+                                flex: 1,
+                                borderWidth: 1,
+                                padding: 10,
+                                marginVertical: 10,
+                                backgroundColor: "#ffffff",
+                                borderRadius: 8,
+                                borderColor: "#bbbbbb",
+                                fontSize: 12,
+                              }}
+                              value={interventionZone[index] || ""}
+                              onChangeText={(text) => handleChangeInterventionZone(text, index)}
+                              placeholder={`interventionZone ${index + 1}`}
+                            />
+                              <TouchableOpacity
+                                onPress={() => removeInterventionZone(index)}
+                                style={{
+                                  width: 40,
+                                  height: 40,
+                                  marginLeft: 10,
+                                  padding: 10,
+                                  backgroundColor: "#FF6C02",
+                                  borderRadius: 180,
+                                }}
+                              >
+                                <FontAwesome
+                                  name={"minus"}
+                                  size={20}
+                                  color="#ffffff"
+                                  style={styles.icon}
+                                />
+                              </TouchableOpacity>
+
+                          </View>
+                        ))}
             </View>
           </View>
         </View>
@@ -569,7 +688,6 @@ const styles = StyleSheet.create({
     fontSize: 5,
     color: "red",
     flexDirection: "row",
-    marginBottom: 4,
   },
   errorText: {
     color: "red",

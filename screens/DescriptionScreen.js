@@ -101,7 +101,7 @@ export default function DescriptionScreen({ route }) {
 
   useEffect(() => {
       fetch(
-        `${BACKEND_ADDRESS}/associations/getAssociationByName/${association.name}`,
+        `${BACKEND_ADDRESS}/associations/checkAdminStatus/${association.name}`,
         {
           method: "GET",
           headers: {
