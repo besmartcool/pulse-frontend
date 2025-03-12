@@ -2,14 +2,20 @@ import { useEffect, useState } from "react";
 import {
   View,
   Text,
-  FlatList,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
 } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { BACKEND_ADDRESS } from "../assets/url";
+import Pusher from "pusher-js/react-native";
 import { useSelector } from "react-redux";
+
+const pusher = new Pusher("55d828cade0571956384", {
+  cluster: "eu",
+  forceTLS: true,
+  enabledTransports: ["ws", "wss"],
+});
 
 export default function ConversationListScreen({ navigation, route }) {
   const [rooms, setRooms] = useState([]);
@@ -34,7 +40,10 @@ export default function ConversationListScreen({ navigation, route }) {
       .then((response) => response.json())
       .then((data) => {
         if (data.result !== false) {
-          setUsers(data.filter((user) => user.email !== email)); // Exclure l'utilisateur actuel
+          const uniqueUsers = Array.from(
+            new Map(data.map((user) => [user.email, user])).values()
+          );
+          setUsers(uniqueUsers.filter((user) => user.email !== email));
         } else {
           setUsers([]);
         }
@@ -46,6 +55,28 @@ export default function ConversationListScreen({ navigation, route }) {
         )
       );
   }, []);
+
+  useEffect(() => {
+    fetch(`${BACKEND_ADDRESS}/rooms/${email}`)
+      .then((response) => response.json())
+      .then((data) => setRooms(data))
+      .catch((error) =>
+        console.error("Erreur récupération des rooms :", error)
+      );
+    const channel = pusher.subscribe(`rooms-${email}`);
+
+    channel.bind("room-updated", (newRoom) => {
+      setRooms((prevRooms) => {
+        const roomExists = prevRooms.some((room) => room._id === newRoom._id);
+        return roomExists ? prevRooms : [...prevRooms, newRoom];
+      });
+    });
+
+    return () => {
+      channel.unbind_all();
+      channel.unsubscribe();
+    };
+  }, [email]);
 
   const openChat = (otherUser) => {
     if (!otherUser || !otherUser.email) {
