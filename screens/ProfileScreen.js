@@ -15,8 +15,9 @@ import {
   View,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { addInfoProfile } from "../reducers/user";
+import { addInfoProfile, logout } from "../reducers/user";
 import { BACKEND_ADDRESS } from "../assets/url";
+import CountryDropdown from "../components/countryDropdown";
 
 export default function ProfileScreen({ navigation }) {
   const [inputs, setInputs] = useState([""]);
@@ -72,6 +73,10 @@ export default function ProfileScreen({ navigation }) {
       })
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
+
+  const selectNewNationality = () => {
+      setNewNationality((newNationality) => [...newNationality]);
+  };
 
   const handleChangeNationality = (text, index) => {
     setNewNationality((prev) => {
@@ -148,7 +153,7 @@ export default function ProfileScreen({ navigation }) {
 
   const handleDeconnexion = () => {
     // Logique de déconnexion
-    
+    dispatch(logout());
   };
 
   return (
@@ -251,15 +256,26 @@ export default function ProfileScreen({ navigation }) {
               </View>
             ))}
             <Text style={styles.titleInput}>PAYS DE RESIDENCE</Text>
-            <Input
+            <CountryDropdown
+              onSelectCountry={selectNewNationality}
+              selectedCountry={()=> {}}
+              style={styles.inputResidenceCountry}
+              placeholder={infos?.residenceCountry || "Pays..."}
+              value={residenceCountry}
+              onChangeText={handleChangeResidenceCountry}
+              secureTextEntry={false}
+              icon="pencil"
+              />
+            {/* <Input
               style={styles.inputResidenceCountry}
               placeholder={infos?.residenceCountry || "..."}
               value={residenceCountry}
               onChangeText={handleChangeResidenceCountry}
               secureTextEntry={false}
               icon="pencil"
-            />
+            /> */}
             <Text style={styles.titleInput}>PAYS DE DESTINATION</Text>
+            
             {inputs2.map((value, index) => (
               <View
                 key={index}
