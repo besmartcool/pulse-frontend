@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
   Pressable,
+  TextInput,
 } from "react-native";
 import Input from "./input";
 import CountryDropdown from "./countryDropdown";
@@ -46,6 +47,8 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
   const [gallery, setGallery] = useState([]);
   const [history, setHistory] = useState([]);
   const [missions, setMissions] = useState([]);
+  const [associationID, setAssociationID] = useState("test")
+
 
   // Récupération infos utilisateur
   const user = useSelector((state) => state.user.value);
@@ -80,34 +83,28 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
     }
   };
 
-  // Champs de contact
+  // CHAMPS CONTACT
+
+  // Numéro de téléphone
   const addPhoneNumber = (phoneNumber) => {
     if (phoneNumber) {
       setPhone((phone) => [...phone, phoneNumber]);
     }
   };
 
-  const formatFrenchPhoneNumber = (phoneNumber) => {
-    if (!/^0\d{9}$/.test(phoneNumber)) return "Numéro invalide";
-    return `+33 ${phoneNumber.slice(1, 2)} ${phoneNumber.slice(
-      2,
-      4
-    )} ${phoneNumber.slice(4, 6)} ${phoneNumber.slice(
-      6,
-      8
-    )} ${phoneNumber.slice(8, 10)}`;
+  const handleChangePhoneNumber = (text, index) => {
+    setPhone((prev) => {
+      const updated = [...prev];
+      updated[index] = text;
+      return updated;
+    });
   };
 
-  const phoneNumbers = phone?.map((data, i) => {
-    return (
-      <View key={i}>
-        <Text style={{ marginRight: 5, marginLeft: 5, color: "blue" }}>
-          Tél {i + 1}: {formatFrenchPhoneNumber(data)}
-        </Text>
-      </View>
-    );
-  });
-
+  const removePhoneNumber = (index) => {
+    const inputs = phone;
+    const newInputs = inputs.filter((_, i) => i !== index);
+    setPhone(newInputs);
+  };
 
   //Vérificationd de l'email
   const [errorEmail, setErrorEmail] = useState("");
@@ -153,52 +150,62 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
     }
   };
 
-  // Champs autres informations
+  // CHAMPS AUTRES INFORMATIONS
+
+    // Langues parlées
+    const languagesListFrenchDataSet = languagesListFrench.map((language, i) => ({
+      id: `${i}`,
+      title: language,
+    }));
+
+    const selectLanguages = (language) => {
+      if (language) {
+        setLanguages((languages) => [...languages, language]);
+      }
+    };
+
+    const handleChangeLanguages = (text, index) => {
+      setLanguages((prev) => {
+        const updated = [...prev];
+        updated[index] = text;
+        return updated;
+      });
+    };
+
+    const removeLanguage = (index) => {
+      const inputs = languages;
+      const newInputs = inputs.filter((_, i) => i !== index);
+      setLanguages(newInputs);
+    };
+
+
+  //Zone d'intervention
+
   const selectInterventionZone = (country) => {
     if (country) {
       setInterventionZone((interventionZone) => [...interventionZone, country]);
     }
   };
 
-  const interventionZoneSelected = interventionZone?.map((data, i) => {
-    return (
-      <View key={i}>
-        <Text style={{ marginRight: 5, marginLeft: 5, color: "blue" }}>
-          {data}
-        </Text>
-      </View>
-    );
-  });
+  const handleChangeInterventionZone = (text, index) => {
+      setInterventionZone((prev) => {
+        const updated = [...prev];
+        updated[index] = text;
+        return updated;
+      });
+    };
 
-  const languagesListFrenchDataSet = languagesListFrench.map((language, i) => ({
-    id: `${i}`,
-    title: language,
-  }));
+    const removeInterventionZone = (index) => {
+      const inputs = interventionZone;
+      const newInputs = inputs.filter((_, i) => i !== index);
+      setInterventionZone(newInputs);
+    };
 
-  const selectLanguages = (language) => {
-    if (language) {
-      setLanguages((languages) => [...languages, language]);
-    }
-  };
 
-  let textLanguagesSeleted = languages.length > 0 && (
-    <View style={styles.dataSelected}>
-      <Text>Sélection:</Text>
-    </View>
-  );
 
-  const languagesSelected = languages?.map((data, i) => {
-    return (
-      <View key={i}>
-        <Text style={{ marginRight: 5, marginLeft: 5, color: "blue" }}>
-          {data}
-        </Text>
-      </View>
-    );
-  });
 
   // Récupération des données de l'association dans les états
-  const newAsso = {
+  const updatedData = {
     name,
     description,
     residenceCountry,
@@ -223,7 +230,9 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
     gallery,
     history,
     missions,
+    _id: associationID
   };
+
 
   // Etats pour affichage de la modale (message de confirmation)
   const [modalVisible, setModalVisible] = useState(false);
@@ -240,23 +249,79 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
   }
 
       // MISE A JOUR DES INFORMATIONS DE L'ASSOCIATION
+
+      // Etat pour stocker l'ID de l'association modifiée
+
+      // Variable pour mettre à jour tous les états sans appeler les setters individuellement
+      const setters = {
+        name: setName,
+        description: setDescription,
+        nationality: setNationality,
+        residenceCountry: setResidenceCountry,
+        category: setCategory,
+        phone: setPhone,
+        email: setEmail,
+        streetNumberAndLabel: setStreetNumberAndLabel,
+        zipcode: setZipcode,
+        city: setCity,
+        department: setDepartment,
+        country: setCountry,
+        languages: setLanguages,
+        interventionZone: setInterventionZone,
+        creationDate: setCreationDate,
+        lastDeclarationDate: setlastDeclarationDate,
+        legalNumber: setLegalNumber,
+        members: setMembers,
+        socialNetworks: setSocialNetworks,
+        gallery: setGallery,
+        history: setHistory,
+        missions: setMissions,
+        _id: setAssociationID
+      };
+
+      // Fonction pour mise à jour de plusieurs états en une fois
+      const updateStates = (newValues) => {
+        Object.entries(newValues).forEach(([key, value]) => {
+          if (setters[key]) {
+            setters[key](value); // Appelle le setter correspondant à la clé
+          }
+        });
+      };
+
+      // Chargement des données de l'asso dans le formulaire
       useEffect(() => {
-        console.log("user.associations", user.AssociationUpdated);
-      }, [user.AssociationUpdated]);
+        fetch(
+                `${BACKEND_ADDRESS}/associations/associationBeingUpdated/${user.associationBeingUpdated}`,
+                {
+                  method: "GET",
+                  headers: {
+                    Authorization: `Bearer ${user.token}`,
+                  },
+                }
+              )
+                .then((response) => response.json())
+                .then((data) => {
+                    updateStates(data.AssociationData)
+                })
+                .catch((error) =>
+                  console.error("Erreur lors de la récupération :", error)
+                );
+      }, []);
 
 
-  // Adapter le fetch pour la modification, d'abord un fetch pour récupérer les infos, ensuite le fetch de modification
-  const handleRegistrationSubmit = () => {
-    fetch(`${BACKEND_ADDRESS}/associations/creation`, {
+  // Envoi des données au backend pour mise à jour
+  const handleUpdateSubmit = () => {
+    fetch(`${BACKEND_ADDRESS}/associations/update`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${user.token}`,
       },
-      body: JSON.stringify(newAsso),
+      body: JSON.stringify(updatedData),
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log("données reçues du backend", data)
         if (data.result) {
           setMessage("✅ Association créée avec succès !");
           setIsSuccess(true);
@@ -282,7 +347,7 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
         <Pressable onPress={handleBackToDefault} style={styles.backButton}>
           <FontAwesome name="arrow-left" size={24} color="#FF6C02" />
         </Pressable>
-          <Text style={styles.mainHeader}>Modif infos association</Text>
+          <Text style={styles.mainHeader}>Modification données asso</Text>
       </View>
       <View style={styles.bottomBorder} />
       <ScrollView
@@ -351,13 +416,53 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
               <Text style={styles.errorText}>{errorEmail}</Text>
             ) : null}
             <PhoneInput
-              title="Téléphone"
+              title="Téléphone(s)"
               placeholder="06..."
               value={phone}
-              onChangeText={(value) => addPhoneNumber(value)}
+              onChangeText={addPhoneNumber}
               secureTextEntry={false}
             />
-            {phoneNumbers}
+            {phone.map((value, index) => (
+                          <View
+                            key={index}
+                            style={{ flexDirection: "row", alignItems: "center" }}
+                          >
+                            <TextInput
+                              style={{
+                                flex: 1,
+                                borderWidth: 1,
+                                padding: 10,
+                                marginVertical: 10,
+                                backgroundColor: "#ffffff",
+                                borderRadius: 8,
+                                borderColor: "#bbbbbb",
+                                fontSize: 12,
+                              }}
+                              value={phone[index] || ""}
+                              onChangeText={(text) => handleChangePhoneNumber(text, index)}
+                              placeholder={`Phone ${index + 1}`}
+                            />
+                              <TouchableOpacity
+                                onPress={() => removePhoneNumber(index)}
+                                style={{
+                                  width: 40,
+                                  height: 40,
+                                  marginLeft: 10,
+                                  padding: 10,
+                                  backgroundColor: "#FF6C02",
+                                  borderRadius: 180,
+                                }}
+                              >
+                                <FontAwesome
+                                  name={"minus"}
+                                  size={20}
+                                  color="#ffffff"
+                                  style={styles.icon}
+                                />
+                              </TouchableOpacity>
+
+                          </View>
+                        ))}
             <View style={styles.dropdown}>
               <AddressDropdown
                 title="Numéro et libellé de la voie"
@@ -428,24 +533,102 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
                 selectLanguages(item?.title);
               }}
             />
-            <View style={styles.dataSelected}>
-              {textLanguagesSeleted}
-              {languagesSelected}
-            </View>
+            {languages.map((value, index) => (
+                          <View
+                            key={index}
+                            style={{ flexDirection: "row", alignItems: "center" }}
+                          >
+                            <TextInput
+                              style={{
+                                flex: 1,
+                                borderWidth: 1,
+                                padding: 10,
+                                marginVertical: 10,
+                                backgroundColor: "#ffffff",
+                                borderRadius: 8,
+                                borderColor: "#bbbbbb",
+                                fontSize: 12,
+                              }}
+                              value={languages[index] || ""}
+                              onChangeText={(text) => handleChangeLanguages(text, index)}
+                              placeholder={`Language ${index + 1}`}
+                            />
+                              <TouchableOpacity
+                                onPress={() => removeLanguage(index)}
+                                style={{
+                                  width: 40,
+                                  height: 40,
+                                  marginLeft: 10,
+                                  padding: 10,
+                                  backgroundColor: "#FF6C02",
+                                  borderRadius: 180,
+                                }}
+                              >
+                                <FontAwesome
+                                  name={"minus"}
+                                  size={20}
+                                  color="#ffffff"
+                                  style={styles.icon}
+                                />
+                              </TouchableOpacity>
+
+                          </View>
+                        ))}
             <View style={styles.dropdown}>
               <CountryDropdown
                 title="Zone d'intervention"
                 placeholder="Sélectionner un ou plusieurs pays"
                 onSelectCountry={selectInterventionZone}
-                selectedCountry={interventionZone}
+                selectedCountry={()=> {}}
               />
+            {interventionZone.map((value, index) => (
+                          <View
+                            key={index}
+                            style={{ flexDirection: "row", alignItems: "center" }}
+                          >
+                            <TextInput
+                              style={{
+                                flex: 1,
+                                borderWidth: 1,
+                                padding: 10,
+                                marginVertical: 10,
+                                backgroundColor: "#ffffff",
+                                borderRadius: 8,
+                                borderColor: "#bbbbbb",
+                                fontSize: 12,
+                              }}
+                              value={interventionZone[index] || ""}
+                              onChangeText={(text) => handleChangeInterventionZone(text, index)}
+                              placeholder={`interventionZone ${index + 1}`}
+                            />
+                              <TouchableOpacity
+                                onPress={() => removeInterventionZone(index)}
+                                style={{
+                                  width: 40,
+                                  height: 40,
+                                  marginLeft: 10,
+                                  padding: 10,
+                                  backgroundColor: "#FF6C02",
+                                  borderRadius: 180,
+                                }}
+                              >
+                                <FontAwesome
+                                  name={"minus"}
+                                  size={20}
+                                  color="#ffffff"
+                                  style={styles.icon}
+                                />
+                              </TouchableOpacity>
+
+                          </View>
+                        ))}
             </View>
           </View>
         </View>
       </ScrollView>
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          onPress={() => handleRegistrationSubmit()}
+          onPress={() => handleUpdateSubmit()}
           style={styles.button}
           activeOpacity={0.8}
         >
@@ -571,7 +754,6 @@ const styles = StyleSheet.create({
     fontSize: 5,
     color: "red",
     flexDirection: "row",
-    marginBottom: 4,
   },
   errorText: {
     color: "red",

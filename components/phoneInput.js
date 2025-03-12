@@ -1,30 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, StyleSheet } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
-const PhoneInput = ({ title, placeholder, value, onChangeText }) => {
+const PhoneInput = ({ title, placeholder, onChangeText }) => {
+  const [inputValue, setInputValue] = useState(""); // État local pour gérer l'affichage
   const [error, setError] = useState("");
 
   const handleTextChange = (text) => {
     let formattedText = text.replace(/\D/g, "");
-    
+
     if (!formattedText.startsWith("0") && !formattedText.startsWith("33")) {
       formattedText = "0" + formattedText;
     }
-    
+
     if (formattedText.startsWith("+33")) {
       formattedText = "+33" + formattedText.slice(3, 12);
     } else {
       formattedText = formattedText.slice(0, 10);
     }
-    
+
+    setInputValue(formattedText); // Met à jour l'affichage
+
     if (formattedText.length === 10 || (formattedText.startsWith("+33") && formattedText.length === 12)) {
       setError("");
-      onChangeText(formattedText);
     } else {
-      setError("Numéro erroné");
+      setError("Numéro incomplet ou erroné");
     }
   };
+
+   // Réinitialisation automatique après ajout
+   useEffect(() => {
+    if (inputValue.length === 10 || (inputValue.startsWith("+33") && inputValue.length === 12)) {
+      onChangeText(inputValue); // Envoie le numéro valide au parent
+      setInputValue(""); // Réinitialise l'affichage de l'input
+    }
+  }, [inputValue]);
 
   return (
     <View style={styles.inputContainer}>
@@ -32,8 +42,8 @@ const PhoneInput = ({ title, placeholder, value, onChangeText }) => {
       <View style={styles.input}>
         <TextInput
           style={styles.inputText}
-          placeholder={placeholder || "Ex: 06 12 34 56 78"}
-          value={value}
+          placeholder={placeholder}
+          value={inputValue}
           onChangeText={handleTextChange}
           keyboardType="phone-pad"
         />

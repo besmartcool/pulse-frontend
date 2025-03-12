@@ -28,8 +28,8 @@ export default function AssoScreen({ navigation }) {
   let content;
 
   useEffect (() => {
-    user.AssociationUpdated && setTypeContent("UpdateAssociationForm")
-  }, [user.AssociationUpdated])
+    user.associationBeingUpdated && setTypeContent("UpdateAssociationForm")
+  }, [user.associationBeingUpdated])
 
   if (typeContent == "default") {
     content = <MyAssociations handleTypeContent={handleTypeContent} />;
