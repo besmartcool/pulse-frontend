@@ -35,6 +35,7 @@ export default function SearchFilters({
               placeholder="Sélectionner un pays"
               selectedCountry={originCountry}
               onSelectCountry={setOriginCountry}
+              resetInput = {() => {setOriginCountry("")}}
             />
           </View>
 
@@ -47,6 +48,7 @@ export default function SearchFilters({
                 setDestinationCountry(country);
                 handleFilteredSearch(country, destinationCity);
               }}
+              resetInput = {() => {setDestinationCountry("")}}
             />
           </View>
 

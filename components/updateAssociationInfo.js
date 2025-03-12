@@ -19,11 +19,10 @@ import InternalDataSetDropdown from "./internalDataSetDropdown";
 import PhoneInput from "./phoneInput";
 import MessageModal from "./messageModal";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {addAssociation} from "../reducers/user";
+import { addAssociation } from "../reducers/user";
 import { BACKEND_ADDRESS } from "../assets/url";
 
 export default function UpdateAssociationInfo({ handleBackToDefault }) {
-
   //Etats pour les données de l'association
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -47,8 +46,7 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
   const [gallery, setGallery] = useState([]);
   const [history, setHistory] = useState([]);
   const [missions, setMissions] = useState([]);
-  const [associationID, setAssociationID] = useState("test")
-
+  const [associationID, setAssociationID] = useState("test");
 
   // Récupération infos utilisateur
   const user = useSelector((state) => state.user.value);
@@ -60,7 +58,7 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
 
   // Champs d'identification de l'association
   const categoriesDataSet = categoriesList.map((category, i) => ({
-      id: `${i}`,
+    id: `${i}`,
     title: category,
   }));
 
@@ -71,11 +69,20 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
     }
   };
 
+  const resetResidenceCountry = () => {
+    setResidenceCountry("")
+    setCountry("")
+  }
+
   const selectNationality = (country) => {
     if (country) {
       setNationality(country);
     }
   };
+
+  const resetNationality = () => {
+    setNationality("")
+  }
 
   const selectCategory = (category) => {
     if (category) {
@@ -152,32 +159,31 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
 
   // CHAMPS AUTRES INFORMATIONS
 
-    // Langues parlées
-    const languagesListFrenchDataSet = languagesListFrench.map((language, i) => ({
-      id: `${i}`,
-      title: language,
-    }));
+  // Langues parlées
+  const languagesListFrenchDataSet = languagesListFrench.map((language, i) => ({
+    id: `${i}`,
+    title: language,
+  }));
 
-    const selectLanguages = (language) => {
-      if (language) {
-        setLanguages((languages) => [...languages, language]);
-      }
-    };
+  const selectLanguages = (language) => {
+    if (language) {
+      setLanguages((languages) => [...languages, language]);
+    }
+  };
 
-    const handleChangeLanguages = (text, index) => {
-      setLanguages((prev) => {
-        const updated = [...prev];
-        updated[index] = text;
-        return updated;
-      });
-    };
+  const handleChangeLanguages = (text, index) => {
+    setLanguages((prev) => {
+      const updated = [...prev];
+      updated[index] = text;
+      return updated;
+    });
+  };
 
-    const removeLanguage = (index) => {
-      const inputs = languages;
-      const newInputs = inputs.filter((_, i) => i !== index);
-      setLanguages(newInputs);
-    };
-
+  const removeLanguage = (index) => {
+    const inputs = languages;
+    const newInputs = inputs.filter((_, i) => i !== index);
+    setLanguages(newInputs);
+  };
 
   //Zone d'intervention
 
@@ -188,21 +194,18 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
   };
 
   const handleChangeInterventionZone = (text, index) => {
-      setInterventionZone((prev) => {
-        const updated = [...prev];
-        updated[index] = text;
-        return updated;
-      });
-    };
+    setInterventionZone((prev) => {
+      const updated = [...prev];
+      updated[index] = text;
+      return updated;
+    });
+  };
 
-    const removeInterventionZone = (index) => {
-      const inputs = interventionZone;
-      const newInputs = inputs.filter((_, i) => i !== index);
-      setInterventionZone(newInputs);
-    };
-
-
-
+  const removeInterventionZone = (index) => {
+    const inputs = interventionZone;
+    const newInputs = inputs.filter((_, i) => i !== index);
+    setInterventionZone(newInputs);
+  };
 
   // Récupération des données de l'association dans les états
   const updatedData = {
@@ -230,9 +233,8 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
     gallery,
     history,
     missions,
-    _id: associationID
+    _id: associationID,
   };
-
 
   // Etats pour affichage de la modale (message de confirmation)
   const [modalVisible, setModalVisible] = useState(false);
@@ -246,100 +248,107 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
     } else {
       setModalVisible(false);
     }
-  }
+  };
 
-      // MISE A JOUR DES INFORMATIONS DE L'ASSOCIATION
+  // MISE A JOUR DES INFORMATIONS DE L'ASSOCIATION
 
-      // Etat pour stocker l'ID de l'association modifiée
+  // Etat pour stocker l'ID de l'association modifiée
 
-      // Variable pour mettre à jour tous les états sans appeler les setters individuellement
-      const setters = {
-        name: setName,
-        description: setDescription,
-        nationality: setNationality,
-        residenceCountry: setResidenceCountry,
-        category: setCategory,
-        phone: setPhone,
-        email: setEmail,
-        streetNumberAndLabel: setStreetNumberAndLabel,
-        zipcode: setZipcode,
-        city: setCity,
-        department: setDepartment,
-        country: setCountry,
-        languages: setLanguages,
-        interventionZone: setInterventionZone,
-        creationDate: setCreationDate,
-        lastDeclarationDate: setlastDeclarationDate,
-        legalNumber: setLegalNumber,
-        members: setMembers,
-        socialNetworks: setSocialNetworks,
-        gallery: setGallery,
-        history: setHistory,
-        missions: setMissions,
-        _id: setAssociationID
-      };
+  // Variable pour mettre à jour tous les états sans appeler les setters individuellement
+  const setters = {
+    name: setName,
+    description: setDescription,
+    nationality: setNationality,
+    residenceCountry: setResidenceCountry,
+    category: setCategory,
+    phone: setPhone,
+    email: setEmail,
+    streetNumberAndLabel: setStreetNumberAndLabel,
+    zipcode: setZipcode,
+    city: setCity,
+    department: setDepartment,
+    country: setCountry,
+    languages: setLanguages,
+    interventionZone: setInterventionZone,
+    creationDate: setCreationDate,
+    lastDeclarationDate: setlastDeclarationDate,
+    legalNumber: setLegalNumber,
+    members: setMembers,
+    socialNetworks: setSocialNetworks,
+    gallery: setGallery,
+    history: setHistory,
+    missions: setMissions,
+    _id: setAssociationID,
+  };
 
-      // Fonction pour mise à jour de plusieurs états en une fois
-      const updateStates = (newValues) => {
-        Object.entries(newValues).forEach(([key, value]) => {
-          if (setters[key]) {
-            setters[key](value); // Appelle le setter correspondant à la clé
-          }
-        });
-      };
+  // Fonction pour mise à jour de plusieurs états en une fois
+  const updateStates = (newValues) => {
+    Object.entries(newValues).forEach(([key, value]) => {
+      if (setters[key]) {
+        setters[key](value); // Appelle le setter correspondant à la clé
+      }
+    });
+  };
 
-      // Chargement des données de l'asso dans le formulaire
-      useEffect(() => {
-        fetch(
-                `${BACKEND_ADDRESS}/associations/associationBeingUpdated/${user.associationBeingUpdated}`,
-                {
-                  method: "GET",
-                  headers: {
-                    Authorization: `Bearer ${user.token}`,
-                  },
-                }
-              )
-                .then((response) => response.json())
-                .then((data) => {
-                    updateStates(data.AssociationData)
-                })
-                .catch((error) =>
-                  console.error("Erreur lors de la récupération :", error)
-                );
-      }, []);
-
+  // Chargement des données de l'asso dans le formulaire
+  useEffect(() => {
+    fetch(
+      `${BACKEND_ADDRESS}/associations/associationBeingUpdated/${user.associationBeingUpdated}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        updateStates(data.AssociationData);
+      })
+      .catch((error) =>
+        console.error("Erreur lors de la récupération :", error)
+      );
+  }, []);
 
   // Envoi des données au backend pour mise à jour
   const handleUpdateSubmit = () => {
-    fetch(`${BACKEND_ADDRESS}/associations/update`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user.token}`,
-      },
-      body: JSON.stringify(updatedData),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("données reçues du backend", data)
-        if (data.result) {
-          setMessage("✅ Association créée avec succès !");
-          setIsSuccess(true);
-          dispatch(addAssociation(data.newAssociation));
-        } else {
-          setMessage("❌ Une association du même nom existe déjà.");
-          setIsSuccess(false);
-        }
-        setModalVisible(true); // Afficher la modale
-      })
-      .catch((error) => {
-        console.error("Erreur :", error);
-        setMessage("⚠️ Une erreur s'est produite, veuillez réessayer.");
-        setIsSuccess(false);
-        setModalVisible(true);
-      });
-  };
 
+    console.log("nom", name, "description", description, "nationality", nationality, "category", category, "residenceCountry", residenceCountry)
+
+    if (!name || !description || !nationality || !category || !residenceCountry) {
+        setMessage("❌ Une erreur s'est produite, veuillez réessayer.");
+          setIsSuccess(false);
+          setModalVisible(true);
+          return
+    }
+
+        fetch(`${BACKEND_ADDRESS}/associations/update`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
+          body: JSON.stringify(updatedData),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.result) {
+              setMessage("✅ Données mises à jour avec succès !");
+              setIsSuccess(true);
+              dispatch(addAssociation(data.newAssociation));
+            } else {
+              setMessage("❌ Une erreur s'est produite, veuillez réessayer.");
+              setIsSuccess(false);
+            }
+            setModalVisible(true);
+          })
+          .catch((error) => {
+            console.error("Erreur :", error);
+            setMessage("⚠️ Une erreur s'est produite, veuillez réessayer.");
+            setIsSuccess(false);
+            setModalVisible(true);
+          });
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -347,7 +356,7 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
         <Pressable onPress={handleBackToDefault} style={styles.backButton}>
           <FontAwesome name="arrow-left" size={24} color="#FF6C02" />
         </Pressable>
-          <Text style={styles.mainHeader}>Modification données asso</Text>
+        <Text style={styles.mainHeader}>Modification données asso</Text>
       </View>
       <View style={styles.bottomBorder} />
       <ScrollView
@@ -363,7 +372,11 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
               title="Nom de l'association"
               placeholder="Nom de l'association"
               value={name}
-              onChangeText={(value) => setName(value)}
+              onChangeText={(value) => {
+                if (value.length <= 150) {
+                  setName(value);
+                }
+              }}
               secureTextEntry={false}
               icon="pencil"
             />
@@ -371,30 +384,36 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
               title="Description"
               placeholder="Objet de l'association"
               value={description}
-              onChangeText={(value) => setDescription(value)}
+              onChangeText={(value) => {
+                if (value.length <= 1000) {
+                  setDescription(value);
+                }
+              }}
               secureTextEntry={false}
               icon="pencil"
             />
             <View style={styles.dropdown}>
               <CountryDropdown
                 title="Pays de résidence de l'asso"
-                placeholder="Choisir un pays"
+                placeholder= {residenceCountry || "Choisir un pays"}
                 onSelectCountry={selectResidenceCountry}
                 selectedCountry={residenceCountry}
+                resetInput = {() => resetResidenceCountry()}
               />
             </View>
             <View style={styles.dropdown}>
               <CountryDropdown
                 title="Pays d'origine des membres"
-                placeholder="Choisir un ou plusieurs pays"
+                placeholder={nationality || "Choisir un pays"}
                 onSelectCountry={selectNationality}
                 selectedCountry={nationality}
+                resetInput = {() => resetNationality()}
               />
             </View>
             <InternalDataSetDropdown
               title="Secteurs d'activité"
               dataSet={categoriesDataSet}
-              placeholder="Choisir un ou plusieurs secteurs"
+              placeholder={category ||"Choisir un secteur"}
               value={category}
               onSelectItem={(item) => {
                 selectCategory(item?.title);
@@ -408,7 +427,11 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
               keyboardType="email-address"
               placeholder="Email"
               value={email}
-              onChangeText={(value) => setEmail(value)}
+              onChangeText={(value) => {
+                if (value.length <= 100) {
+                  setEmail(value);
+                }
+              }}
               secureTextEntry={false}
               icon="pencil"
             />
@@ -423,46 +446,45 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
               secureTextEntry={false}
             />
             {phone.map((value, index) => (
-                          <View
-                            key={index}
-                            style={{ flexDirection: "row", alignItems: "center" }}
-                          >
-                            <TextInput
-                              style={{
-                                flex: 1,
-                                borderWidth: 1,
-                                padding: 10,
-                                marginVertical: 10,
-                                backgroundColor: "#ffffff",
-                                borderRadius: 8,
-                                borderColor: "#bbbbbb",
-                                fontSize: 12,
-                              }}
-                              value={phone[index] || ""}
-                              onChangeText={(text) => handleChangePhoneNumber(text, index)}
-                              placeholder={`Phone ${index + 1}`}
-                            />
-                              <TouchableOpacity
-                                onPress={() => removePhoneNumber(index)}
-                                style={{
-                                  width: 40,
-                                  height: 40,
-                                  marginLeft: 10,
-                                  padding: 10,
-                                  backgroundColor: "#FF6C02",
-                                  borderRadius: 180,
-                                }}
-                              >
-                                <FontAwesome
-                                  name={"minus"}
-                                  size={20}
-                                  color="#ffffff"
-                                  style={styles.icon}
-                                />
-                              </TouchableOpacity>
-
-                          </View>
-                        ))}
+              <View
+                key={index}
+                style={{ flexDirection: "row", alignItems: "center" }}
+              >
+                <TextInput
+                  style={{
+                    flex: 1,
+                    borderWidth: 1,
+                    padding: 10,
+                    marginVertical: 10,
+                    backgroundColor: "#ffffff",
+                    borderRadius: 8,
+                    borderColor: "#bbbbbb",
+                    fontSize: 12,
+                  }}
+                  value={phone[index] || ""}
+                  onChangeText={(text) => handleChangePhoneNumber(text, index)}
+                  placeholder={`Phone ${index + 1}`}
+                />
+                <TouchableOpacity
+                  onPress={() => removePhoneNumber(index)}
+                  style={{
+                    width: 40,
+                    height: 40,
+                    marginLeft: 10,
+                    padding: 10,
+                    backgroundColor: "#FF6C02",
+                    borderRadius: 180,
+                  }}
+                >
+                  <FontAwesome
+                    name={"minus"}
+                    size={20}
+                    color="#ffffff"
+                    style={styles.icon}
+                  />
+                </TouchableOpacity>
+              </View>
+            ))}
             <View style={styles.dropdown}>
               <AddressDropdown
                 title="Numéro et libellé de la voie"
@@ -476,28 +498,44 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
               title="Code postal"
               placeholder="Exemple: 75008"
               value={zipcode}
-              onChangeText={(value) => setZipcode(value)}
+              onChangeText={(value) => {
+                if (value.length <= 20) {
+                  setZipcode(value);
+                }
+              }}
               secureTextEntry={false}
             />
             <Input
               title="Ville"
               placeholder="Exemple: Paris"
               value={city}
-              onChangeText={(value) => setCity(value)}
+              onChangeText={(value) => {
+                if (value.length <= 150) {
+                  setCity(value);
+                }
+              }}
               secureTextEntry={false}
             />
             <Input
               title="N° de département"
               placeholder="Exemple: 75"
               value={department}
-              onChangeText={(value) => setDepartment(value)}
+              onChangeText={(value) => {
+                if (value.length <= 150) {
+                  setDepartment(value);
+                }
+              }}
               secureTextEntry={false}
             />
             <Input
               title="Pays"
               placeholder="Exemple: France"
               value={country}
-              onChangeText={(value) => setCountry(value)}
+              onChangeText={(value) => {
+                if (value.length <= 150) {
+                  setCountry(value);
+                }
+              }}
               secureTextEntry={false}
             />
           </View>
@@ -512,7 +550,11 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
               title="Numéro d'identification"
               placeholder="Exemple: W111000000"
               value={legalNumber}
-              onChangeText={(value) => setLegalNumber(value)}
+              onChangeText={(value) => {
+                if (value.length <= 150) {
+                  setLegalNumber(value);
+                }
+              }}
               secureTextEntry={false}
               icon="pencil"
             />
@@ -534,94 +576,94 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
               }}
             />
             {languages.map((value, index) => (
-                          <View
-                            key={index}
-                            style={{ flexDirection: "row", alignItems: "center" }}
-                          >
-                            <TextInput
-                              style={{
-                                flex: 1,
-                                borderWidth: 1,
-                                padding: 10,
-                                marginVertical: 10,
-                                backgroundColor: "#ffffff",
-                                borderRadius: 8,
-                                borderColor: "#bbbbbb",
-                                fontSize: 12,
-                              }}
-                              value={languages[index] || ""}
-                              onChangeText={(text) => handleChangeLanguages(text, index)}
-                              placeholder={`Language ${index + 1}`}
-                            />
-                              <TouchableOpacity
-                                onPress={() => removeLanguage(index)}
-                                style={{
-                                  width: 40,
-                                  height: 40,
-                                  marginLeft: 10,
-                                  padding: 10,
-                                  backgroundColor: "#FF6C02",
-                                  borderRadius: 180,
-                                }}
-                              >
-                                <FontAwesome
-                                  name={"minus"}
-                                  size={20}
-                                  color="#ffffff"
-                                  style={styles.icon}
-                                />
-                              </TouchableOpacity>
-
-                          </View>
-                        ))}
+              <View
+                key={index}
+                style={{ flexDirection: "row", alignItems: "center" }}
+              >
+                <TextInput
+                  style={{
+                    flex: 1,
+                    borderWidth: 1,
+                    padding: 10,
+                    marginVertical: 10,
+                    backgroundColor: "#ffffff",
+                    borderRadius: 8,
+                    borderColor: "#bbbbbb",
+                    fontSize: 12,
+                  }}
+                  value={languages[index] || ""}
+                  onChangeText={(text) => handleChangeLanguages(text, index)}
+                  placeholder={`Language ${index + 1}`}
+                />
+                <TouchableOpacity
+                  onPress={() => removeLanguage(index)}
+                  style={{
+                    width: 40,
+                    height: 40,
+                    marginLeft: 10,
+                    padding: 10,
+                    backgroundColor: "#FF6C02",
+                    borderRadius: 180,
+                  }}
+                >
+                  <FontAwesome
+                    name={"minus"}
+                    size={20}
+                    color="#ffffff"
+                    style={styles.icon}
+                  />
+                </TouchableOpacity>
+              </View>
+            ))}
             <View style={styles.dropdown}>
               <CountryDropdown
                 title="Zone d'intervention"
                 placeholder="Sélectionner un ou plusieurs pays"
                 onSelectCountry={selectInterventionZone}
-                selectedCountry={()=> {}}
+                selectedCountry={() => {}}
               />
-            {interventionZone.map((value, index) => (
-                          <View
-                            key={index}
-                            style={{ flexDirection: "row", alignItems: "center" }}
-                          >
-                            <TextInput
-                              style={{
-                                flex: 1,
-                                borderWidth: 1,
-                                padding: 10,
-                                marginVertical: 10,
-                                backgroundColor: "#ffffff",
-                                borderRadius: 8,
-                                borderColor: "#bbbbbb",
-                                fontSize: 12,
-                              }}
-                              value={interventionZone[index] || ""}
-                              onChangeText={(text) => handleChangeInterventionZone(text, index)}
-                              placeholder={`interventionZone ${index + 1}`}
-                            />
-                              <TouchableOpacity
-                                onPress={() => removeInterventionZone(index)}
-                                style={{
-                                  width: 40,
-                                  height: 40,
-                                  marginLeft: 10,
-                                  padding: 10,
-                                  backgroundColor: "#FF6C02",
-                                  borderRadius: 180,
-                                }}
-                              >
-                                <FontAwesome
-                                  name={"minus"}
-                                  size={20}
-                                  color="#ffffff"
-                                  style={styles.icon}
-                                />
-                              </TouchableOpacity>
-
-                          </View>
-                        ))}
+              {interventionZone.map((value, index) => (
+                <View
+                  key={index}
+                  style={{ flexDirection: "row", alignItems: "center" }}
+                >
+                  <TextInput
+                    style={{
+                      flex: 1,
+                      borderWidth: 1,
+                      padding: 10,
+                      marginVertical: 10,
+                      backgroundColor: "#ffffff",
+                      borderRadius: 8,
+                      borderColor: "#bbbbbb",
+                      fontSize: 12,
+                    }}
+                    value={interventionZone[index] || ""}
+                    onChangeText={(text) =>
+                      handleChangeInterventionZone(text, index)
+                    }
+                    placeholder={`interventionZone ${index + 1}`}
+                  />
+                  <TouchableOpacity
+                    onPress={() => removeInterventionZone(index)}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      marginLeft: 10,
+                      padding: 10,
+                      backgroundColor: "#FF6C02",
+                      borderRadius: 180,
+                    }}
+                  >
+                    <FontAwesome
+                      name={"minus"}
+                      size={20}
+                      color="#ffffff"
+                      style={styles.icon}
+                    />
+                  </TouchableOpacity>
+                </View>
+              ))}
             </View>
           </View>
         </View>
