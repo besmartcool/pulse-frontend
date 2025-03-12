@@ -19,16 +19,16 @@ import { addInfoProfile } from "../reducers/user";
 import { BACKEND_ADDRESS } from "../assets/url";
 
 export default function ProfileScreen({ navigation }) {
-  const [inputs, setInputs] = useState([]);
-  const [inputs2, setInputs2] = useState([]);
+  const [inputs, setInputs] = useState([""]);
+  const [inputs2, setInputs2] = useState([""]);
   const [lastname, setLastname] = useState("");
   const [firstname, setFirstname] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [newNationality, setNewNationality] = useState([]);
+  const [newNationality, setNewNationality] = useState([""]);
   const [residenceCountry, setResidenceCountry] = useState("");
-  const [newDestinationCountry, setNewDestinationCountry] = useState([]);
+  const [newDestinationCountry, setNewDestinationCountry] = useState([""]);
   const [infos, setInfos] = useState();
   const user = useSelector((state) => state.user.value);
   const dispatch = useDispatch();
@@ -52,12 +52,22 @@ export default function ProfileScreen({ navigation }) {
           setFirstname(data.data.firstname || "");
           setUsername(data.data.username || "");
           setEmail(data.data.email || "");
-          setNewNationality(data.data.nationality || []);
+          setNewNationality(data.data.nationality || [""]);
           setResidenceCountry(data.data.residenceCountry || "");
-          setNewDestinationCountry(data.data.destinationCountry || []);
+          setNewDestinationCountry(data.data.destinationCountry || [""]);
           setInfos(data.data); // Stockez les informations initiales
-          setInputs(data.data.nationality || []); // Initialisez les inputs avec les valeurs initiales
-          setInputs2(data.data.destinationCountry || []); // Initialisez les inputs2 avec les valeurs initiales
+          setInputs(data.data.nationality || [""]); // Initialisez les inputs avec les valeurs initiales
+          setInputs2(data.data.destinationCountry || [""]); // Initialisez les inputs2 avec les valeurs initiales
+
+          // Ajoutez un champ vide si les tableaux sont vides
+          if (!data.data.nationality || data.data.nationality.length === 0) {
+            setInputs([""]);
+            setNewNationality([""]);
+          }
+          if (!data.data.destinationCountry || data.data.destinationCountry.length === 0) {
+            setInputs2([""]);
+            setNewDestinationCountry([""]);
+          }
         }
       })
       .catch((error) => console.error("Error fetching data:", error));
@@ -137,7 +147,8 @@ export default function ProfileScreen({ navigation }) {
   };
 
   const handleDeconnexion = () => {
-
+    // Logique de déconnexion
+    
   };
 
   return (

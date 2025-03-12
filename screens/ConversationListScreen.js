@@ -2,14 +2,21 @@ import { useEffect, useState } from "react";
 import {
   View,
   Text,
-  FlatList,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
 } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { BACKEND_ADDRESS } from "../assets/url";
+import Pusher from "pusher-js/react-native";
 import { useSelector } from "react-redux";
+
+// Connexion à Pusher
+const pusher = new Pusher("55d828cade0571956384", {
+  cluster: "eu",
+  forceTLS: true, // Utilisation TLS pour de la sécurité
+  enabledTransports: ["ws", "wss"], // Active les websockets
+});
 
 export default function ConversationListScreen({ navigation, route }) {
   const [rooms, setRooms] = useState([]);
@@ -19,6 +26,7 @@ export default function ConversationListScreen({ navigation, route }) {
   const email = user?.email || "default@email.com";
 
   useEffect(() => {
+    // Chargement des rooms de l'user
     fetch(`${BACKEND_ADDRESS}/rooms/${email}`)
       .then((response) => response.json())
       .then((data) => {
@@ -30,11 +38,16 @@ export default function ConversationListScreen({ navigation, route }) {
   }, []);
 
   useEffect(() => {
+    // Chargement des utilisateurs
     fetch(`${BACKEND_ADDRESS}/users/allUsers`)
       .then((response) => response.json())
       .then((data) => {
         if (data.result !== false) {
-          setUsers(data.filter((user) => user.email !== email)); // Exclure l'utilisateur actuel
+          const uniqueUsers = Array.from(
+            // On exclue l'utilisateur actuellement connecté
+            new Map(data.map((user) => [user.email, user])).values()
+          );
+          setUsers(uniqueUsers.filter((user) => user.email !== email));
         } else {
           setUsers([]);
         }
@@ -47,7 +60,43 @@ export default function ConversationListScreen({ navigation, route }) {
       );
   }, []);
 
+  useEffect(() => {
+    // Récupérer les rooms de l'utilisateur
+    fetch(`${BACKEND_ADDRESS}/rooms/${email}`)
+      .then((response) => response.json())
+      .then((data) => setRooms(data))
+      .catch((error) =>
+        console.error("Erreur lors de la récupération des rooms :", error)
+      );
+
+    // Abonnement Pusher pour écouter les mises à jour des rooms
+    const channel = pusher.subscribe(`rooms-${email}`);
+
+    channel.bind("room-updated", (updatedRoom) => {
+
+      setRooms((prevRooms) => {
+        const updatedRooms = prevRooms.map((room) =>
+          room._id === updatedRoom._id
+            ? {
+                ...room,
+                lastMessage: updatedRoom.lastMessage,
+                lastMessageAt: updatedRoom.lastMessageAt,
+              }
+            : room
+        );
+
+        return [...updatedRooms]; // on force le re-render pour afficher le dernier message
+      });
+    });
+
+    return () => {
+      channel.unbind_all();
+      channel.unsubscribe();
+    };
+  }, [email]); // re-render en fonction de l'email
+
   const openChat = (otherUser) => {
+    // Ouvrir un chat avec un utilisateur
     if (!otherUser || !otherUser.email) {
       console.error("Erreur : utilisateur invalide", otherUser);
       return;
@@ -60,23 +109,26 @@ export default function ConversationListScreen({ navigation, route }) {
     );
 
     if (existingRoom) {
+      // Si elle existe déjà, on va vers la room
       navigation.navigate("ChatScreen", {
         email,
         roomId: existingRoom._id,
         user: otherUser,
       });
     } else {
+      // Sinon on la crée
       fetch(`${BACKEND_ADDRESS}/rooms/private`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user1: email, user2: otherUser.email }),
+        body: JSON.stringify({ user1: email, user2: otherUser.email }), // avec les 2 users concercnnés
       })
         .then((response) => response.json())
         .then((data) => {
           if (data.result && data.room && data.room._id) {
-            setRooms((prevRooms) => [...prevRooms, data.room]);
+            setRooms((prevRooms) => [...prevRooms, data.room]); // On ajoute la room sur le front
 
             navigation.navigate("ChatScreen", {
+              // on navigue vers la room
               email,
               roomId: data.room._id,
               user: otherUser,
@@ -90,9 +142,11 @@ export default function ConversationListScreen({ navigation, route }) {
   };
 
   const navigateToChat = (room) => {
-    const otherUserEmail = room.users.find((u) => u !== email);
-    const otherUser = users.find((u) => u.email === otherUserEmail);
+    // Ouvrir un chat existant
+    const otherUserEmail = room.users.find((u) => u !== email); // on récupère l'email de l'autre user
+    const otherUser = users.find((u) => u.email === otherUserEmail); // contient toutes les infos de l'user
 
+    // Vérification des données en amont
     if (!room._id || !otherUser) {
       console.error("Données manquantes :", {
         room,
@@ -102,6 +156,7 @@ export default function ConversationListScreen({ navigation, route }) {
     }
 
     navigation.navigate("ChatScreen", {
+      // On va vers le chatscreen correspondant
       email,
       roomId: room._id,
       user: otherUser,
@@ -140,8 +195,11 @@ export default function ConversationListScreen({ navigation, route }) {
         <Text style={styles.title}>Messages</Text>
         <ScrollView contentContainerStyle={styles.roomList}>
           {rooms.map((item) => {
-            const otherUserEmail =
-              item.users.find((u) => u !== email) || "Inconnu";
+            // Récupérer l'email de l'autre utilisateur dans la conversation
+            const otherUserEmail = item.users.find((u) => u !== email);
+            // Trouver l'objet utilisateur correspondant dans la liste des users
+            const otherUser = users.find((u) => u.email === otherUserEmail);
+
             return (
               <TouchableOpacity
                 key={item._id}
@@ -150,7 +208,11 @@ export default function ConversationListScreen({ navigation, route }) {
               >
                 <FontAwesome name="user-circle" size={40} color="#FF6C02" />
                 <View>
-                  <Text style={styles.roomText}>{otherUserEmail}</Text>
+                  <Text style={styles.roomText}>
+                    {otherUser
+                      ? `${otherUser.firstname} ${otherUser.lastname}`
+                      : "Utilisateur inconnu"}
+                  </Text>
                   {item.lastMessageAt && (
                     <Text style={styles.lastMessageTime}>
                       {new Date(item.lastMessageAt).toLocaleTimeString()}
