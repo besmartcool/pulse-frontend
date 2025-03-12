@@ -17,8 +17,6 @@ import { liked, saveAssociationForUpdate } from "../reducers/user";
 import { BACKEND_ADDRESS } from "../assets/url";
 
 export default function DescriptionScreen({ route }) {
-
- 
   const { association } = route.params;
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -94,33 +92,91 @@ export default function DescriptionScreen({ route }) {
     dispatch(liked(association));
   };
 
-
   //PERMET DE SAVOIR SI L'UTILISATEUR EST ADMIN DE L'ASSOCIATION
 
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-      fetch(
-        `${BACKEND_ADDRESS}/associations/checkAdminStatus/${association.name}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
+    fetch(
+      `${BACKEND_ADDRESS}/associations/checkAdminStatus/${association.name}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          setIsAdmin(true);
+        } else {
+          setIsAdmin(false);
         }
-      )
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.result) {
-            setIsAdmin(true);
-          } else {
-            setIsAdmin(false)
-          }
-        })
-        .catch((error) =>
-          console.error("Erreur lors de la récupération :", error)
+      })
+      .catch((error) =>
+        console.error("Erreur lors de la récupération :", error)
+      );
+  }, []);
+
+  const handleContact = () => {
+    let secretary = null;
+    let existingRoom = null;
+
+    // 1️⃣ Récupérer le secrétaire de l'association
+    fetch(`${BACKEND_ADDRESS}/rooms/${association._id}/secretary`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (!data.result || !data.secretary) {
+          alert("Aucun secrétaire trouvé pour cette association.");
+          throw new Error("Secrétaire introuvable");
+        }
+        secretary = data.secretary;
+
+        // 2️⃣ Vérifier si une room existe déjà entre l'utilisateur connecté et le secrétaire
+        return fetch(`${BACKEND_ADDRESS}/rooms/${user.email}`);
+      })
+      .then((response) => response.json())
+      .then((existingRooms) => {
+        existingRoom = existingRooms.find(
+          (room) =>
+            room.users.includes(user.email) &&
+            room.users.includes(secretary.email)
         );
-    }, []);
+
+        if (existingRoom) {
+          // 3️⃣ Si la room existe déjà, ouvrir le chat existant
+          navigation.navigate("ChatScreen", {
+            email: user.email,
+            roomId: existingRoom._id,
+            user: secretary,
+          });
+        } else {
+          // 4️⃣ Sinon, créer une nouvelle room
+          return fetch(`${BACKEND_ADDRESS}/rooms/private`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ user1: user.email, user2: secretary.email }),
+          });
+        }
+      })
+      .then((response) => response.json())
+      .then((newRoomData) => {
+        if (newRoomData.result && newRoomData.room) {
+          // 5️⃣ Ouvrir le chat avec la nouvelle room
+          navigation.navigate("ChatScreen", {
+            email: user.email,
+            roomId: newRoomData.room._id,
+            user: secretary,
+          });
+        } else {
+          alert("Erreur lors de la création de la conversation.");
+        }
+      })
+      .catch((error) => {
+        console.error("Erreur lors de l'ouverture du chat :", error);
+      });
+  };
 
   return (
     <View style={styles.fakeModal}>
@@ -156,32 +212,30 @@ export default function DescriptionScreen({ route }) {
                   {association.nationality}
                 </Text>
               </View>
-            ) : (
-              null
-            )}
+            ) : null}
           </View>
         </View>
 
-        {isAdmin &&
-        <View style={styles.admin}>
-          <FontAwesome
-            style={styles.icons}
-            name="comment"
-            size={24}
-            color="black"
-          />
-          <FontAwesome
-            style={styles.icons}
-            name="pencil"
-            size={24}
-            color="black"
-            onPress={() => {
-              dispatch(saveAssociationForUpdate(association.name))
-              navigation.navigate('Asso')
-            }}
-          />
-        </View>}
-
+        {isAdmin && (
+          <View style={styles.admin}>
+            <FontAwesome
+              style={styles.icons}
+              name="comment"
+              size={24}
+              color="black"
+            />
+            <FontAwesome
+              style={styles.icons}
+              name="pencil"
+              size={24}
+              color="black"
+              onPress={() => {
+                dispatch(saveAssociationForUpdate(association.name));
+                navigation.navigate("Asso");
+              }}
+            />
+          </View>
+        )}
       </View>
 
       <ScrollView style={styles.scrollView}>
@@ -367,12 +421,10 @@ export default function DescriptionScreen({ route }) {
             style={styles.icon}
           />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.contact}>
+        <TouchableOpacity style={styles.contact} onPress={handleContact}>
           <Text style={styles.contactText}>Contacter</Text>
         </TouchableOpacity>
-        
       </View>
-      
     </View>
   );
 }

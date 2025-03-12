@@ -108,10 +108,6 @@ export default function SearchScreen({ navigation }) {
     setShowCriterias(!showCriterias);
   };
 
-  const toggleFilters = () => {
-    setShowFilters(!showFilters);
-  };
-
   const handleShowResult = () => {
     setTypeContent("result");
   };
