@@ -101,7 +101,7 @@ export default function SearchScreen({ navigation }) {
       ))
     ) : (
       <Text>Aucune catégorie trouvée.</Text>
-    );
+    )
 
   // Gestion de l'affichage
   const handleBackToDefault = () => {
