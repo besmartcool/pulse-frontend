@@ -28,11 +28,6 @@ export default function SearchFilters({
   toggleCriterias,
   handleShowResult,
 }) {
-  const handleFilterCategory = (category) => {
-    console.log("Filtre sélectionné :", category);
-    handleFilteredSearch(category);
-  };
-
   return (
     <View style={styles.fakeModal}>
       <View style={styles.research}>
@@ -173,10 +168,10 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     backgroundColor: "#FFF5E6",
     shadowColor: "#FF6C02",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
     width: "auto",
     height: "auto",
   },

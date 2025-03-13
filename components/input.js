@@ -26,7 +26,6 @@ const Input = ({ title, placeholder, value, onChangeText, secureTextEntry, keybo
 const styles = StyleSheet.create({
   inputContainer: {
     width: "100%",
-    marginVertical: 10,
   },
   title: {
     color: "#FF6C02",

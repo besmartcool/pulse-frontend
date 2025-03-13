@@ -1,8 +1,8 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import NewAssociationForm from "../components/newAssociationForm";
-import MyAssociations from "../components/myAssociations";
-import UpdateAssociationInfo from "../components/updateAssociationInfo"
+import NewAssociationForm from "../components/assoScreen/newAssociationForm";
+import MyAssociations from "../components/assoScreen/myAssociations";
+import UpdateAssociationInfo from "../components/assoScreen/updateAssociationInfo"
 import { saveAssociationForUpdate } from "../reducers/user";
 import React, {useState, useEffect} from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -40,15 +40,16 @@ export default function AssoScreen({ navigation }) {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
       {content}
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   scrollContainer: {
-    flexGrow: 1,
+    flex: 1,
     alignItems: "center",
+    backgroundColor: 'green'
   },
 });

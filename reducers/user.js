@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import UpdateAssociationInfo from "../components/updateAssociationInfo";
+import UpdateAssociationInfo from "../components/assoScreen/updateAssociationInfo";
 
 const initialState = {
   value: { token: null, email: null, favorites: [], associations: [], associationBeingUpdated: null },

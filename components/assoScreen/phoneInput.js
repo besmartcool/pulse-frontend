@@ -57,7 +57,6 @@ const PhoneInput = ({ title, placeholder, onChangeText }) => {
 const styles = StyleSheet.create({
   inputContainer: {
     width: "100%",
-    marginVertical: 10,
   },
   title: {
     color: "#FF6C02",
@@ -73,10 +72,12 @@ const styles = StyleSheet.create({
     borderColor: "#bbbbbb",
     borderRadius: 8,
     paddingHorizontal: 10,
+    backgroundColor: 'white',
   },
   inputText: {
     flex: 1,
     paddingVertical: 10,
+    fontSize: 14,
   },
   icon: {
     marginLeft: 8,
