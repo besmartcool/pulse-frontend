@@ -27,9 +27,10 @@ export default function ProfileScreen({ navigation }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [newNationality, setNewNationality] = useState([""]);
+  const [newNationality, setNewNationality] = useState([]);
   const [residenceCountry, setResidenceCountry] = useState("");
   const [newDestinationCountry, setNewDestinationCountry] = useState([""]);
+
   const [infos, setInfos] = useState();
   const user = useSelector((state) => state.user.value);
   const dispatch = useDispatch();
@@ -48,24 +49,25 @@ export default function ProfileScreen({ navigation }) {
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log("data.data.nationality", data.data.nationality);
         if (data.result) {
           setLastname(data.data.lastname || "");
           setFirstname(data.data.firstname || "");
           setUsername(data.data.username || "");
           setEmail(data.data.email || "");
-          setNewNationality(data.data.nationality || [""]);
+          setNewNationality(data.data.nationality || []);
           setResidenceCountry(data.data.residenceCountry || "");
           setNewDestinationCountry(data.data.destinationCountry || [""]);
           setInfos(data.data); // Stockez les informations initiales
-          setInputs(data.data.nationality || [""]); // Initialisez les inputs avec les valeurs initiales
+
           setInputs2(data.data.destinationCountry || [""]); // Initialisez les inputs2 avec les valeurs initiales
 
           // Ajoutez un champ vide si les tableaux sont vides
-          if (!data.data.nationality || data.data.nationality.length === 0) {
-            setInputs([""]);
-            setNewNationality([""]);
-          }
-          if (!data.data.destinationCountry || data.data.destinationCountry.length === 0) {
+
+          if (
+            !data.data.destinationCountry ||
+            data.data.destinationCountry.length === 0
+          ) {
             setInputs2([""]);
             setNewDestinationCountry([""]);
           }
@@ -74,35 +76,56 @@ export default function ProfileScreen({ navigation }) {
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-  const selectNewNationality = () => {
-      setNewNationality((newNationality) => [...newNationality]);
+  useEffect(() => {
+    console.log(newNationality);
+  }, [newNationality]);
+
+  const resetNewNationalityInput = () => {};
+
+  const selectNewNationality = (country) => {
+    if (!country) return;
+    setNewNationality((newNationality) => [...newNationality, country]);
   };
 
   const handleChangeNationality = (text, index) => {
     setNewNationality((prev) => {
       const updated = [...prev];
       updated[index] = text;
+
       return updated;
     });
   };
 
   const removeInput = (index) => {
-    const newInputs = inputs.filter((_, i) => i !== index);
-    setInputs(newInputs.length ? newInputs : [""]);
+    const newInputs = newNationality.filter((_, i) => i !== index);
     setNewNationality(newInputs);
+  };
+
+  const selectResidenceCountry = (country) => {
+    if (!country) return;
+    setResidenceCountry(residenceCountry);
+  };
+
+  const selectNewDestinationCountry = (country) => {
+    if (!country) return;
+    setNewDestinationCountry((newDestinationCountry) => [
+      ...newDestinationCountry,
+      country,
+    ]);
   };
 
   const handleChangeDestination = (text, index) => {
     setNewDestinationCountry((prev) => {
       const updated = [...prev];
       updated[index] = text;
+
       return updated;
     });
+    setInputs2(newDestinationCountry);
   };
 
   const removeInput2 = (index) => {
-    const newInputs = inputs2.filter((_, i) => i !== index);
-    setInputs2(newInputs.length ? newInputs : [""]);
+    const newInputs = newDestinationCountry.filter((_, i) => i !== index);
     setNewDestinationCountry(newInputs);
   };
 
@@ -114,7 +137,9 @@ export default function ProfileScreen({ navigation }) {
       username: username || infos?.username,
       nationality: newNationality.length ? newNationality : infos?.nationality,
       residenceCountry: residenceCountry || infos?.residenceCountry,
-      destinationCountry: newDestinationCountry.length ? newDestinationCountry : infos?.destinationCountry,
+      destinationCountry: newDestinationCountry.length
+        ? newDestinationCountry
+        : infos?.destinationCountry,
     };
 
     fetch(`${BACKEND_ADDRESS}/users`, {
@@ -126,7 +151,7 @@ export default function ProfileScreen({ navigation }) {
       .then((data) => {
         if (data.result) {
           dispatch(addInfoProfile(updatedData));
-          console.log("user", user)
+          console.log("user", user);
           setMessage("Mise à jour réussie !");
         } else {
           setErrorMessage("Erreur lors de la mise à jour.");
@@ -151,8 +176,8 @@ export default function ProfileScreen({ navigation }) {
     setResidenceCountry(text);
   };
 
+  // Logique de déconnexion
   const handleDeconnexion = () => {
-    // Logique de déconnexion
     dispatch(logout());
   };
 
@@ -164,10 +189,16 @@ export default function ProfileScreen({ navigation }) {
             style={styles.logo}
             source={require("../assets/Logo_Letter.png")}
           />
-          <Image
-            style={styles.placeholderImage}
-            source={require("../assets/placeholderImage.png")}
-          />
+          <View style={styles.placeholderContainer}>
+            {infos?.firstname && infos?.lastname ? (
+              <Text style={styles.initials}>
+                {infos.firstname.charAt(0).toUpperCase()}
+                {infos.lastname.charAt(0).toUpperCase()}
+              </Text>
+            ) : (
+              <Text style={styles.initials}>?</Text>
+            )}
+          </View>
         </View>
         <Text style={styles.title}>Mon compte</Text>
         <View style={styles.line}></View>
@@ -176,21 +207,21 @@ export default function ProfileScreen({ navigation }) {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.input}>
-            <Text style={styles.titleInput}>NOM</Text>
-            <Input
-              style={styles.inputLastname}
-              placeholder={infos?.lastname || "Nom..."}
-              value={lastname}
-              onChangeText={handleChangeLastname}
-              secureTextEntry={false}
-              icon="pencil"
-            />
             <Text style={styles.titleInput}>PRENOM</Text>
             <Input
               style={styles.inputFirstname}
               placeholder={infos?.firstname || "Prénom..."}
               value={firstname}
               onChangeText={handleChangeFirstname}
+              secureTextEntry={false}
+              icon="pencil"
+            />
+            <Text style={styles.titleInput}>NOM</Text>
+            <Input
+              style={styles.inputLastname}
+              placeholder={infos?.lastname || "Nom..."}
+              value={lastname}
+              onChangeText={handleChangeLastname}
               secureTextEntry={false}
               icon="pencil"
             />
@@ -212,8 +243,13 @@ export default function ProfileScreen({ navigation }) {
               secureTextEntry={false}
             />
             <View style={styles.seperateLine}></View>
-            <Text style={styles.titleInput}>NATIONALITE</Text>
-            {inputs.map((value, index) => (
+            <CountryDropdown
+              title="Nationalité"
+              placeholder="Sélectionner un ou plusieurs pays"
+              onSelectCountry={selectNewNationality}
+              resetInput={() => {}}
+            />
+            {newNationality.map((value, index) => (
               <View
                 key={index}
                 style={{ flexDirection: "row", alignItems: "center" }}
@@ -231,52 +267,51 @@ export default function ProfileScreen({ navigation }) {
                   }}
                   value={newNationality[index] || ""}
                   onChangeText={(text) => handleChangeNationality(text, index)}
-                  placeholder={`Nationality ${index + 1}`}
+                  placeholder={`Nationalité ${index + 1}`}
                 />
-                {inputs.length > 1 && (
-                  <TouchableOpacity
-                    onPress={() => removeInput(index)}
-                    style={{
-                      width: 40,
-                      height: 40,
-                      marginLeft: 10,
-                      padding: 10,
-                      backgroundColor: "#FF6C02",
-                      borderRadius: 180,
-                    }}
-                  >
-                    <FontAwesome
-                      name={"minus"}
-                      size={20}
-                      color="#ffffff"
-                      style={styles.icon}
-                    />
-                  </TouchableOpacity>
-                )}
+
+                <TouchableOpacity
+                  onPress={() => removeInput(index)}
+                  style={{
+                    width: 40,
+                    height: 40,
+                    marginLeft: 10,
+                    padding: 10,
+                    backgroundColor: "#FF6C02",
+                    borderRadius: 180,
+                  }}
+                >
+                  <FontAwesome
+                    name={"minus"}
+                    size={20}
+                    color="#ffffff"
+                    style={styles.icon}
+                  />
+                </TouchableOpacity>
               </View>
             ))}
-            <Text style={styles.titleInput}>PAYS DE RESIDENCE</Text>
             <CountryDropdown
-              onSelectCountry={selectNewNationality}
-              selectedCountry={()=> {}}
+              title="Pays de résidence"
+              placeholder={residenceCountry || "Choisir un pays"}
+              onSelectCountry={selectResidenceCountry}
+              resetInput={() => {}}
+            />
+            {/* <Input
               style={styles.inputResidenceCountry}
               placeholder={infos?.residenceCountry || "Pays..."}
               value={residenceCountry}
               onChangeText={handleChangeResidenceCountry}
               secureTextEntry={false}
               icon="pencil"
-              />
-            {/* <Input
-              style={styles.inputResidenceCountry}
-              placeholder={infos?.residenceCountry || "..."}
-              value={residenceCountry}
-              onChangeText={handleChangeResidenceCountry}
-              secureTextEntry={false}
-              icon="pencil"
             /> */}
-            <Text style={styles.titleInput}>PAYS DE DESTINATION</Text>
-            
-            {inputs2.map((value, index) => (
+            <CountryDropdown
+              title="Pays de destination"
+              placeholder="Sélectionner un ou plusieurs pays"
+              onSelectCountry={selectNewDestinationCountry}
+              selectedCountry={() => {}}
+              resetInput={() => {}}
+            />
+            {newDestinationCountry.map((value, index) => (
               <View
                 key={index}
                 style={{ flexDirection: "row", alignItems: "center" }}
@@ -296,7 +331,7 @@ export default function ProfileScreen({ navigation }) {
                   onChangeText={(text) => handleChangeDestination(text, index)}
                   placeholder={`Destination ${index + 1}`}
                 />
-                {inputs2.length > 1 && (
+                {newDestinationCountry.length > 1 && (
                   <TouchableOpacity
                     onPress={() => removeInput2(index)}
                     style={{
@@ -318,24 +353,24 @@ export default function ProfileScreen({ navigation }) {
                 )}
               </View>
             ))}
-              {message && <Text style={styles.message}>{message}</Text>}
-              {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
-            <TouchableOpacity
-              onPress={() => handleRegistrationSubmit()}
-              style={styles.button}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.textButton}>Envoyer les modifications</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => handleDeconnexion()}
-              style={styles.buttonDeconnexion}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.textButtonDeconnexion}>Se déconnecter</Text>
-            </TouchableOpacity>
           </View>
         </ScrollView>
+        {message && <Text style={styles.message}>{message}</Text>}
+        {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
+        <TouchableOpacity
+          onPress={() => handleRegistrationSubmit()}
+          style={styles.button}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.textButton}>Envoyer les modifications</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => handleDeconnexion()}
+          style={styles.buttonDeconnexion}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.textButtonDeconnexion}>Se déconnecter</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -362,11 +397,6 @@ const styles = StyleSheet.create({
     fontWeight: 900,
     fontSize: 20,
     paddingTop: 10,
-  },
-  placeholderImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 180,
   },
   line: {
     width: "90%",
@@ -397,12 +427,12 @@ const styles = StyleSheet.create({
     marginTop: 30,
     alignSelf: "center",
     justifyContent: "center",
-    width: "100%",
+    width: "90%",
     height: 43,
     borderWidth: 1,
     borderColor: "#bbbbbb",
     backgroundColor: "#FF6C02",
-    borderRadius: 8,
+    borderRadius: 180,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.3,
@@ -420,12 +450,12 @@ const styles = StyleSheet.create({
     marginTop: 30,
     alignSelf: "center",
     justifyContent: "center",
-    width: "100%",
+    width: "90%",
     height: 43,
     borderWidth: 1,
     borderColor: "#bbbbbb",
     backgroundColor: "white",
-    borderRadius: 8,
+    borderRadius: 180,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.3,
@@ -449,5 +479,19 @@ const styles = StyleSheet.create({
   message: {
     color: "green",
     alignSelf: "center",
+  },
+  placeholderContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#FF6C02",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  initials: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
