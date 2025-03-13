@@ -188,24 +188,28 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
   //Zone d'intervention
 
   const selectInterventionZone = (country) => {
-    if (country) {
+    if (!country) return; // Empêche d'ajouter undefined
       setInterventionZone((interventionZone) => [...interventionZone, country]);
-    }
   };
+
+  const resetInterventionZone = () => {
+    // fonction vide car valide une propriété destinée aux champs d'input qui alimentent des états de type String (pas les états de type Array)
+  }
 
   const handleChangeInterventionZone = (text, index) => {
-    setInterventionZone((prev) => {
-      const updated = [...prev];
-      updated[index] = text;
-      return updated;
-    });
-  };
+      setInterventionZone((prev) => {
+        const updated = [...prev];
+        updated[index] = text;
+        return updated;
+      });
+    };
 
-  const removeInterventionZone = (index) => {
-    const inputs = interventionZone;
-    const newInputs = inputs.filter((_, i) => i !== index);
-    setInterventionZone(newInputs);
-  };
+    const removeInterventionZone = (index) => {
+      const inputs = interventionZone;
+      const newInputs = inputs.filter((_, i) => i !== index);
+      setInterventionZone(newInputs);
+    };
+
 
   // Récupération des données de l'association dans les états
   const updatedData = {
@@ -616,11 +620,11 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
               </View>
             ))}
             <View style={styles.dropdown}>
-              <CountryDropdown
+            <CountryDropdown
                 title="Zone d'intervention"
                 placeholder="Sélectionner un ou plusieurs pays"
                 onSelectCountry={selectInterventionZone}
-                selectedCountry={() => {}}
+                resetInput = {() => resetInterventionZone()}
               />
               {interventionZone.map((value, index) => (
                 <View
