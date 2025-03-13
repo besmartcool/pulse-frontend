@@ -61,31 +61,39 @@ export default function ConversationListScreen({ navigation, route }) {
   }, []);
 
   useEffect(() => {
-    // Récupérer les rooms de l'utilisateur
-    fetch(`${BACKEND_ADDRESS}/rooms/${email}`)
-      .then((response) => response.json())
-      .then((data) => setRooms(data))
-      .catch((error) =>
-        console.error("Erreur lors de la récupération des rooms :", error)
-      );
+    const fetchRooms = () => {
+      fetch(`${BACKEND_ADDRESS}/rooms/${email}`)
+        .then((response) => response.json())
+        .then((data) => setRooms(data))
+        .catch((error) =>
+          console.error("Erreur lors de la récupération des rooms :", error)
+        );
+    };
 
-    // Abonnement Pusher pour écouter les mises à jour des rooms
+    fetchRooms(); // Charger les rooms au montage
+
+    // Abonnement à Pusher
     const channel = pusher.subscribe(`rooms-${email}`);
 
     channel.bind("room-updated", (updatedRoom) => {
-
       setRooms((prevRooms) => {
-        const updatedRooms = prevRooms.map((room) =>
-          room._id === updatedRoom._id
-            ? {
-                ...room,
-                lastMessage: updatedRoom.lastMessage,
-                lastMessageAt: updatedRoom.lastMessageAt,
-              }
-            : room
+        const index = prevRooms.findIndex(
+          (room) => room._id === updatedRoom._id
         );
 
-        return [...updatedRooms]; // on force le re-render pour afficher le dernier message
+        if (index !== -1) {
+          // Room existante, on met à jour le dernier message
+          const updatedRooms = [...prevRooms];
+          updatedRooms[index] = {
+            ...updatedRooms[index],
+            lastMessage: updatedRoom.lastMessage,
+            lastMessageAt: updatedRoom.lastMessageAt,
+          };
+          return updatedRooms;
+        } else {
+          // Nouvelle room, on l'ajoute à la liste
+          return [...prevRooms, updatedRoom];
+        }
       });
     });
 
@@ -93,7 +101,7 @@ export default function ConversationListScreen({ navigation, route }) {
       channel.unbind_all();
       channel.unsubscribe();
     };
-  }, [email]); // re-render en fonction de l'email
+  }, [email]);
 
   const openChat = (otherUser) => {
     // Ouvrir un chat avec un utilisateur
@@ -293,9 +301,11 @@ const styles = StyleSheet.create({
   },
   content: {
     width: "90%",
+    flex: 1,
   },
   roomList: {
     width: "100%",
+    height: "auto",
   },
   roomItem: {
     paddingVertical: 15,

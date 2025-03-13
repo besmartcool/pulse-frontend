@@ -1,5 +1,12 @@
 import React from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+} from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import CityDropdown from "../cityDropdown";
 import CountryDropdown from "../countryDropdown";
@@ -13,17 +20,27 @@ export default function SearchFilters({
   setDestinationCountry,
   destinationCity,
   setDestinationCity,
+  selectedCategory,
+  setSelectedCategory,
   associationsCategories,
   criteriasView,
   filtersView,
   toggleCriterias,
   handleShowResult,
 }) {
+  const handleFilterCategory = (category) => {
+    console.log("Filtre sélectionné :", category);
+    handleFilteredSearch(category);
+  };
+
   return (
     <View style={styles.fakeModal}>
       <View style={styles.research}>
         <View style={styles.top}>
-          <TouchableOpacity onPress={handleBackToDefault} style={styles.backButton}>
+          <TouchableOpacity
+            onPress={handleBackToDefault}
+            style={styles.backButton}
+          >
             <FontAwesome name="arrow-left" size={25} color="#FF6C02" />
           </TouchableOpacity>
         </View>
@@ -34,8 +51,24 @@ export default function SearchFilters({
               title="Pays d'origine"
               placeholder="Sélectionner un pays"
               selectedCountry={originCountry}
-              onSelectCountry={setOriginCountry}
-              resetInput = {() => {setOriginCountry("")}}
+              onSelectCountry={(country) => {
+                setOriginCountry(country);
+                handleFilteredSearch(
+                  country,
+                  destinationCountry,
+                  destinationCity,
+                  selectedCategory
+                );
+              }}
+              resetInput={() => {
+                setOriginCountry("");
+                handleFilteredSearch(
+                  "",
+                  destinationCountry,
+                  destinationCity,
+                  selectedCategory
+                );
+              }}
             />
           </View>
 
@@ -46,9 +79,22 @@ export default function SearchFilters({
               selectedCountry={destinationCountry}
               onSelectCountry={(country) => {
                 setDestinationCountry(country);
-                handleFilteredSearch(country, destinationCity);
+                handleFilteredSearch(
+                  originCountry,
+                  country,
+                  destinationCity,
+                  selectedCategory
+                );
               }}
-              resetInput = {() => {setDestinationCountry("")}}
+              resetInput={() => {
+                setDestinationCountry("");
+                handleFilteredSearch(
+                  originCountry,
+                  "",
+                  destinationCity,
+                  selectedCategory
+                );
+              }}
             />
           </View>
 
@@ -59,7 +105,21 @@ export default function SearchFilters({
               selectedCity={destinationCity}
               onSelectCity={(city) => {
                 setDestinationCity(city);
-                handleFilteredSearch(destinationCountry, city);
+                handleFilteredSearch(
+                  originCountry,
+                  destinationCountry,
+                  city,
+                  selectedCategory
+                );
+              }}
+              resetInput={() => {
+                setDestinationCity("");
+                handleFilteredSearch(
+                  originCountry,
+                  destinationCountry,
+                  "",
+                  selectedCategory
+                );
               }}
             />
           </View>
@@ -73,26 +133,12 @@ export default function SearchFilters({
           {associationsCategories}
         </ScrollView>
 
-        {criteriasView && (
-          <View style={styles.criteriasContainer}>
-            <TouchableOpacity style={styles.criteria}>
-              <Text style={styles.criteriaText}>A-Z</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.criteria}>
-              <Text style={styles.criteriaText}>Date de création</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.criteria}>
-              <Text style={styles.criteriaText}>Statut</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
         <View style={styles.bottomContent}>
-          <TouchableOpacity style={styles.validateButton} onPress={toggleCriterias}>
-            <FontAwesome name="filter" size={25} color="white" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.validateButton} onPress={handleShowResult}>
-            <FontAwesome name="arrow-up" size={25} color="white" />
+          <TouchableOpacity
+            style={styles.validateButton}
+            onPress={handleShowResult}
+          >
+            <FontAwesome name="angle-up" size={25} color="white" />
           </TouchableOpacity>
         </View>
       </View>
@@ -151,7 +197,7 @@ const styles = StyleSheet.create({
   },
   bottomContent: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
     alignItems: "center",
     width: "100%",
     marginTop: 10,
@@ -169,7 +215,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 6,
     borderWidth: 2,
-    borderColor: "#FFFFFF",
+    borderColor: "#bbbbbb",
   },
   criteriasContainer: {
     flexDirection: "row",

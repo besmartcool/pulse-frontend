@@ -186,13 +186,18 @@ export default function NewAssociationForm({ handleBackToDefault }) {
     };
 
 
+    useEffect(() => {console.log("country:", country, "interventionZone:", interventionZone)}, [interventionZone])
+
   //Zone d'intervention
 
   const selectInterventionZone = (country) => {
-    if (country) {
+    if (!country) return; // Empêche d'ajouter undefined
       setInterventionZone((interventionZone) => [...interventionZone, country]);
-    }
   };
+
+  const resetInterventionZone = () => {
+    // fonction vide car valide une propriété destinée aux champs d'input qui alimentent des états de type String (pas les états de type Array)
+  }
 
   const handleChangeInterventionZone = (text, index) => {
       setInterventionZone((prev) => {
@@ -339,7 +344,6 @@ export default function NewAssociationForm({ handleBackToDefault }) {
                 title="Pays de résidence de l'asso"
                 placeholder= {residenceCountry || "Choisir un pays"}
                 onSelectCountry={selectResidenceCountry}
-                selectedCountry={residenceCountry}
                 resetInput = {() => resetResidenceCountry()}
               />
             </View>
@@ -348,7 +352,6 @@ export default function NewAssociationForm({ handleBackToDefault }) {
                 title="Pays d'origine des membres"
                 placeholder={nationality || "Choisir un pays"}
                 onSelectCountry={selectNationality}
-                selectedCountry={nationality}
                 resetInput = {() => resetNationality()}
               />
             </View>
@@ -564,7 +567,7 @@ export default function NewAssociationForm({ handleBackToDefault }) {
                 title="Zone d'intervention"
                 placeholder="Sélectionner un ou plusieurs pays"
                 onSelectCountry={selectInterventionZone}
-                selectedCountry={()=> {}}
+                resetInput = {() => resetInterventionZone()}
               />
             {interventionZone.map((value, index) => (
                           <View

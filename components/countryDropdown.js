@@ -8,11 +8,10 @@ import {
 const CountryDropdown = ({
   title,
   placeholder,
-  selectedCountry,
   onSelectCountry,
   resetInput,
 }) => {
-  const [searchText, setSearchText] = useState(selectedCountry || "");
+  const [searchText, setSearchText] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [allCountries, setAllCountries] = useState([]);
   const firstRender = useRef(true); // ✅ useRef pour suivre la première exécution

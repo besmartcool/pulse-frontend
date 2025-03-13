@@ -31,11 +31,11 @@ export const userSlice = createSlice({
       state.value.associations.push(action.payload);
     },
     liked: (state, action) => {
-      const index = state.value.favorites.findIndex((fav) => fav.id === action.payload.id);
-      if (index === -1) {
-        state.value.favorites.push(action.payload);
+      const existingIndex = state.value.favorites.findIndex((fav) => fav._id === action.payload._id);
+      if (existingIndex === -1) {
+        state.value.favorites = [...state.value.favorites, action.payload];
       } else {
-        state.value.favorites = state.value.favorites.filter(fav => fav.id !== action.payload.id);
+        state.value.favorites = state.value.favorites.filter(fav => fav._id !== action.payload._id);
       }
     },
     addInfoProfile: (state, action) => {

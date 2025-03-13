@@ -9,6 +9,7 @@ import { BACKEND_ADDRESS } from "../assets/url";
 
 const AssociationCard = ({ association }) => {
   const [countryCode, setCountryCode] = useState("");
+  const user = useSelector((state) => state.user.value);
 
   const navigation = useNavigation();
 
@@ -50,38 +51,35 @@ const AssociationCard = ({ association }) => {
 
   const handleContact = () => {
     let secretary = null;
-    let existingRoom = null;
+    let roomId = null;
 
-    // 1️⃣ Récupérer le secrétaire de l'association
-    fetch(`${BACKEND_ADDRESS}/rooms/${association._id}/secretary`)
+    // Récupérer le secrétaire de l'association
+    fetch(`${BACKEND_ADDRESS}/associations/${association._id}/secretary`)
       .then((response) => response.json())
       .then((data) => {
-        if (!data.result || !data.secretary) {
-          alert("Aucun secrétaire trouvé pour cette association.");
-          throw new Error("Secrétaire introuvable");
+        if (!data.result || !data.secretary || data.secretary.length === 0) {
+          console.log("Aucun secrétaire trouvé pour cette association.");
+          throw new Error("Aucun secrétaire trouvé");
         }
-        secretary = data.secretary;
 
-        // 2️⃣ Vérifier si une room existe déjà entre l'utilisateur connecté et le secrétaire
+        secretary = data.secretary[0];
+
+        // Vérifier si une room existe déjà entre l'utilisateur connecté et le secrétaire
         return fetch(`${BACKEND_ADDRESS}/rooms/${user.email}`);
       })
       .then((response) => response.json())
       .then((existingRooms) => {
-        existingRoom = existingRooms.find(
+        const existingRoom = existingRooms.find(
           (room) =>
             room.users.includes(user.email) &&
             room.users.includes(secretary.email)
         );
 
         if (existingRoom) {
-          // 3️⃣ Si la room existe déjà, ouvrir le chat existant
-          navigation.navigate("ChatScreen", {
-            email: user.email,
-            roomId: existingRoom._id,
-            user: secretary,
-          });
+          roomId = existingRoom._id;
+          return null; // Pas besoin de créer une nouvelle room
         } else {
-          // 4️⃣ Sinon, créer une nouvelle room
+          // Créer une nouvelle room si elle n'existe pas
           return fetch(`${BACKEND_ADDRESS}/rooms/private`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -89,17 +87,27 @@ const AssociationCard = ({ association }) => {
           });
         }
       })
-      .then((response) => response.json())
+      .then((response) => (response ? response.json() : null))
       .then((newRoomData) => {
-        if (newRoomData.result && newRoomData.room) {
-          // 5️⃣ Ouvrir le chat avec la nouvelle room
+        if (newRoomData && newRoomData.result && newRoomData.room) {
+          roomId = newRoomData.room._id;
+        }
+
+        if (roomId) {
           navigation.navigate("ChatScreen", {
             email: user.email,
-            roomId: newRoomData.room._id,
-            user: secretary,
+            roomId,
+            user: {
+              firstname: secretary.firstname,
+              lastname: secretary.lastname,
+              email: secretary.email,
+              association: association.name,
+            },
           });
         } else {
-          alert("Erreur lors de la création de la conversation.");
+          console.log(
+            "Erreur lors de la récupération ou création de la conversation."
+          );
         }
       })
       .catch((error) => {

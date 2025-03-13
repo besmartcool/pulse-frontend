@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, View, Text, Pressable, TouchableOpacity } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  Text,
+  Pressable,
+  TouchableOpacity,
+} from "react-native";
 import SearchHome from "../components/searchScreen/searchHome";
 import SearchFilters from "../components/searchScreen/searchFilters";
 import SearchResult from "../components/searchScreen/searchResult";
@@ -10,8 +17,8 @@ import categoriesList from "../assets/categoriesList";
 import { BACKEND_ADDRESS } from "../assets/url";
 
 export default function SearchScreen({ navigation }) {
-
   // États principaux
+
   const [typeContent, setTypeContent] = useState("default");
   const [resultResearch, setResultResearch] = useState("default");
 
@@ -38,17 +45,13 @@ export default function SearchScreen({ navigation }) {
   }, []);
 
   // Fonction pour rechercher les associations avec les filtres
-  const handleFilteredSearch = (
-    country = destinationCountry,
-    city = destinationCity,
-    category = selectedCategory
-  ) => {
+  const handleFilteredSearch = (origin, destination, city, category) => {
     let queryParams = [];
 
-    if (country) queryParams.push(`country=${encodeURIComponent(country)}`);
-
+    if (origin) queryParams.push(`originCountry=${encodeURIComponent(origin)}`);
+    if (destination)
+      queryParams.push(`destinationCountry=${encodeURIComponent(destination)}`);
     if (city) queryParams.push(`city=${encodeURIComponent(city)}`);
-
     if (category) queryParams.push(`category=${encodeURIComponent(category)}`);
 
     const queryString =
@@ -76,15 +79,21 @@ export default function SearchScreen({ navigation }) {
 
   // Gestion du clic sur une catégorie
   const handleCategoryClick = (category) => {
-    setSelectedCategory(category);
-    setTimeout(handleFilteredSearch, 0);
+    setSelectedCategory((prevCategory) => {
+      const newCategory = prevCategory === category ? "" : category;
+      handleFilteredSearch(originCountry, destinationCountry, destinationCity, newCategory);
+      return newCategory;
+    });
   };
 
   // Affichage des catégories
   const associationsCategories =
     categoriesList.length > 0 ? (
       categoriesList.map((category, index) => (
-        <TouchableOpacity key={category} onPress={() => handleCategoryClick(category)}>
+        <TouchableOpacity
+          key={category}
+          onPress={() => handleCategoryClick(category)}
+        >
           <View style={{ marginRight: 5 }}>
             <CategorieRound categorie={category} />
           </View>
@@ -92,7 +101,7 @@ export default function SearchScreen({ navigation }) {
       ))
     ) : (
       <Text>Aucune catégorie trouvée.</Text>
-    );
+    )
 
   // Gestion de l'affichage
   const handleBackToDefault = () => {
@@ -114,19 +123,22 @@ export default function SearchScreen({ navigation }) {
 
   // Affichage des associations
   const resultFromResearch =
-  resultResearch === "default"
-    ? associations.map((association) => (
+    resultResearch === "default"
+      ? associations.map((association) => (
           <AssociationCard key={association.name} association={association} />
-      ))
-    : filteredAssociations.map((association) => (
+        ))
+      : filteredAssociations.map((association) => (
           <AssociationCard key={association.name} association={association} />
-      ));
+        ));
 
   return (
     <View style={styles.container}>
       <View style={styles.allContent}>
         {typeContent === "default" && (
-          <SearchHome setTypeContent={setTypeContent} navigation = {() => navigation.navigate("Asso")}/>
+          <SearchHome
+            setTypeContent={setTypeContent}
+            navigation={() => navigation.navigate("Asso")}
+          />
         )}
         {typeContent === "search" && (
           <SearchFilters
@@ -138,6 +150,8 @@ export default function SearchScreen({ navigation }) {
             setDestinationCountry={setDestinationCountry}
             destinationCity={destinationCity}
             setDestinationCity={setDestinationCity}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
             associationsCategories={associationsCategories}
             criteriasView={showCriterias}
             filtersView={showFilters}

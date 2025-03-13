@@ -1,8 +1,8 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
-const CategorieRound = ({ categorie }) => {
+const CategorieRound = ({ categorie, onPress }) => {
   const categoryIcons = {
     "Education": "graduation-cap",
     "Santé": "heartbeat",
@@ -67,7 +67,9 @@ const CategorieRound = ({ categorie }) => {
   const backgroundColor = categoryColors[categorie] || "#bdc3c7";
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
+    <View
+      style={[styles.container, { backgroundColor }]}
+    >
       <FontAwesome name={iconName} size={12} color="white" />
       <Text style={styles.categoryText} numberOfLines={2} adjustsFontSizeToFit>
         {categorie}
@@ -82,7 +84,7 @@ const styles = StyleSheet.create({
   container: {
     width: 60,
     height: 60,
-    borderRadius: 40, // Cercle parfait
+    borderRadius: 40,
     backgroundColor: "#bdc3c7",
     alignItems: "center",
     justifyContent: "center",
@@ -93,7 +95,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
     borderWidth: 2,
-    borderColor: '#d0d0d0'
+    borderColor: "#bbbbbb",
   },
   categoryText: {
     fontSize: 8,
