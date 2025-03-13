@@ -37,10 +37,6 @@ export default function ProfileScreen({ navigation }) {
 
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  
-  const resetNewNationalityInput = () => {};
-
-
 
   useEffect(() => {
     fetch(`${BACKEND_ADDRESS}/users/getInfos`, {
@@ -84,7 +80,10 @@ export default function ProfileScreen({ navigation }) {
     console.log(newNationality);
   }, [newNationality]);
 
+  const resetNewNationalityInput = () => {};
+
   const selectNewNationality = (country) => {
+    if (!country) return;
     setNewNationality((newNationality) => [...newNationality, country]);
   };
 
@@ -98,21 +97,28 @@ export default function ProfileScreen({ navigation }) {
   };
 
   const removeInput = (index) => {
-    const inputs = newNationality;
     const newInputs = newNationality.filter((_, i) => i !== index);
-    // setInputs(newInputs.length ? newInputs : [""]);
     setNewNationality(newInputs);
   };
 
+  const selectResidenceCountry = (country) => {
+    if (!country) return;
+    setResidenceCountry(residenceCountry);
+  };
+
   const selectNewDestinationCountry = (country) => {
-    setNewDestinationCountry((newDestinationCountry) => [...newDestinationCountry, country]);
+    if (!country) return;
+    setNewDestinationCountry((newDestinationCountry) => [
+      ...newDestinationCountry,
+      country,
+    ]);
   };
 
   const handleChangeDestination = (text, index) => {
     setNewDestinationCountry((prev) => {
       const updated = [...prev];
       updated[index] = text;
-      
+
       return updated;
     });
     setInputs2(newDestinationCountry);
@@ -120,7 +126,6 @@ export default function ProfileScreen({ navigation }) {
 
   const removeInput2 = (index) => {
     const newInputs = newDestinationCountry.filter((_, i) => i !== index);
-    // setInputs2(newInputs.length ? newInputs : [""]);
     setNewDestinationCountry(newInputs);
   };
 
@@ -171,13 +176,10 @@ export default function ProfileScreen({ navigation }) {
     setResidenceCountry(text);
   };
 
-
   // Logique de déconnexion
   const handleDeconnexion = () => {
     dispatch(logout());
   };
-
-
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -205,7 +207,6 @@ export default function ProfileScreen({ navigation }) {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.input}>
-          
             <Text style={styles.titleInput}>PRENOM</Text>
             <Input
               style={styles.inputFirstname}
@@ -246,8 +247,7 @@ export default function ProfileScreen({ navigation }) {
               title="Nationalité"
               placeholder="Sélectionner un ou plusieurs pays"
               onSelectCountry={selectNewNationality}
-              selectedCountry={() => {}}
-              resetInput={() => resetNewNationalityInput()}
+              resetInput={() => {}}
             />
             {newNationality.map((value, index) => (
               <View
@@ -290,16 +290,20 @@ export default function ProfileScreen({ navigation }) {
                 </TouchableOpacity>
               </View>
             ))}
-            
-            <Text style={styles.titleInput}>PAYS DE RESIDENCE</Text>
-            <Input
+            <CountryDropdown
+              title="Pays de résidence"
+              placeholder={residenceCountry || "Choisir un pays"}
+              onSelectCountry={selectResidenceCountry}
+              resetInput={() => {}}
+            />
+            {/* <Input
               style={styles.inputResidenceCountry}
               placeholder={infos?.residenceCountry || "Pays..."}
               value={residenceCountry}
               onChangeText={handleChangeResidenceCountry}
               secureTextEntry={false}
               icon="pencil"
-            />
+            /> */}
             <CountryDropdown
               title="Pays de destination"
               placeholder="Sélectionner un ou plusieurs pays"
@@ -327,7 +331,7 @@ export default function ProfileScreen({ navigation }) {
                   onChangeText={(text) => handleChangeDestination(text, index)}
                   placeholder={`Destination ${index + 1}`}
                 />
-                {inputs2.length > 1 && (
+                {newDestinationCountry.length > 1 && (
                   <TouchableOpacity
                     onPress={() => removeInput2(index)}
                     style={{
@@ -349,24 +353,24 @@ export default function ProfileScreen({ navigation }) {
                 )}
               </View>
             ))}
-            {message && <Text style={styles.message}>{message}</Text>}
-            {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
-            <TouchableOpacity
-              onPress={() => handleRegistrationSubmit()}
-              style={styles.button}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.textButton}>Envoyer les modifications</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => handleDeconnexion()}
-              style={styles.buttonDeconnexion}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.textButtonDeconnexion}>Se déconnecter</Text>
-            </TouchableOpacity>
           </View>
         </ScrollView>
+        {message && <Text style={styles.message}>{message}</Text>}
+        {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
+        <TouchableOpacity
+          onPress={() => handleRegistrationSubmit()}
+          style={styles.button}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.textButton}>Envoyer les modifications</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => handleDeconnexion()}
+          style={styles.buttonDeconnexion}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.textButtonDeconnexion}>Se déconnecter</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -423,12 +427,12 @@ const styles = StyleSheet.create({
     marginTop: 30,
     alignSelf: "center",
     justifyContent: "center",
-    width: "100%",
+    width: "90%",
     height: 43,
     borderWidth: 1,
     borderColor: "#bbbbbb",
     backgroundColor: "#FF6C02",
-    borderRadius: 8,
+    borderRadius: 180,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.3,
@@ -446,12 +450,12 @@ const styles = StyleSheet.create({
     marginTop: 30,
     alignSelf: "center",
     justifyContent: "center",
-    width: "100%",
+    width: "90%",
     height: 43,
     borderWidth: 1,
     borderColor: "#bbbbbb",
     backgroundColor: "white",
-    borderRadius: 8,
+    borderRadius: 180,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.3,
@@ -484,11 +488,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  
+
   initials: {
     color: "white",
     fontSize: 18,
     fontWeight: "bold",
   },
-  
 });
