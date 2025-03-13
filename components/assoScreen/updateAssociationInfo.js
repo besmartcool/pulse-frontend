@@ -70,9 +70,9 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
   };
 
   const resetResidenceCountry = () => {
-    setResidenceCountry("")
-    setCountry("")
-  }
+    setResidenceCountry("");
+    setCountry("");
+  };
 
   const selectNationality = (country) => {
     if (country) {
@@ -81,8 +81,8 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
   };
 
   const resetNationality = () => {
-    setNationality("")
-  }
+    setNationality("");
+  };
 
   const selectCategory = (category) => {
     if (category) {
@@ -189,27 +189,26 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
 
   const selectInterventionZone = (country) => {
     if (!country) return; // Empêche d'ajouter undefined
-      setInterventionZone((interventionZone) => [...interventionZone, country]);
+    setInterventionZone((interventionZone) => [...interventionZone, country]);
   };
 
   const resetInterventionZone = () => {
     // fonction vide car valide une propriété destinée aux champs d'input qui alimentent des états de type String (pas les états de type Array)
-  }
+  };
 
   const handleChangeInterventionZone = (text, index) => {
-      setInterventionZone((prev) => {
-        const updated = [...prev];
-        updated[index] = text;
-        return updated;
-      });
-    };
+    setInterventionZone((prev) => {
+      const updated = [...prev];
+      updated[index] = text;
+      return updated;
+    });
+  };
 
-    const removeInterventionZone = (index) => {
-      const inputs = interventionZone;
-      const newInputs = inputs.filter((_, i) => i !== index);
-      setInterventionZone(newInputs);
-    };
-
+  const removeInterventionZone = (index) => {
+    const inputs = interventionZone;
+    const newInputs = inputs.filter((_, i) => i !== index);
+    setInterventionZone(newInputs);
+  };
 
   // Récupération des données de l'association dans les états
   const updatedData = {
@@ -317,52 +316,63 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
   // Envoi des données au backend pour mise à jour
   const handleUpdateSubmit = () => {
 
-    console.log("nom", name, "description", description, "nationality", nationality, "category", category, "residenceCountry", residenceCountry)
-
-    if (!name || !description || !nationality || !category || !residenceCountry) {
-        setMessage("❌ Une erreur s'est produite, veuillez réessayer.");
-          setIsSuccess(false);
-          setModalVisible(true);
-          return
+    if (
+      !name ||
+      !description ||
+      !nationality ||
+      !category ||
+      !residenceCountry
+    ) {
+      setMessage("❌ Une erreur s'est produite, veuillez réessayer.");
+      setIsSuccess(false);
+      setModalVisible(true);
+      return;
     }
 
-        fetch(`${BACKEND_ADDRESS}/associations/update`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`,
-          },
-          body: JSON.stringify(updatedData),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.result) {
-              setMessage("✅ Données mises à jour avec succès !");
-              setIsSuccess(true);
-              dispatch(addAssociation(data.newAssociation));
-            } else {
-              setMessage("❌ Une erreur s'est produite, veuillez réessayer.");
-              setIsSuccess(false);
-            }
-            setModalVisible(true);
-          })
-          .catch((error) => {
-            console.error("Erreur :", error);
-            setMessage("⚠️ Une erreur s'est produite, veuillez réessayer.");
-            setIsSuccess(false);
-            setModalVisible(true);
-          });
+    fetch(`${BACKEND_ADDRESS}/associations/update`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.token}`,
+      },
+      body: JSON.stringify(updatedData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          setMessage("✅ Données mises à jour avec succès !");
+          setIsSuccess(true);
+          dispatch(addAssociation(data.newAssociation));
+        } else {
+          setMessage("❌ Une erreur s'est produite, veuillez réessayer.");
+          setIsSuccess(false);
+        }
+        setModalVisible(true);
+      })
+      .catch((error) => {
+        console.error("Erreur :", error);
+        setMessage("⚠️ Une erreur s'est produite, veuillez réessayer.");
+        setIsSuccess(false);
+        setModalVisible(true);
+      });
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <View style={styles.mainHeaderContainer}>
-        <Pressable onPress={handleBackToDefault} style={styles.backButton}>
-          <FontAwesome name="arrow-left" size={24} color="#FF6C02" />
-        </Pressable>
-        <Text style={styles.mainHeader}>Modification données asso</Text>
+    <View style={styles.container}>
+      <View style={styles.fakeModal}>
+        <View style={styles.newResearch}>
+          <View style={styles.buttonNew}>
+            <TouchableOpacity
+              onPress={handleBackToDefault}
+              style={styles.backButton}
+            >
+              <FontAwesome name="arrow-left" size={24} color="#FF6C02" />
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.bigTitle}>Mettre à jour</Text>
+        </View>
       </View>
-      <View style={styles.bottomBorder} />
+
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
@@ -399,10 +409,10 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
             <View style={styles.dropdown}>
               <CountryDropdown
                 title="Pays de résidence de l'asso"
-                placeholder= {residenceCountry || "Choisir un pays"}
+                placeholder={residenceCountry || "Choisir un pays"}
                 onSelectCountry={selectResidenceCountry}
                 selectedCountry={residenceCountry}
-                resetInput = {() => resetResidenceCountry()}
+                resetInput={() => resetResidenceCountry()}
               />
             </View>
             <View style={styles.dropdown}>
@@ -411,13 +421,13 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
                 placeholder={nationality || "Choisir un pays"}
                 onSelectCountry={selectNationality}
                 selectedCountry={nationality}
-                resetInput = {() => resetNationality()}
+                resetInput={() => resetNationality()}
               />
             </View>
             <InternalDataSetDropdown
               title="Secteurs d'activité"
               dataSet={categoriesDataSet}
-              placeholder={category ||"Choisir un secteur"}
+              placeholder={category || "Choisir un secteur"}
               value={category}
               onSelectItem={(item) => {
                 selectCategory(item?.title);
@@ -463,7 +473,7 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
                     backgroundColor: "#ffffff",
                     borderRadius: 8,
                     borderColor: "#bbbbbb",
-                    fontSize: 12,
+                    fontSize: 14,
                   }}
                   value={phone[index] || ""}
                   onChangeText={(text) => handleChangePhoneNumber(text, index)}
@@ -478,11 +488,13 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
                     padding: 10,
                     backgroundColor: "#FF6C02",
                     borderRadius: 180,
+                    justifyContent: 'center',
+                    alignItems: 'center'
                   }}
                 >
                   <FontAwesome
                     name={"minus"}
-                    size={20}
+                    size={25}
                     color="#ffffff"
                     style={styles.icon}
                   />
@@ -593,7 +605,7 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
                     backgroundColor: "#ffffff",
                     borderRadius: 8,
                     borderColor: "#bbbbbb",
-                    fontSize: 12,
+                    fontSize: 14,
                   }}
                   value={languages[index] || ""}
                   onChangeText={(text) => handleChangeLanguages(text, index)}
@@ -608,6 +620,8 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
                     padding: 10,
                     backgroundColor: "#FF6C02",
                     borderRadius: 180,
+                    justifyContent: 'center',
+                    alignItems: 'center'
                   }}
                 >
                   <FontAwesome
@@ -620,11 +634,11 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
               </View>
             ))}
             <View style={styles.dropdown}>
-            <CountryDropdown
+              <CountryDropdown
                 title="Zone d'intervention"
                 placeholder="Sélectionner un ou plusieurs pays"
                 onSelectCountry={selectInterventionZone}
-                resetInput = {() => resetInterventionZone()}
+                resetInput={() => resetInterventionZone()}
               />
               {interventionZone.map((value, index) => (
                 <View
@@ -640,7 +654,7 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
                       backgroundColor: "#ffffff",
                       borderRadius: 8,
                       borderColor: "#bbbbbb",
-                      fontSize: 12,
+                      fontSize: 14,
                     }}
                     value={interventionZone[index] || ""}
                     onChangeText={(text) =>
@@ -652,11 +666,13 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
                     onPress={() => removeInterventionZone(index)}
                     style={{
                       width: 40,
-                      height: 40,
-                      marginLeft: 10,
-                      padding: 10,
-                      backgroundColor: "#FF6C02",
-                      borderRadius: 180,
+                    height: 40,
+                    marginLeft: 10,
+                    padding: 10,
+                    backgroundColor: "#FF6C02",
+                    borderRadius: 180,
+                    justifyContent: 'center',
+                    alignItems: 'center'
                     }}
                   >
                     <FontAwesome
@@ -692,118 +708,154 @@ export default function UpdateAssociationInfo({ handleBackToDefault }) {
 }
 
 const styles = StyleSheet.create({
-  scrollContainer: {
-    flexGrow: 1,
+  container: {
+    flex: 1,
     alignItems: "center",
+    justifyContent: "flex-start",
+    backgroundColor: "#F5F5F5",
   },
-  safeAreaContainer: {
-    paddingTop: 15,
-    width: "90%",
-    alignItems: "center",
-  },
-  mainHeaderContainer: {
+  fakeModal: {
     width: "100%",
-    height: 50,
     alignItems: "center",
+    backgroundColor: "white",
+    paddingVertical: 20,
+    borderBottomRightRadius: 20,
+    borderBottomLeftRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 4,
+  },
+  newResearch: {
+    width: "90%",
+    height: "auto",
+    alignItems: "flex-start",
+    marginTop: 40,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    gap: 30,
+  },
+  bigTitle: {
+    fontWeight: "600",
+    fontSize: 30,
+    marginTop: 10,
+  },
+  buttonNew: {
+    width: "auto",
+    height: "auto",
+    backgroundColor: "transparent",
+  },
+  headerContainer: {
+    width: "90%",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-between",
+    marginTop: 30,
   },
   backButton: {
+    padding: 10,
     borderRadius: 50,
-    backgroundColor: "white",
+    backgroundColor: "#FFF5E6",
     shadowColor: "#FF6C02",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 2,
-    width: "auto",
-    height: "auto",
-    position: "absolute",
-    left: 25,
   },
-  mainHeader: {
-    fontSize: 20,
+  title: {
     fontWeight: "bold",
-    textAlign: "center",
+    fontSize: 24,
+    color: "#333",
   },
-  bottomBorder: {
-    //Trait en bas du titre
-    bottom: 0,
+  scrollContainer: {
+    flexGrow: 1,
     width: "90%",
-    height: 2, // Épaisseur de la bordure
-    backgroundColor: "black",
-    alignSelf: "center",
+    paddingVertical: 15,
   },
-  firstSubSectionContainer: {
-    width: "100%",
-  },
-  subSectionContainer: {
-    borderTopWidth: 1.5,
-    width: "100%",
-  },
-  subSectionHeader: {
-    fontSize: 15,
+  sectionHeader: {
+    fontSize: 18,
     fontWeight: "bold",
-    marginTop: 15,
-    textAlign: "center",
-  },
-  buttonContainer: {
-    width: "100%",
-    height: 50,
-    alignItems: "center",
-  },
-  button: {
-    position: "absolute",
-    top: 0,
-    backgroundColor: "#FF6C02",
-    textAlign: "center",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "90%",
-    borderRadius: 5,
-    height: "60%",
-    // Ombre pour **Android**
-    elevation: 5,
-    // Ombre pour **iOS**
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
+    marginTop: 20,
+    color: "#444",
   },
   inputContainer: {
     width: "100%",
-    marginVertical: 10,
+    marginTop: 10,
   },
-  title: {
-    color: "#FF6C02",
-    fontSize: 12,
-    fontWeight: "600",
-    marginBottom: 4,
-  },
-  input: {
-    flexDirection: "row",
+  inputField: {
     borderWidth: 1,
-    borderColor: "#bbbbbb",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    height: 100,
+    borderColor: "#ddd",
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: "white",
+    fontSize: 16,
   },
-  inputText: {
-    flex: 1,
-    paddingVertical: 10,
+  dropdown: {
+    marginTop: 10,
   },
-  icon: {
-    marginLeft: 8,
+  buttonContainer: {
+    width: "100%",
+    alignItems: "center",
+    marginVertical: 20,
   },
-  dataSelected: {
-    fontSize: 5,
-    color: "red",
-    flexDirection: "row",
+  button: {
+    backgroundColor: "#FF6C02",
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    shadowColor: "#FF6C02",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 4,
+    width: "90%",
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "600",
+    fontSize: 16,
   },
   errorText: {
     color: "red",
     fontSize: 12,
-    marginTop: 4,
+    marginTop: 5,
+  },
+  multiInputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  subSectionHeader: {
+    fontWeight: "bold",
+    fontWeight: 600,
+    fontSize: 20,
+    marginTop: 10,
+  },
+  removeButton: {
+    width: 40,
+    height: 40,
+    marginLeft: 10,
+    padding: 10,
+    backgroundColor: "#FF6C02",
+    borderRadius: 180,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  removeIcon: {
+    color: "white",
+    fontSize: 18,
+  },
+  icon: {
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  textButton: {
+    color: "white",
+    fontWeight: "600",
+    fontSize: 14,
   },
 });
