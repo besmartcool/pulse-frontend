@@ -16,7 +16,6 @@ const CountryDropdown = ({
   const [allCountries, setAllCountries] = useState([]);
   const firstRender = useRef(true); // ✅ useRef pour suivre la première exécution
 
-
   // ON STOCK LA LISTE DES PAYS TRADUITE DANS LE STATE ALLCOUNTRIES
   useEffect(() => {
     fetch("https://restcountries.com/v3.1/all?fields=translations")
@@ -35,7 +34,6 @@ const CountryDropdown = ({
   }, []);
 
   useEffect(() => {
-
     // Ignore la première exécution afin de faire des suggestions uniquement après la première saisie
     if (firstRender.current) {
       firstRender.current = false;
@@ -68,9 +66,9 @@ const CountryDropdown = ({
             setSearchText(item?.title || "");
             onSelectCountry(item?.title);
           }}
-          onClear = {() => {
-            setSearchText("")
-            resetInput()
+          onClear={() => {
+            setSearchText("");
+            resetInput();
           }}
           dataSet={suggestions}
           textInputProps={{
@@ -97,7 +95,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#bbbbbb",
     borderRadius: 8,
-    backgroundColor: "white",
   },
   input: {
     padding: 8,
@@ -109,7 +106,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#dddddd",
-    right: 20,
+    right: 26.5,
   },
 });
 
