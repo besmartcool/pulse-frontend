@@ -5485,6 +5485,11 @@ react-native-autocomplete-dropdown@^4.4.0:
     react-native-feather "^1.1.2"
     react-native-size-matters "^0.4.2"
 
+react-native-autocomplete-input@^5.5.6:
+  version "5.5.6"
+  resolved "https://registry.yarnpkg.com/react-native-autocomplete-input/-/react-native-autocomplete-input-5.5.6.tgz#df2700877bbaad8c22ebd551b82a8cd9dabbe76d"
+  integrity sha512-cUTzZpz9BseWff0RuSPAp+d+3C5NRl6kLUTIqNuwDoZuTqrxbOz87d0zP4M2Ncnv1KcPkm4Hs1T6Qdj4reM9Tg==
+
 react-native-dotenv@^3.4.11:
   version "3.4.11"
   resolved "https://registry.npmjs.org/react-native-dotenv/-/react-native-dotenv-3.4.11.tgz"
