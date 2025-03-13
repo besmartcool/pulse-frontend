@@ -222,32 +222,26 @@ export default function DescriptionScreen({ route }) {
             ) : null}
           </View>
         </View>
-
-        {isAdmin && (
-          <View style={styles.admin}>
-            <FontAwesome
-              style={styles.icons}
-              name="comment"
-              size={24}
-              color="black"
-            />
-            <FontAwesome
-              style={styles.icons}
-              name="pencil"
-              size={24}
-              color="black"
-              onPress={() => {
-                dispatch(saveAssociationForUpdate(association.name));
-                navigation.navigate("Asso");
-              }}
-            />
-          </View>
-        )}
       </View>
 
       <ScrollView style={styles.scrollView}>
         <View style={styles.content}>
           <View style={styles.containerMap}>
+            {isAdmin && (
+              <View style={styles.admin}>
+                <TouchableOpacity
+                  style={styles.contact2}
+                  onPress={() => {
+                    dispatch(saveAssociationForUpdate(association.name));
+                    navigation.navigate("Asso");
+                  }}
+                >
+                  <Text style={styles.contact2Text}>
+                    Modifier mon association
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
             <MapView
               region={{
                 latitude: coordinates.latitude,
@@ -473,17 +467,14 @@ const styles = StyleSheet.create({
   },
 
   admin: {
-    height: 100,
+    height: "auto",
     width: "100%",
     flexDirection: "row",
     justifyContent: "space-around",
-    marginRight: 20,
-  },
-  icons: {
-    color: "#3BC3FF",
+    marginVertical: 20,
   },
   scrollView: {
-    marginTop: 115,
+    marginTop: 90,
     width: "90%",
     marginBottom: 25,
   },
@@ -652,6 +643,29 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 15,
     textAlign: "center",
+  },
+  contact2: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "white",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    borderColor: "#FF6C02",
+    borderWidth: 1,
+    width: "100%",
+    shadowColor: "#FF6C02",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 4,
+  },
+  contact2Text: {
+    color: "#FF6C02",
+    fontWeight: "600",
+    fontSize: 16,
+    marginLeft: 10,
   },
   bottomStickyContent: {
     width: "90%",

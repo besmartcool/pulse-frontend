@@ -77,6 +77,9 @@ const AddressDropdown = ({
           }}
           inputContainerStyle={styles.inputContainer}
           suggestionsListContainerStyle={styles.suggestionsList}
+          suggestionsListProps={{
+            nestedScrollEnabled: true,
+          }}
         />
       </View>
     </AutocompleteDropdownContextProvider>

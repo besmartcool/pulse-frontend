@@ -60,6 +60,9 @@ const CityDropdown = ({ title, placeholder, selectedCity, onSelectCity }) => {
           }}
           inputContainerStyle={styles.inputContainer}
           suggestionsListContainerStyle={styles.suggestionsList}
+          suggestionsListProps={{
+            nestedScrollEnabled: true, 
+          }}
         />
       </View>
     </AutocompleteDropdownContextProvider>
