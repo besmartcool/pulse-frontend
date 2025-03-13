@@ -11,13 +11,13 @@ import {
 } from "react-native";
 import Input from "../input";
 import CountryDropdown from "../countryDropdown";
-import AddressDropdown from "../addressDropdown";
+import AddressDropdown from "./addressDropdown";
 import categoriesList from "../../assets/categoriesList";
 import languagesListFrench from "../../assets/languagesList";
 import DatePickerInput from "./dateTimePicker";
-import InternalDataSetDropdown from "../internalDataSetDropdown";
+import InternalDataSetDropdown from "./internalDataSetDropdown";
 import PhoneInput from "./phoneInput";
-import MessageModal from "../messageModal";
+import MessageModal from "./messageModal";
 import { useNavigation } from "@react-navigation/native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { addAssociation } from "../../reducers/user";
