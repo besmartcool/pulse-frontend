@@ -98,7 +98,7 @@ const TabNavigator = () => {
       />
       <Tab.Screen
         name="Chat"
-        component={ChatStack}
+        component={!userInfo.token ? HomeScreen : ChatStack}
         initialParams={{ email: userInfo.email }}
       />
 

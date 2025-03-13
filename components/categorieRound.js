@@ -67,16 +67,14 @@ const CategorieRound = ({ categorie, onPress }) => {
   const backgroundColor = categoryColors[categorie] || "#bdc3c7";
 
   return (
-    <TouchableOpacity
-      onPress={onPress} // Correction : Ajout de l'événement onPress
-      activeOpacity={0.7} // Ajout d'un feedback
+    <View
       style={[styles.container, { backgroundColor }]}
     >
       <FontAwesome name={iconName} size={12} color="white" />
       <Text style={styles.categoryText} numberOfLines={2} adjustsFontSizeToFit>
         {categorie}
       </Text>
-    </TouchableOpacity>
+    </View>
   );
 };
 
@@ -86,7 +84,7 @@ const styles = StyleSheet.create({
   container: {
     width: 60,
     height: 60,
-    borderRadius: 40, // Cercle parfait
+    borderRadius: 40,
     backgroundColor: "#bdc3c7",
     alignItems: "center",
     justifyContent: "center",
@@ -97,7 +95,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
     borderWidth: 2,
-    borderColor: '#d0d0d0'
+    borderColor: "#bbbbbb",
   },
   categoryText: {
     fontSize: 8,

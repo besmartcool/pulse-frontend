@@ -26,7 +26,7 @@ export default function SearchResult({
         ) : null}
 
         <Pressable onPress={handleBackToSearch} style={styles.angleDown}>
-          <FontAwesome name="arrow-down" size={25} color="white" />
+          <FontAwesome name="angle-down" size={25} color="white" />
         </Pressable>
       </View>
     </View>
@@ -108,6 +108,6 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 6,
     borderWidth: 2,
-    borderColor: "#FFFFFF",
+    borderColor: "#bbbbbb",
   },
 });
