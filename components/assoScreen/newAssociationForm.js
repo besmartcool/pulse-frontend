@@ -189,9 +189,12 @@ export default function NewAssociationForm({ handleBackToDefault }) {
   //Zone d'intervention
 
   const selectInterventionZone = (country) => {
-    if (country) {
-      setInterventionZone((interventionZone) => [...interventionZone, country]);
-    }
+    if (!country) return; // Empêche d'ajouter undefined
+    setInterventionZone((interventionZone) => [...interventionZone, country]);
+  };
+
+  const resetInterventionZone = () => {
+    // fonction vide car valide une propriété destinée aux champs d'input qui alimentent des états de type String (pas les états de type Array)
   };
 
   const handleChangeInterventionZone = (text, index) => {
@@ -572,7 +575,7 @@ export default function NewAssociationForm({ handleBackToDefault }) {
               title="Zone d'intervention"
               placeholder="Sélectionner un ou plusieurs pays"
               onSelectCountry={selectInterventionZone}
-              selectedCountry={() => {}}
+              resetInput={() => resetInterventionZone()}
             />
             {interventionZone.map((value, index) => (
               <View
@@ -689,7 +692,7 @@ const styles = StyleSheet.create({
   buttonNew: {
     width: "auto",
     height: "auto",
-    backgroundColor: 'transparent'
+    backgroundColor: "transparent",
   },
   scrollContainer: {
     flexGrow: 1,
@@ -701,7 +704,7 @@ const styles = StyleSheet.create({
   },
   subSectionContainer: {
     width: "100%",
-    gap: 10
+    gap: 10,
   },
   subSectionHeader: {
     fontWeight: "bold",
@@ -713,7 +716,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 50,
     alignItems: "center",
-    marginTop: 15
+    marginTop: 15,
   },
   button: {
     backgroundColor: "#FF6C02",
@@ -726,9 +729,9 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 4,
     marginBottom: 5,
-    width: '90%',
-    justifyContent: 'center',
-    alignItems: 'center'
+    width: "90%",
+    justifyContent: "center",
+    alignItems: "center",
   },
   textButton: {
     color: "white",
