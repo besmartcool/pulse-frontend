@@ -1,8 +1,8 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
-const CategorieRound = ({ categorie }) => {
+const CategorieRound = ({ categorie, onPress }) => {
   const categoryIcons = {
     "Education": "graduation-cap",
     "Santé": "heartbeat",
@@ -67,12 +67,16 @@ const CategorieRound = ({ categorie }) => {
   const backgroundColor = categoryColors[categorie] || "#bdc3c7";
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
+    <TouchableOpacity
+      onPress={onPress} // Correction : Ajout de l'événement onPress
+      activeOpacity={0.7} // Ajout d'un feedback
+      style={[styles.container, { backgroundColor }]}
+    >
       <FontAwesome name={iconName} size={12} color="white" />
       <Text style={styles.categoryText} numberOfLines={2} adjustsFontSizeToFit>
         {categorie}
       </Text>
-    </View>
+    </TouchableOpacity>
   );
 };
 

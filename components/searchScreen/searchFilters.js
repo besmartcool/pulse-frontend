@@ -1,8 +1,16 @@
 import React from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+} from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import CityDropdown from "../cityDropdown";
 import CountryDropdown from "../countryDropdown";
+import CategorieRound from "../categorieRound";
 
 export default function SearchFilters({
   handleBackToDefault,
@@ -19,11 +27,19 @@ export default function SearchFilters({
   toggleCriterias,
   handleShowResult,
 }) {
+  const handleFilterCategory = (category) => {
+    console.log("Filtre sélectionné :", category);
+    handleFilteredSearch(category);
+  };
+
   return (
     <View style={styles.fakeModal}>
       <View style={styles.research}>
         <View style={styles.top}>
-          <TouchableOpacity onPress={handleBackToDefault} style={styles.backButton}>
+          <TouchableOpacity
+            onPress={handleBackToDefault}
+            style={styles.backButton}
+          >
             <FontAwesome name="arrow-left" size={25} color="#FF6C02" />
           </TouchableOpacity>
         </View>
@@ -35,7 +51,9 @@ export default function SearchFilters({
               placeholder="Sélectionner un pays"
               selectedCountry={originCountry}
               onSelectCountry={setOriginCountry}
-              resetInput = {() => {setOriginCountry("")}}
+              resetInput={() => {
+                setOriginCountry("");
+              }}
             />
           </View>
 
@@ -48,7 +66,9 @@ export default function SearchFilters({
                 setDestinationCountry(country);
                 handleFilteredSearch(country, destinationCity);
               }}
-              resetInput = {() => {setDestinationCountry("")}}
+              resetInput={() => {
+                setDestinationCountry("");
+              }}
             />
           </View>
 
@@ -71,6 +91,13 @@ export default function SearchFilters({
           showsHorizontalScrollIndicator={false}
         >
           {associationsCategories}
+          {/* {associationsCategories.map((category, index) => (
+            <CategorieRound
+              key={index}
+              categorie={category}
+              onPress={() => handleFilterCategory(category)} // Passe la fonction ici
+            />
+          ))} */}
         </ScrollView>
 
         {criteriasView && (
@@ -88,10 +115,16 @@ export default function SearchFilters({
         )}
 
         <View style={styles.bottomContent}>
-          <TouchableOpacity style={styles.validateButton} onPress={toggleCriterias}>
+          <TouchableOpacity
+            style={styles.validateButton}
+            onPress={toggleCriterias}
+          >
             <FontAwesome name="filter" size={25} color="white" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.validateButton} onPress={handleShowResult}>
+          <TouchableOpacity
+            style={styles.validateButton}
+            onPress={handleShowResult}
+          >
             <FontAwesome name="arrow-up" size={25} color="white" />
           </TouchableOpacity>
         </View>

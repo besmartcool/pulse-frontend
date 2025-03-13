@@ -33,12 +33,10 @@ export default function ChatScreen({ navigation, route: { params } }) {
         if (data && Array.isArray(data)) {
           setMessages(data);
         } else {
-          console.error("Données invalides reçues :", data);
+          console.log("Données invalides reçues :", data);
         }
       })
-      .catch((error) =>
-        console.error("Erreur chargement des messages :", error)
-      );
+      .catch((error) => console.log("Erreur chargement des messages :", error));
 
     // Écoute des messages en temps réel avec Pusher
     const subscription = pusher.subscribe(`chat-${roomId}`);
@@ -91,9 +89,16 @@ export default function ChatScreen({ navigation, route: { params } }) {
         >
           <FontAwesome name="arrow-left" color="#FF6C02" size={25} />
         </TouchableOpacity>
-        <Text style={styles.greetingText}>
-          {user.firstname} {user.lastname}
-        </Text>
+        <View style={styles.text}>
+          <Text style={styles.greetingText}>
+            {user.firstname} {user.lastname}
+          </Text>
+          <View>
+            {user.association
+              ? <Text>`${user.association}`</Text>
+              : null}
+          </View>
+        </View>
       </View>
 
       <View style={styles.inset}>
@@ -137,12 +142,15 @@ export default function ChatScreen({ navigation, route: { params } }) {
                 </Text>
               </View>
               <Text style={styles.timeText}>
-              {message.timestamp && (
-                <Text style={styles.timeText}>
-                  {new Date(message.timestamp).getHours()}:
-                  {String(new Date(message.timestamp).getMinutes()).padStart(2, "0")}
-                </Text>
-              )}
+                {message.timestamp && (
+                  <Text style={styles.timeText}>
+                    {new Date(message.timestamp).getHours()}:
+                    {String(new Date(message.timestamp).getMinutes()).padStart(
+                      2,
+                      "0"
+                    )}
+                  </Text>
+                )}
               </Text>
             </View>
           ))}
@@ -207,7 +215,6 @@ const styles = StyleSheet.create({
     color: "#222",
     fontWeight: "bold",
     fontSize: 18,
-    marginLeft: 15,
   },
   inset: {
     flex: 1,
@@ -304,5 +311,9 @@ const styles = StyleSheet.create({
     elevation: 1.2,
     width: 50,
     height: 50,
+  },
+  text: {
+    alignItems: "flex-start",
+    marginLeft: 20,
   },
 });
