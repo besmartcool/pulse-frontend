@@ -39,17 +39,22 @@ export default function SearchScreen({ navigation }) {
 
   // Fonction pour rechercher les associations avec les filtres
   const handleFilteredSearch = (
-    country = destinationCountry,
+    originCountry = originCountry, //modif "originCountry" et "destinationCountry"
+    destinationCountry = destinationCountry, //modif "originCountry" et "destinationCountry"
     city = destinationCity,
     category = selectedCategory
   ) => {
     let queryParams = [];
 
-    if (country) queryParams.push(`country=${encodeURIComponent(country)}`);
+    if (originCountry) queryParams.push(`originCountry=${encodeURIComponent(originCountry)}`);
+
+    if (destinationCountry) queryParams.push(`destinationCountry=${encodeURIComponent(destinationCountry)}`);
 
     if (city) queryParams.push(`city=${encodeURIComponent(city)}`);
 
     if (category) queryParams.push(`category=${encodeURIComponent(category)}`);
+
+
 
     const queryString =
       queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
@@ -57,6 +62,7 @@ export default function SearchScreen({ navigation }) {
     if (!queryString) {
       setFilteredAssociations(associations);
     } else {
+      console.log("vérification queryString:", queryString)
       fetch(`${BACKEND_ADDRESS}/associations/search${queryString}`)
         .then((response) => response.json())
         .then((data) => {
@@ -73,6 +79,9 @@ export default function SearchScreen({ navigation }) {
         );
     }
   };
+     //vérification états
+     useEffect(() => {console.log("vérification états","originCountry:", originCountry, "destinationCity:", destinationCity, "destinationCountry:", destinationCountry, "selectedCategory:", selectedCategory )}, [originCountry, destinationCity, destinationCountry, selectedCategory])
+
 
   // Gestion du clic sur une catégorie
   const handleCategoryClick = (category) => {
