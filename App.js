@@ -46,7 +46,7 @@ const ChatStack = () => {
   );
 };
 
-// const [showModal, setShowModal] = useState(false);
+// const [showModal, setShowModal] = useState(false)
 
 const TabNavigator = () => {
   //Import pour vérifier que l'utilisateur est connecté (voir propriété "component" des tabScreen)
@@ -87,7 +87,6 @@ const TabNavigator = () => {
       })}
     >
       <Tab.Screen name="Search" component={SearchStack} />
-      {/* Provisoire, à remplacer par un listener et une modale qui affiche le message "veuilelz vous connecter" */}
       <Tab.Screen
         name="Favorite"
         component={!userInfo.token ? HomeScreen : FavoriteScreen}
@@ -98,7 +97,7 @@ const TabNavigator = () => {
       />
       <Tab.Screen
         name="Chat"
-        component={ChatStack}
+        component={!userInfo.token ? HomeScreen : ChatStack}
         initialParams={{ email: userInfo.email }}
       />
 
@@ -118,19 +117,20 @@ function MainNavigator() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Asso" component={userInfo?.token ? AssoScreen : HomeScreen} />
+        <Stack.Screen
+          name="Asso"
+          component={userInfo?.token ? AssoScreen : HomeScreen}
+        />
         <Stack.Screen name="TabNavigator" component={TabNavigator} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
 
-
 export default function App() {
-
   return (
     <Provider store={store}>
-      <MainNavigator /> {/* Appelle le composant qui utilise useSelector */}
+      <MainNavigator />
     </Provider>
   );
 }
