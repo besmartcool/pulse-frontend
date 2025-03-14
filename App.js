@@ -16,6 +16,10 @@ import { Provider, useSelector } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import user from "./reducers/user";
 import React, { useState, useEffect } from "react";
+import { LogBox } from 'react-native';
+
+LogBox.ignoreAllLogs(); // Désactive tous les warnings
+
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
