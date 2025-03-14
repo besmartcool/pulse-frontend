@@ -95,7 +95,7 @@ export default function ChatScreen({ navigation, route: { params } }) {
           </Text>
           <View>
             {user.association
-              ? <Text>`${user.association}`</Text>
+              ? <Text>${user.association}</Text>
               : null}
           </View>
         </View>
