@@ -46,8 +46,6 @@ export default function Signin({ setSigninVisible }) {
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log("Réponse du backend:", data); // Vérifie la réponse ici
-
           if (data.result) {
             dispatch(
               signin({
