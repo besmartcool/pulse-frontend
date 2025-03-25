@@ -13,7 +13,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Pusher from "pusher-js/react-native";
 import { BACKEND_ADDRESS } from "../assets/url";
 
-// Connection à Pusher
+// Connexion au service Pusher pour la gestion du chat en temps réel
 const pusher = new Pusher("55d828cade0571956384", {
   cluster: "eu",
   forceTLS: true,
@@ -21,12 +21,21 @@ const pusher = new Pusher("55d828cade0571956384", {
 });
 
 export default function ChatScreen({ navigation, route: { params } }) {
+  // Récupération des paramètres de navigation
   const { email, roomId, user } = params;
+
+  // messages : tableau contenant tous les messages de la conversation
   const [messages, setMessages] = useState([]);
+
+  // messageText : texte saisi dans l'input
   const [messageText, setMessageText] = useState("");
+
+  // Référence utilisée pour scroller automatiquement en bas
   const scrollViewRef = useRef(null);
 
+  // useEffect pour charger les messages existants et gérer les messages reçus via Pusher
   useEffect(() => {
+    // On charge les anciens messages depuis le backend
     fetch(`${BACKEND_ADDRESS}/chat/messages/${roomId}`)
       .then((response) => response.json())
       .then((data) => {
@@ -36,28 +45,32 @@ export default function ChatScreen({ navigation, route: { params } }) {
           console.log("Données invalides reçues :", data);
         }
       })
-      .catch((error) => console.log("Erreur chargement des messages :", error));
+      .catch((error) =>
+        console.log("Erreur chargement des messages :", error)
+      );
 
-    // Écoute des messages en temps réel avec Pusher
+    // On écoute les nouveaux messages via Pusher (temps réel)
     const subscription = pusher.subscribe(`chat-${roomId}`);
     subscription.bind("chat-message", (data) => {
       setMessages((prevMessages) => [...prevMessages, data]);
     });
 
+    // Nettoyage à la destruction du composant
     return () => {
       subscription.unsubscribe();
     };
-  }, [roomId]); // Met à jour les messages en temps réel
+  }, [roomId]);
 
-  // Scroll automatique en bas quand un message est reçu
+  // Scroll automatique vers le bas à chaque nouveau message
   useEffect(() => {
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollToEnd({ animated: true });
     }
   }, [messages]);
 
+  // Envoi d’un message au backend
   const handleSendMessage = () => {
-    if (!messageText.trim()) return;
+    if (!messageText.trim()) return; // On évite d’envoyer des messages vides
 
     fetch(`${BACKEND_ADDRESS}/chat/message`, {
       method: "POST",
@@ -65,10 +78,10 @@ export default function ChatScreen({ navigation, route: { params } }) {
       body: JSON.stringify({ text: messageText, email, roomId }),
     })
       .then(() => {
-        setMessageText(""); // Réinitialise l'input après l'envoi
+        setMessageText(""); // Réinitialise le champ de saisie
         setTimeout(() => {
           if (scrollViewRef.current) {
-            scrollViewRef.current.scrollToEnd({ animated: true });
+            scrollViewRef.current.scrollToEnd({ animated: true }); // Scroll vers le bas après envoi
           }
         }, 100);
       })
@@ -76,6 +89,7 @@ export default function ChatScreen({ navigation, route: { params } }) {
         console.error("Erreur lors de l'envoi du message :", error);
       });
   };
+
 
   return (
     <KeyboardAvoidingView

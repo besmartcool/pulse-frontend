@@ -17,27 +17,33 @@ import { liked, saveAssociationForUpdate } from "../reducers/user";
 import { BACKEND_ADDRESS } from "../assets/url";
 
 export default function DescriptionScreen({ route }) {
+  // Récupération de l'association passée en paramètre de navigation
   const { association } = route.params;
+
   const navigation = useNavigation();
   const dispatch = useDispatch();
-
   const user = useSelector((state) => state.user.value);
 
+  // Vérifie si l'association est dans les favoris de l'utilisateur
   const favorites = user.favorites;
   const isLiked = favorites.some((fav) => fav.name === association.name);
 
+  // Code ISO du pays pour affichage du drapeau
   const [countryCode, setCountryCode] = useState("");
 
+  // State d'affichage complet ou tronqué de la description
   const [showFullDescription, setShowFullDescription] = useState(false);
 
+  // Coordonnées géographiques pour l'affichage de la carte
   const [coordinates, setCoordinates] = useState({
-    latitude: 37.78825,
+    latitude: 37.78825, // initialement à San Francisco
     longitude: -122.4324,
   });
 
+  // Adresse complète de l'association pour le géocodage
   const address = `${association.address.street}, ${association.address.city}, ${association.address.country}`;
 
-  // FONCTION QUI NOUS PERMET DE RETROUVER LE CODE DU PAYS
+  // Fonction pour obtenir le code pays alpha-2
   const getCountryCode = (countryName) => {
     return fetch(
       `https://restcountries.com/v3.1/name/${countryName}?fullText=false`
@@ -55,7 +61,7 @@ export default function DescriptionScreen({ route }) {
       });
   };
 
-  // PERMET DE RÉCUPÉRER LES DRAPEAUX POUR CHAQUE ASSOCIATION
+  // Récupère le code pays à chaque chargement du composant
   useEffect(() => {
     if (association.nationality) {
       getCountryCode(association.nationality).then((code) => {
@@ -66,6 +72,7 @@ export default function DescriptionScreen({ route }) {
     }
   }, [association.nationality]);
 
+  // Récupère les coordonnées GPS via API de l'état FR
   useEffect(() => {
     fetch(
       `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(
@@ -88,12 +95,12 @@ export default function DescriptionScreen({ route }) {
       });
   }, [association.address]);
 
+  // Ajout / suppression d'une association des favoris
   const handleLike = () => {
     dispatch(liked(association));
   };
 
-  //PERMET DE SAVOIR SI L'UTILISATEUR EST ADMIN DE L'ASSOCIATION
-
+  // Vérifie si l'utilisateur est administrateur de l'association
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -119,11 +126,12 @@ export default function DescriptionScreen({ route }) {
       );
   }, []);
 
+  // Fonction pour contacter le secrétaire
   const handleContact = () => {
     let secretary = null;
     let roomId = null;
 
-    // Récupérer le secrétaire de l'association
+    // Récupère le secrétaire de l'association
     fetch(`${BACKEND_ADDRESS}/associations/${association._id}/secretary`)
       .then((response) => response.json())
       .then((data) => {
@@ -134,7 +142,7 @@ export default function DescriptionScreen({ route }) {
 
         secretary = data.secretary[0];
 
-        // Vérifier si une room existe déjà entre l'utilisateur connecté et le secrétaire
+        // Vérifie si une room de chat existe déjà
         return fetch(`${BACKEND_ADDRESS}/rooms/${user.email}`);
       })
       .then((response) => response.json())
@@ -145,11 +153,12 @@ export default function DescriptionScreen({ route }) {
             room.users.includes(secretary.email)
         );
 
+        // Si elle existe, on la réutilise
         if (existingRoom) {
           roomId = existingRoom._id;
-          return null; // Pas besoin de créer une nouvelle room
+          return null;
         } else {
-          // Créer une nouvelle room si elle n'existe pas
+          // Sinon, on en crée une nouvelle
           return fetch(`${BACKEND_ADDRESS}/rooms/private`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -163,6 +172,7 @@ export default function DescriptionScreen({ route }) {
           roomId = newRoomData.room._id;
         }
 
+        // Redirection vers l'écran de chat
         if (roomId) {
           navigation.navigate("ChatScreen", {
             email: user.email,
@@ -251,11 +261,11 @@ export default function DescriptionScreen({ route }) {
               }}
               style={styles.map}
             >
-              <Marker
+              {/* <Marker // Ne fonctionne pas pour IOS et fais planter l'app...
                 coordinate={coordinates}
                 title={association.name}
                 pinColor="#FF6C02"
-              />
+              /> */}
             </MapView>
             <Text style={styles.address}>
               <FontAwesome name="map-pin" size={14} color="#000000" />

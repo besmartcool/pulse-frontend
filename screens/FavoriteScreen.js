@@ -13,9 +13,10 @@ import { useSelector } from "react-redux";
 import AssociationCard from "../components/associationCard";
 
 export default function FavoritesScreen({ navigation }) {
+  // on récupère les infos likés par l'user
   const user = useSelector((state) => state.user.value);
-  console.log(user);
 
+  // et on les affiche
   const favorites = user.favorites.map((association, i) => (
     <View key={i} style={styles.favoriteContainer}>
       <AssociationCard association={association} />

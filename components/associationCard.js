@@ -7,31 +7,39 @@ import { useDispatch, useSelector } from "react-redux";
 import { liked } from "../reducers/user";
 import { BACKEND_ADDRESS } from "../assets/url";
 
+// Composant qui affiche une carte d'association
 const AssociationCard = ({ association }) => {
+  // État local pour stocker le code pays (pour afficher le drapeau)
   const [countryCode, setCountryCode] = useState("");
+
+  // Accès à l'utilisateur connecté via Redux
   const user = useSelector((state) => state.user.value);
-
   const navigation = useNavigation();
-
   const dispatch = useDispatch();
+
+  // Récupère les favoris de l'utilisateur
   const favorites = useSelector((state) => state.user.value.favorites);
+
+  // Vérifie si cette association est déjà dans les favoris
   const isLiked = favorites.some((fav) => fav.name === association.name);
 
+  // Ajoute ou retire une association des favoris
   const handleLike = () => {
     dispatch(liked(association));
   };
 
   const countryOverrides = {
-    Chine: "China", // Pour éviter "Taiwan"
+    Chine: "China", // eviter que l'api renvoie taiwan au lieu de chine
   };
 
-  // Récupération du code pays
+  // Récupère le code ISO du pays pour afficher le bon drapeau
   useEffect(() => {
     if (association.nationality) {
-      // Vérifie si le pays est dans countryOverrides, sinon garde le même nom
+      // Vérifie si c'est chine
       const countryName =
         countryOverrides[association.nationality] || association.nationality;
 
+      // Appel à l’API restcountries pour obtenir le code alpha2 du pays
       fetch(
         `https://restcountries.com/v3.1/name/${encodeURIComponent(
           countryName
@@ -40,7 +48,7 @@ const AssociationCard = ({ association }) => {
         .then((response) => response.json())
         .then((data) => {
           if (data && data.length > 0) {
-            setCountryCode(data[0].cca2); // Récupère le code alpha2 internationale
+            setCountryCode(data[0].cca2); // Code ISO alpha-2
           }
         })
         .catch((error) =>
@@ -49,11 +57,12 @@ const AssociationCard = ({ association }) => {
     }
   }, [association.nationality]);
 
+  // Fonction qui s'exécute lorsqu'on clique sur "Contacter"
   const handleContact = () => {
     let secretary = null;
     let roomId = null;
 
-    // Récupérer le secrétaire de l'association
+    // Récupérer le secrétaire de l’association
     fetch(`${BACKEND_ADDRESS}/associations/${association._id}/secretary`)
       .then((response) => response.json())
       .then((data) => {
@@ -62,13 +71,15 @@ const AssociationCard = ({ association }) => {
           throw new Error("Aucun secrétaire trouvé");
         }
 
+        // On prend le premier secrétaire retourné
         secretary = data.secretary[0];
 
-        // Vérifier si une room existe déjà entre l'utilisateur connecté et le secrétaire
+        // 2. Vérifier si une room (conversation) existe déjà entre les deux
         return fetch(`${BACKEND_ADDRESS}/rooms/${user.email}`);
       })
       .then((response) => response.json())
       .then((existingRooms) => {
+        // Recherche d'une room contenant l'utilisateur et le secrétaire
         const existingRoom = existingRooms.find(
           (room) =>
             room.users.includes(user.email) &&
@@ -76,10 +87,11 @@ const AssociationCard = ({ association }) => {
         );
 
         if (existingRoom) {
+          // Si elle existe, on récupère l’id
           roomId = existingRoom._id;
-          return null; // Pas besoin de créer une nouvelle room
+          return null; // On ne crée pas de nouvelle room
         } else {
-          // Créer une nouvelle room si elle n'existe pas
+          // Sinon, on crée une nouvelle room privée
           return fetch(`${BACKEND_ADDRESS}/rooms/private`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -89,10 +101,12 @@ const AssociationCard = ({ association }) => {
       })
       .then((response) => (response ? response.json() : null))
       .then((newRoomData) => {
+        // Si on a bien une nouvelle room créée
         if (newRoomData && newRoomData.result && newRoomData.room) {
           roomId = newRoomData.room._id;
         }
 
+        // Redirection vers l'écran de chat avec les infos nécessaires
         if (roomId) {
           navigation.navigate("ChatScreen", {
             email: user.email,
@@ -115,6 +129,7 @@ const AssociationCard = ({ association }) => {
       });
   };
 
+  // Affichage de la carte d'association
   return (
     <View style={styles.associationCard}>
       <TouchableOpacity
@@ -122,6 +137,7 @@ const AssociationCard = ({ association }) => {
       >
         <View style={styles.topAssoContent}>
           <View style={styles.textTitle}>
+            {/* Affichage du drapeau si code disponible */}
             {countryCode ? (
               <Image
                 source={{
@@ -132,27 +148,37 @@ const AssociationCard = ({ association }) => {
             ) : (
               <View style={styles.drapeauDefault}></View>
             )}
+
+            {/* Affichage du nom de l'association, on le tronque si trop long */}
             <Text style={styles.assoName}>
               {association.name.length > 30
                 ? association.name.slice(0, 30) + "..."
                 : association.name}
             </Text>
           </View>
+
+          {/* Affichage de la catégorie dans un badge rond */}
           <View style={styles.textCategorie}>
             <CategorieRound categorie={association.category} />
           </View>
         </View>
+
+        {/* Adresse de l'association */}
         <Text style={styles.address}>
           <FontAwesome name="map-pin" size={14} color="#000000" />{" "}
           {association.address.city.toUpperCase()} {association.address.zipCode}
           , {association.address.country}
         </Text>
+
+        {/* Description de l'association, no le tronque à 150 caractères */}
         <Text style={styles.description}>
           {association.description.length > 150
             ? association.description.slice(0, 150) + "..."
             : association.description}
         </Text>
       </TouchableOpacity>
+
+      {/* Bas de la carte : bouton like + bouton contacter */}
       <View style={styles.bottomAssoContent}>
         <TouchableOpacity onPress={handleLike}>
           <FontAwesome
@@ -161,6 +187,7 @@ const AssociationCard = ({ association }) => {
             color={isLiked ? "#FF0000" : "#000000"}
           />
         </TouchableOpacity>
+
         <TouchableOpacity style={styles.contact} onPress={handleContact}>
           <Text style={styles.contactText}>Contacter</Text>
         </TouchableOpacity>
@@ -170,6 +197,7 @@ const AssociationCard = ({ association }) => {
 };
 
 export default AssociationCard;
+
 
 const styles = StyleSheet.create({
   associationCard: {

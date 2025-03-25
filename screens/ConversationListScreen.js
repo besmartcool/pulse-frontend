@@ -11,40 +11,39 @@ import { BACKEND_ADDRESS } from "../assets/url";
 import Pusher from "pusher-js/react-native";
 import { useSelector } from "react-redux";
 
-// Connexion à Pusher
+// Initialisation de la connexion à Pusher (WebSockets temps réel)
 const pusher = new Pusher("55d828cade0571956384", {
   cluster: "eu",
-  forceTLS: true, // Utilisation TLS pour de la sécurité
-  enabledTransports: ["ws", "wss"], // Active les websockets
+  forceTLS: true, // Connexion sécurisée via TLS
+  enabledTransports: ["ws", "wss"], // Utilisation des WebSockets uniquement
 });
 
 export default function ConversationListScreen({ navigation, route }) {
-  const [rooms, setRooms] = useState([]);
-  const [users, setUsers] = useState([]);
+  const [rooms, setRooms] = useState([]); // Liste des rooms de chat
+  const [users, setUsers] = useState([]); // Liste des utilisateurs disponibles pour discuter
 
-  const user = useSelector((state) => state.user.value);
-  const email = user?.email || "default@email.com";
+  const user = useSelector((state) => state.user.value); // Utilisateur connecté via Redux
+  const email = user?.email || "default@email.com"; // Fallback si non connecté
 
+  // 1. Récupération des rooms de l'utilisateur
   useEffect(() => {
-    // Chargement des rooms de l'user
     fetch(`${BACKEND_ADDRESS}/rooms/${email}`)
       .then((response) => response.json())
       .then((data) => {
-        setRooms(data);
+        setRooms(data); // Stocke les rooms récupérées
       })
       .catch((error) =>
         console.error("Erreur lors de la récupération des rooms :", error)
       );
   }, []);
 
+  // 2. Récupération de tous les utilisateurs sauf soi-même
   useEffect(() => {
-    // Chargement des utilisateurs
     fetch(`${BACKEND_ADDRESS}/users/allUsers`)
       .then((response) => response.json())
       .then((data) => {
         if (data.result !== false) {
           const uniqueUsers = Array.from(
-            // On exclue l'utilisateur actuellement connecté
             new Map(data.map((user) => [user.email, user])).values()
           );
           setUsers(uniqueUsers.filter((user) => user.email !== email));
@@ -53,13 +52,11 @@ export default function ConversationListScreen({ navigation, route }) {
         }
       })
       .catch((error) =>
-        console.error(
-          "Erreur lors de la récupération des utilisateurs :",
-          error
-        )
+        console.error("Erreur lors de la récupération des utilisateurs :", error)
       );
   }, []);
 
+  // 3. Synchronisation temps réel avec Pusher
   useEffect(() => {
     const fetchRooms = () => {
       fetch(`${BACKEND_ADDRESS}/rooms/${email}`)
@@ -70,19 +67,21 @@ export default function ConversationListScreen({ navigation, route }) {
         );
     };
 
-    fetchRooms(); // Charger les rooms au montage
+    fetchRooms(); // Chargement initial
 
-    // Abonnement à Pusher
+    // Abonnement à un canal Pusher personnalisé (par email)
     const channel = pusher.subscribe(`rooms-${email}`);
 
+    // Gestion d'un événement personnalisé "room-updated"
     channel.bind("room-updated", (updatedRoom) => {
+      // Mise à jour des rooms dans le state
       setRooms((prevRooms) => {
         const index = prevRooms.findIndex(
           (room) => room._id === updatedRoom._id
         );
 
         if (index !== -1) {
-          // Room existante, on met à jour le dernier message
+          // Si la room existe, on met à jour le dernier message
           const updatedRooms = [...prevRooms];
           updatedRooms[index] = {
             ...updatedRooms[index],
@@ -91,52 +90,54 @@ export default function ConversationListScreen({ navigation, route }) {
           };
           return updatedRooms;
         } else {
-          // Nouvelle room, on l'ajoute à la liste
+          // Sinon, c'est une nouvelle room qu'on ajoute à la liste
           return [...prevRooms, updatedRoom];
         }
       });
     });
 
+    // Nettoyage à la désactivation du composant
     return () => {
       channel.unbind_all();
       channel.unsubscribe();
     };
   }, [email]);
 
+  // Fonction appelée quand on clique sur un utilisateur
   const openChat = (otherUser) => {
-    // Ouvrir un chat avec un utilisateur
     if (!otherUser || !otherUser.email) {
       console.error("Erreur : utilisateur invalide", otherUser);
       return;
     }
 
-    // Vérifie si une room existe déjà
+    // Vérifie si une room existe déjà entre les 2 utilisateurs
     const existingRoom = rooms.find(
       (room) =>
         room.users.includes(email) && room.users.includes(otherUser.email)
     );
 
     if (existingRoom) {
-      // Si elle existe déjà, on va vers la room
+      // Si elle existe : on navigue vers l'écran de chat
       navigation.navigate("ChatScreen", {
         email,
         roomId: existingRoom._id,
         user: otherUser,
       });
     } else {
-      // Sinon on la crée
+      // Sinon, on en crée une
       fetch(`${BACKEND_ADDRESS}/rooms/private`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user1: email, user2: otherUser.email }), // avec les 2 users concercnnés
+        body: JSON.stringify({ user1: email, user2: otherUser.email }),
       })
         .then((response) => response.json())
         .then((data) => {
           if (data.result && data.room && data.room._id) {
-            setRooms((prevRooms) => [...prevRooms, data.room]); // On ajoute la room sur le front
+            // Ajout de la room au front
+            setRooms((prevRooms) => [...prevRooms, data.room]);
 
+            // Navigation vers la nouvelle room
             navigation.navigate("ChatScreen", {
-              // on navigue vers la room
               email,
               roomId: data.room._id,
               user: otherUser,
@@ -149,22 +150,17 @@ export default function ConversationListScreen({ navigation, route }) {
     }
   };
 
+  // Navigation vers une room existante (quand on clique sur une room dans la liste)
   const navigateToChat = (room) => {
-    // Ouvrir un chat existant
-    const otherUserEmail = room.users.find((u) => u !== email); // on récupère l'email de l'autre user
-    const otherUser = users.find((u) => u.email === otherUserEmail); // contient toutes les infos de l'user
+    const otherUserEmail = room.users.find((u) => u !== email);
+    const otherUser = users.find((u) => u.email === otherUserEmail);
 
-    // Vérification des données en amont
     if (!room._id || !otherUser) {
-      console.error("Données manquantes :", {
-        room,
-        otherUser,
-      });
+      console.error("Données manquantes :", { room, otherUser });
       return;
     }
 
     navigation.navigate("ChatScreen", {
-      // On va vers le chatscreen correspondant
       email,
       roomId: room._id,
       user: otherUser,

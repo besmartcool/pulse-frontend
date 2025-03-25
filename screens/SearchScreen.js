@@ -17,8 +17,8 @@ import categoriesList from "../assets/categoriesList";
 import { BACKEND_ADDRESS } from "../assets/url";
 
 export default function SearchScreen({ navigation }) {
-  // États principaux
 
+  // États principaux d'affichage
   const [typeContent, setTypeContent] = useState("default");
   const [resultResearch, setResultResearch] = useState("default");
 
@@ -34,7 +34,7 @@ export default function SearchScreen({ navigation }) {
   const [associations, setAssociations] = useState([]);
   const [filteredAssociations, setFilteredAssociations] = useState([]);
 
-  // Récupération des associations au chargement
+  // Récupération des associations aléatoirement au chargement
   useEffect(() => {
     fetch(`${BACKEND_ADDRESS}/associations/randomall`)
       .then((response) => response.json())
@@ -48,19 +48,19 @@ export default function SearchScreen({ navigation }) {
   const handleFilteredSearch = (origin, destination, city, category) => {
     let queryParams = [];
 
-    if (origin) queryParams.push(`originCountry=${encodeURIComponent(origin)}`);
+    if (origin) queryParams.push(`originCountry=${encodeURIComponent(origin)}`); // si origin existe, alors on l'ajoute dans le tableau
     if (destination)
-      queryParams.push(`destinationCountry=${encodeURIComponent(destination)}`);
-    if (city) queryParams.push(`city=${encodeURIComponent(city)}`);
-    if (category) queryParams.push(`category=${encodeURIComponent(category)}`);
+      queryParams.push(`destinationCountry=${encodeURIComponent(destination)}`); // pareil avec destination
+    if (city) queryParams.push(`city=${encodeURIComponent(city)}`); // city
+    if (category) queryParams.push(`category=${encodeURIComponent(category)}`); // et categorie
 
-    const queryString =
+    const queryString = // on va coller chaque parametre avec des ? et & pour former l'url que l'on souhaite avoir
       queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
 
-    if (!queryString) {
-      setFilteredAssociations(associations);
-    } else {
-      fetch(`${BACKEND_ADDRESS}/associations/search${queryString}`)
+    if (!queryString) { // si rien alors
+      setFilteredAssociations(associations); // on laisse les assos comme tel
+    } else { // sinon
+      fetch(`${BACKEND_ADDRESS}/associations/search${queryString}`) // on va chercher les assos correspondantes
         .then((response) => response.json())
         .then((data) => {
           if (data.result) {
@@ -79,7 +79,7 @@ export default function SearchScreen({ navigation }) {
 
   // Gestion du clic sur une catégorie
   const handleCategoryClick = (category) => {
-    setSelectedCategory((prevCategory) => {
+    setSelectedCategory((prevCategory) => { // lorsque l'on clic sur une category, on regarde si il correspond à celui d'avant, sinon on met le nouveau
       const newCategory = prevCategory === category ? "" : category;
       handleFilteredSearch(originCountry, destinationCountry, destinationCity, newCategory);
       return newCategory;
